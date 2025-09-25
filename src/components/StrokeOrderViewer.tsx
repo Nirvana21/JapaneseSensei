@@ -71,8 +71,11 @@ export default function StrokeOrderViewer({
 
   const loadKanjivgAnimate = async () => {
     try {
+      console.log('Tentative chargement KanjivgAnimate...');
+      
       // Charger dynamiquement KanjivgAnimate
       const KanjivgAnimate = (await import('kanjivganimate')).default;
+      console.log('KanjivgAnimate importé:', KanjivgAnimate);
       
       if (svgContainerRef.current) {
         // Nettoyer l'animation précédente
@@ -82,26 +85,46 @@ export default function StrokeOrderViewer({
 
         // Attendre que le DOM soit mis à jour
         setTimeout(() => {
-          try {
-            animationInstanceRef.current = new KanjivgAnimate(`#${svgId}`, 800);
-            setAnimationLoaded(true);
-            console.log(`Animation KanjiVG initialisée pour ${kanji}`);
-          } catch (animError) {
-            console.warn('Erreur initialisation animation:', animError);
+          const svgElement = document.getElementById(svgId);
+          console.log('Élément SVG trouvé:', svgElement);
+          
+          if (svgElement) {
+            try {
+              console.log(`Initialisation animation pour #${svgId}...`);
+              animationInstanceRef.current = new KanjivgAnimate(`#${svgId}`, 800);
+              setAnimationLoaded(true);
+              console.log(`Animation KanjiVG initialisée pour ${kanji}`);
+            } catch (animError) {
+              console.error('Erreur initialisation animation:', animError);
+            }
+          } else {
+            console.error('SVG élément non trouvé avec ID:', svgId);
           }
-        }, 100);
+        }, 500); // Augmenter le délai
       }
     } catch (err) {
-      console.warn('KanjivgAnimate non disponible:', err);
+      console.error('KanjivgAnimate non disponible:', err);
     }
   };
 
   const handleManualAnimate = () => {
+    console.log('Tentative animation manuelle...');
+    
     if (animationInstanceRef.current) {
+      console.log('Instance animation trouvée, déclenchement...');
       // Déclencher l'animation manuellement
       const svgElement = document.getElementById(svgId);
       if (svgElement) {
+        console.log('Élément SVG trouvé, clic simulé');
         svgElement.click();
+      } else {
+        console.error('Élément SVG non trouvé pour animation:', svgId);
+      }
+    } else {
+      console.warn('Instance animation non disponible, rechargement...');
+      // Essayer de recharger l'animation
+      if (strokeData && showAnimation) {
+        loadKanjivgAnimate();
       }
     }
   };

@@ -3,7 +3,7 @@
 import { KanjiEntry } from '@/types/kanji';
 import { useState, useEffect } from 'react';
 import { KanjiEnrichmentService } from '@/services/jishoApi';
-import StrokeOrderViewer from './StrokeOrderViewer';
+import MultiStrokeOrderViewer from './MultiStrokeOrderViewer';
 
 interface KanjiCardProps {
   kanji: KanjiEntry;
@@ -138,8 +138,8 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
           <div className="border-t pt-4 space-y-4">
             {/* Ordre des traits */}
             <div>
-              <StrokeOrderViewer 
-                kanji={kanji.kanji}
+              <MultiStrokeOrderViewer 
+                text={kanji.kanji}
                 className="w-full"
                 showAnimation={true}
               />
