@@ -102,8 +102,10 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
         <ul className="text-sm text-blue-800 space-y-1">
           <li>• Tapez directement un kanji : <span className="font-mono bg-white px-1 rounded">日</span></li>
           <li>• Ou un mot complet : <span className="font-mono bg-white px-1 rounded">日本語</span></li>
+          <li>• Mots composés : <span className="font-mono bg-white px-1 rounded">花火</span> (décomposés automatiquement)</li>
           <li>• Utilisez votre clavier japonais mobile</li>
           <li>• L&apos;app récupèrera automatiquement les lectures et significations</li>
+          <li>• Les radicaux/clés seront analysés automatiquement</li>
         </ul>
       </div>
     </div>

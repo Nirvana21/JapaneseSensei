@@ -72,6 +72,14 @@ export interface KanjiEntry {
   jlptLevel?: string; // Niveau JLPT
   frequency?: number; // Fréquence d'usage
   
+  // Décomposition pour mots composés
+  kanjiComponents?: Array<{
+    character: string;
+    radicals: string[];
+    meaning: string;
+    strokeCount?: number;
+  }>;
+  
   // Données personnalisées
   customNotes?: string; // Détails supplémentaires ajoutés à la main
   tags?: string[]; // Tags personnalisés

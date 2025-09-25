@@ -2,6 +2,7 @@
 
 import { KanjiEntry } from '@/types/kanji';
 import { useState } from 'react';
+import { KanjiEnrichmentService } from '@/services/jishoApi';
 
 interface KanjiCardProps {
   kanji: KanjiEntry;
@@ -155,6 +156,81 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
                 </div>
               )}
             </div>
+
+            {/* Analyse des radicaux pour kanji individuel */}
+            {kanji.kanji.length === 1 && (
+              <div>
+                <h4 className="font-medium text-gray-700 mb-2">Analyse des radicaux :</h4>
+                {(() => {
+                  // Analyser les radicaux du kanji
+                  const radicalAnalysis = KanjiEnrichmentService.analyzeRadicals(kanji.kanji);
+                  if (radicalAnalysis.length > 0) {
+                    return (
+                      <div className="space-y-1">
+                        {radicalAnalysis.map((analysis, idx) => (
+                          <div key={idx} className="flex items-center gap-2 text-sm">
+                            <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded font-mono">
+                              {analysis.radical}
+                            </span>
+                            <span className="text-gray-600">
+                              {analysis.name} - {analysis.meaning}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  }
+                  return (
+                    <p className="text-sm text-gray-500">
+                      Aucun radical reconnu dans notre base de données
+                    </p>
+                  );
+                })()}
+              </div>
+            )}
+
+            {/* Décomposition pour mots composés */}
+            {kanji.kanjiComponents && kanji.kanjiComponents.length > 1 && (
+              <div>
+                <h4 className="font-medium text-gray-700 mb-2">Décomposition :</h4>
+                <div className="space-y-2">
+                  {kanji.kanjiComponents.map((component, idx) => (
+                    <div key={idx} className="bg-gray-50 border rounded-lg p-3">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-2xl font-bold text-blue-600">
+                          {component.character}
+                        </span>
+                        <div>
+                          <div className="font-medium text-gray-800">
+                            {component.meaning || 'Signification non trouvée'}
+                          </div>
+                          {component.strokeCount && (
+                            <div className="text-xs text-gray-500">
+                              {component.strokeCount} traits
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      {component.radicals.length > 0 && (
+                        <div>
+                          <span className="text-xs text-gray-600">Radicaux : </span>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {component.radicals.map((radical, ridx) => (
+                              <span
+                                key={ridx}
+                                className="bg-orange-100 text-orange-800 px-1 py-0.5 rounded text-xs"
+                              >
+                                {radical}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Radicaux */}
             {kanji.radicals && kanji.radicals.length > 0 && (
