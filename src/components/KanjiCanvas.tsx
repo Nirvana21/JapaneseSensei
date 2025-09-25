@@ -42,6 +42,9 @@ export default function KanjiCanvas({
   const startDrawing = useCallback((e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     if (!context) return;
     
+    // Empêcher le comportement par défaut pour éviter le scroll sur mobile
+    e.preventDefault();
+    
     setIsDrawing(true);
     
     const rect = canvasRef.current!.getBoundingClientRect();
@@ -62,11 +65,13 @@ export default function KanjiCanvas({
   const draw = useCallback((e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     if (!isDrawing || !context) return;
     
+    // Empêcher le comportement par défaut pour éviter le scroll sur mobile
+    e.preventDefault();
+    
     const rect = canvasRef.current!.getBoundingClientRect();
     let x, y;
     
     if ('touches' in e) {
-      e.preventDefault(); // Empêcher le scroll sur mobile
       x = e.touches[0].clientX - rect.left;
       y = e.touches[0].clientY - rect.top;
     } else {
@@ -78,7 +83,23 @@ export default function KanjiCanvas({
     context.stroke();
   }, [isDrawing, context]);
 
-  const stopDrawing = useCallback(() => {
+  const stopDrawingMouse = useCallback(() => {
+    if (!isDrawing || !context) return;
+    
+    setIsDrawing(false);
+    context.beginPath();
+    
+    // Optionnel: notifier que le dessin est terminé
+    if (onDrawingComplete && canvasRef.current) {
+      const imageData = canvasRef.current.toDataURL();
+      onDrawingComplete(imageData);
+    }
+  }, [isDrawing, context, onDrawingComplete]);
+
+  const stopDrawingTouch = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
+    // Empêcher le comportement par défaut
+    e.preventDefault();
+    
     if (!isDrawing || !context) return;
     
     setIsDrawing(false);
@@ -114,7 +135,13 @@ export default function KanjiCanvas({
   return (
     <div className={`kanjicanvas-container ${className}`}>
       {/* Canvas principal */}
-      <div className="relative border-2 border-gray-300 rounded-lg overflow-hidden bg-white">
+      <div 
+        className="relative border-2 border-gray-300 rounded-lg overflow-hidden bg-white touch-none"
+        style={{
+          touchAction: 'none', // Empêche le scroll, zoom et autres gestes sur mobile
+          userSelect: 'none'    // Empêche la sélection de texte
+        }}
+      >
         {/* Grille d'aide (optionnelle) */}
         <div className="absolute inset-0 pointer-events-none">
           <svg width={width} height={height} className="opacity-20">
@@ -151,14 +178,15 @@ export default function KanjiCanvas({
           ref={canvasRef}
           width={width}
           height={height}
-          className="block cursor-crosshair"
+          className="block cursor-crosshair touch-none"
+          style={{ touchAction: 'none' }}
           onMouseDown={startDrawing}
           onMouseMove={draw}
-          onMouseUp={stopDrawing}
-          onMouseLeave={stopDrawing}
+          onMouseUp={stopDrawingMouse}
+          onMouseLeave={stopDrawingMouse}
           onTouchStart={startDrawing}
           onTouchMove={draw}
-          onTouchEnd={stopDrawing}
+          onTouchEnd={stopDrawingTouch}
         />
       </div>
 

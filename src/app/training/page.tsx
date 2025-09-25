@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useKanjis } from "@/hooks/useKanjis";
 import { KanjiEntry } from "@/types/kanji";
 import KanjiCanvas from "@/components/KanjiCanvas";
+import SwipeCard from "@/components/SwipeCard";
 
 export default function TrainingPage() {
   const { kanjis, loading } = useKanjis();
@@ -103,42 +104,85 @@ export default function TrainingPage() {
 
       {/* Zone principale d'entraînement */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Carte flashcard */}
+        {/* Carte flashcard swipeable */}
         <div className="flex justify-center mb-8">
-          <div 
-            className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-lg cursor-pointer transition-all duration-200 hover:shadow-3xl"
-            onClick={() => setShowAnswer(!showAnswer)}
+          <SwipeCard
+            onSwipeLeft={() => handleSwipe('left')}
+            onSwipeRight={() => handleSwipe('right')}
+            onTap={() => setShowAnswer(!showAnswer)}
+            className="w-full max-w-lg"
           >
-            {trainingMode === 'fr-to-jp' ? (
-              // Mode: Français → Japonais
-              <div className="text-center">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                    Traduisez en japonais :
-                  </h2>
-                  <p className="text-4xl font-bold text-blue-600">
-                    {currentKanji.primaryMeaning || currentKanji.meanings[0]}
-                  </p>
-                </div>
+            <div className="p-8">
+              {trainingMode === 'fr-to-jp' ? (
+                // Mode: Français → Japonais
+                <div className="text-center">
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                      Traduisez en japonais :
+                    </h2>
+                    <p className="text-4xl font-bold text-blue-600">
+                      {currentKanji.primaryMeaning || currentKanji.meanings[0]}
+                    </p>
+                  </div>
 
-                {showAnswer && (
-                  <div className="border-t pt-6 mt-6">
-                    <div className="space-y-4">
-                      <div>
-                        <p className="text-sm text-gray-600">Kanji :</p>
-                        <p className="text-6xl font-bold text-gray-800">{currentKanji.kanji}</p>
+                  {showAnswer && (
+                    <div className="border-t pt-6 mt-6">
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-sm text-gray-600">Kanji :</p>
+                          <p className="text-6xl font-bold text-gray-800">{currentKanji.kanji}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Lecture :</p>
+                          <p className="text-2xl text-gray-700">
+                            {currentKanji.primaryReading || 
+                             [...(currentKanji.onyomi || []), ...(currentKanji.kunyomi || [])][0] || 'N/A'}
+                          </p>
+                        </div>
+                        {currentKanji.tags && currentKanji.tags.length > 0 && (
+                          <div>
+                            <p className="text-sm text-gray-600">Tags :</p>
+                            <div className="flex flex-wrap gap-2 mt-1">
+                              {currentKanji.tags.map((tag, index) => (
+                                <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                // Mode: Japonais → Français  
+                <div className="text-center">
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                      Que signifie :
+                    </h2>
+                    <p className="text-8xl font-bold text-gray-800 mb-4">
+                      {currentKanji.kanji}
+                    </p>
+                    <p className="text-2xl text-gray-600">
+                      {currentKanji.primaryReading || 
+                       [...(currentKanji.onyomi || []), ...(currentKanji.kunyomi || [])][0] || 'N/A'}
+                    </p>
+                  </div>
+
+                  {showAnswer && (
+                    <div className="border-t pt-6 mt-6">
                       <div>
-                        <p className="text-sm text-gray-600">Lecture :</p>
-                        <p className="text-2xl text-gray-700">
-                          {currentKanji.primaryReading || 
-                           [...(currentKanji.onyomi || []), ...(currentKanji.kunyomi || [])][0] || 'N/A'}
+                        <p className="text-sm text-gray-600">Signification :</p>
+                        <p className="text-4xl font-bold text-blue-600">
+                          {currentKanji.primaryMeaning || currentKanji.meanings[0]}
                         </p>
                       </div>
                       {currentKanji.tags && currentKanji.tags.length > 0 && (
-                        <div>
+                        <div className="mt-4">
                           <p className="text-sm text-gray-600">Tags :</p>
-                          <div className="flex flex-wrap gap-2 mt-1">
+                          <div className="flex flex-wrap gap-2 mt-1 justify-center">
                             {currentKanji.tags.map((tag, index) => (
                               <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
                                 {tag}
@@ -148,56 +192,11 @@ export default function TrainingPage() {
                         </div>
                       )}
                     </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              // Mode: Japonais → Français  
-              <div className="text-center">
-                <div className="mb-6">
-                  <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                    Que signifie :
-                  </h2>
-                  <p className="text-8xl font-bold text-gray-800 mb-4">
-                    {currentKanji.kanji}
-                  </p>
-                  <p className="text-2xl text-gray-600">
-                    {currentKanji.primaryReading || 
-                     [...(currentKanji.onyomi || []), ...(currentKanji.kunyomi || [])][0] || 'N/A'}
-                  </p>
+                  )}
                 </div>
-
-                {showAnswer && (
-                  <div className="border-t pt-6 mt-6">
-                    <div>
-                      <p className="text-sm text-gray-600">Signification :</p>
-                      <p className="text-4xl font-bold text-blue-600">
-                        {currentKanji.primaryMeaning || currentKanji.meanings[0]}
-                      </p>
-                    </div>
-                    {currentKanji.tags && currentKanji.tags.length > 0 && (
-                      <div className="mt-4">
-                        <p className="text-sm text-gray-600">Tags :</p>
-                        <div className="flex flex-wrap gap-2 mt-1 justify-center">
-                          {currentKanji.tags.map((tag, index) => (
-                            <span key={index} className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-            
-            {!showAnswer && (
-              <p className="text-center text-sm text-gray-500 mt-6">
-                👆 Cliquez pour voir la réponse
-              </p>
-            )}
-          </div>
+              )}
+            </div>
+          </SwipeCard>
         </div>
 
         {/* Zone Canvas pour le mode Français → Japonais */}

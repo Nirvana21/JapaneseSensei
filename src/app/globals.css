@@ -24,3 +24,59 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Optimisations mobile pour le touch et le swipe */
+html, body {
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Permettre la sélection de texte seulement où nécessaire */
+input, textarea, .selectable-text {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Améliorer les performances du scroll sur mobile */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Style pour les éléments avec touch-action: none */
+.touch-none {
+  touch-action: none;
+  -ms-touch-action: none;
+}
+
+/* Curseur pour les éléments draggables */
+.cursor-grab {
+  cursor: grab;
+  cursor: -webkit-grab;
+}
+
+.cursor-grabbing {
+  cursor: grabbing;
+  cursor: -webkit-grabbing;
+}
+
+/* Améliorer l'apparence des boutons sur mobile */
+button {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Style pour le canvas */
+.kanjicanvas-container canvas {
+  touch-action: none;
+  -ms-touch-action: none;
+}
