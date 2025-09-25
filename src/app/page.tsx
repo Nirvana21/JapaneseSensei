@@ -1,87 +1,97 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import AddKanjiForm from "@/components/AddKanjiForm";
 import KanjiList from "@/components/KanjiList";
 import EditKanjiModal from "@/components/EditKanjiModal";
 import { useKanjis } from "@/hooks/useKanjis";
 import { KanjiEntry } from "@/types/kanji";
-import { KanjiStorageService } from "@/services/kanjiStorage";
 
-interface StorageInfo {
-  quota?: number;
-  usage?: number;
-  persistent?: boolean;
+// Simple test inline pour debug l'animation
+function AnimationDebugTest() {
+  const [svgContent, setSvgContent] = useState<string>('');
+  const [testStatus, setTestStatus] = useState<string>('Prêt à tester...');
+
+  const testAnimation = async () => {
+    try {
+      setTestStatus('Chargement SVG...');
+      
+      // Test avec le kanji 日
+      const response = await fetch('https://raw.githubusercontent.com/KanjiVG/kanjivg/master/kanji/065e5.svg');
+      if (!response.ok) throw new Error('Échec chargement SVG');
+      
+      const svgData = await response.text();
+      setSvgContent(svgData);
+      setTestStatus('SVG chargé! Attente KanjivgAnimate...');
+
+      // Import dynamique de KanjivgAnimate
+      setTimeout(async () => {
+        try {
+          const KanjivgAnimate = (await import('kanjivganimate')).default;
+          setTestStatus('Bibliothèque importée! Animation prête.');
+          
+          // Attacher l'animation à l'élément SVG
+          setTimeout(() => {
+            const svgElement = document.querySelector('#debug-svg');
+            if (svgElement) {
+              const animation = new KanjivgAnimate('#debug-svg', 1500);
+              setTestStatus('✅ Animation créée! Cliquez sur le kanji pour tester.');
+              console.log('Animation créée:', animation);
+            } else {
+              setTestStatus('❌ Élément SVG non trouvé.');
+            }
+          }, 500);
+          
+        } catch (error: any) {
+          setTestStatus(`❌ Erreur import: ${error.message}`);
+          console.error('Erreur animation:', error);
+        }
+      }, 1000);
+      
+    } catch (error: any) {
+      setTestStatus(`❌ Erreur: ${error.message}`);
+      console.error('Erreur test:', error);
+    }
+  };
+
+  return (
+    <div className="mb-8 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+      <h3 className="text-lg font-bold mb-4 text-yellow-800">🔧 Test Debug Animation</h3>
+      
+      <div className="mb-4">
+        <button 
+          onClick={testAnimation}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Tester Animation Kanji 日
+        </button>
+      </div>
+
+      <div className="text-sm mb-4 text-gray-600">
+        Status: <span className="font-mono">{testStatus}</span>
+      </div>
+
+      {svgContent && (
+        <div className="flex justify-center mb-4">
+          <div 
+            id="debug-svg"
+            className="cursor-pointer"
+            dangerouslySetInnerHTML={{ __html: svgContent }}
+          />
+        </div>
+      )}
+
+      <div className="text-xs text-yellow-700">
+        Instructions: Cliquez sur "Tester Animation", puis cliquez sur le kanji affiché pour voir l'animation.
+        Ouvrez la console (F12) pour voir les logs détaillés.
+      </div>
+    </div>
+  );
 }
 
 export default function Home() {
-  const [isOnline, setIsOnline] = useState(true);
-  const [storageInfo, setStorageInfo] = useState<StorageInfo>({});
   const [editingKanji, setEditingKanji] = useState<KanjiEntry | null>(null);
-  const [stats, setStats] = useState<{
-    totalKanjis: number;
-    studiedKanjis: number;
-    averageCorrectRate: number;
-    lastStudyDate?: Date;
-  } | null>(null);
-
   const { kanjis, loading, error, updateKanji, deleteKanji, refreshKanjis } = useKanjis();
-
-  useEffect(() => {
-    // Check online status
-    setIsOnline(navigator.onLine);
-    
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-    
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-
-    // Check persistent storage and quota
-    const checkStorage = async () => {
-      try {
-        // Check if persistent storage is granted
-        const persistent = await navigator.storage.persist();
-        
-        // Get storage estimate
-        if ('estimate' in navigator.storage) {
-          const estimate = await navigator.storage.estimate();
-          setStorageInfo({
-            quota: estimate.quota,
-            usage: estimate.usage,
-            persistent,
-          });
-        }
-      } catch (error) {
-        console.error('Storage API not supported:', error);
-      }
-    };
-
-    checkStorage();
-
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
-
-  // Load statistics when kanjis change
-  useEffect(() => {
-    const loadStats = async () => {
-      const kanjiStats = await KanjiStorageService.getStats();
-      setStats(kanjiStats);
-    };
-    
-    if (!loading) {
-      loadStats();
-    }
-  }, [kanjis, loading]);
-
-  const formatBytes = (bytes?: number) => {
-    if (!bytes) return "N/A";
-    const mb = bytes / (1024 * 1024);
-    return `${mb.toFixed(2)} MB`;
-  };
 
   const handleEdit = (kanji: KanjiEntry) => {
     setEditingKanji(kanji);
@@ -104,83 +114,26 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      {/* Header */}
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Japanese Sensei 🇯🇵
-              </h1>
-              <p className="text-gray-600">Votre assistant d&apos;apprentissage des kanjis</p>
-            </div>
-            
-            {/* Status indicators */}
-            <div className="flex items-center gap-4">
-              {/* Online/Offline Status */}
-              <div
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  isOnline
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
-                }`}
-              >
-                {isOnline ? "🟢 Online" : "🔴 Offline"}
-              </div>
-              
-              {/* Storage Status */}
-              <div
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  storageInfo.persistent 
-                    ? "bg-blue-100 text-blue-800" 
-                    : "bg-yellow-100 text-yellow-800"
-                }`}
-              >
-                📱 {storageInfo.persistent ? "Stockage persistant" : "Stockage temporaire"}
-              </div>
-            </div>
-          </div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Japanese Sensei 🇯🇵 - Debug Animation
+          </h1>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Statistics Dashboard */}
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-2xl font-bold text-blue-600">{stats.totalKanjis}</div>
-              <div className="text-sm text-gray-600">Kanjis dans votre collection</div>
-            </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-2xl font-bold text-green-600">{stats.studiedKanjis}</div>
-              <div className="text-sm text-gray-600">Kanjis étudiés</div>
-            </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-2xl font-bold text-purple-600">
-                {stats.averageCorrectRate.toFixed(1)}%
-              </div>
-              <div className="text-sm text-gray-600">Taux de réussite</div>
-            </div>
-            <div className="bg-white rounded-lg shadow p-4">
-              <div className="text-2xl font-bold text-orange-600">
-                {formatBytes(storageInfo.usage)}
-              </div>
-              <div className="text-sm text-gray-600">Stockage utilisé</div>
-            </div>
-          </div>
-        )}
+        {/* Debug Component */}
+        <AnimationDebugTest />
 
-        {/* Add Kanji Form */}
         <AddKanjiForm onKanjiAdded={handleKanjiAdded} />
 
-        {/* Error Display */}
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-red-700">{error}</p>
           </div>
         )}
 
-        {/* Kanji List */}
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">
             Votre collection de kanjis
@@ -192,45 +145,8 @@ export default function Home() {
             onDelete={handleDelete}
           />
         </div>
-
-        {/* Storage Details (Expandable) */}
-        {storageInfo.quota && storageInfo.usage && (
-          <details className="bg-white rounded-lg shadow-sm p-4">
-            <summary className="cursor-pointer text-sm font-medium text-gray-700">
-              📊 Détails du stockage
-            </summary>
-            <div className="mt-3 space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span>Utilisé :</span>
-                <span className="font-mono">{formatBytes(storageInfo.usage)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Quota total :</span>
-                <span className="font-mono">{formatBytes(storageInfo.quota)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Pourcentage :</span>
-                <span>
-                  {((storageInfo.usage / storageInfo.quota) * 100).toFixed(2)}%
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                  style={{
-                    width: `${Math.min(
-                      (storageInfo.usage / storageInfo.quota) * 100,
-                      100
-                    )}%`,
-                  }}
-                ></div>
-              </div>
-            </div>
-          </details>
-        )}
       </main>
 
-      {/* Edit Modal */}
       <EditKanjiModal
         kanji={editingKanji}
         isOpen={!!editingKanji}

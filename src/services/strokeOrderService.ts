@@ -17,7 +17,11 @@ export interface MultiStrokeOrderData {
 }
 
 export class StrokeOrderService {
-  private static readonly KANJIVG_CDN_BASE = 'https://kanjivg.tagaini.net/kanjivg/kanji';
+  // Essayer plusieurs sources pour KanjiVG
+  private static readonly KANJIVG_SOURCES = [
+    'https://raw.githubusercontent.com/KanjiVG/kanjivg/master/kanji',
+    'https://kanjivg.tagaini.net/kanjivg/kanji'
+  ];
 
   /**
    * Convertit un caractère japonais en code hexadécimal pour KanjiVG
@@ -45,31 +49,38 @@ export class StrokeOrderService {
       }
 
       const filename = this.kanjiToKanjiVGFilename(firstChar);
-      const svgUrl = `${this.KANJIVG_CDN_BASE}/${filename}.svg`;
-
-      console.log(`Récupération stroke order pour ${firstChar} depuis: ${svgUrl}`);
-
-      const response = await fetch(svgUrl);
       
-      if (!response.ok) {
-        if (response.status === 404) {
-          console.warn(`Stroke order non disponible pour ${firstChar} (404)`);
-          return null;
+      // Essayer plusieurs sources
+      for (const baseUrl of this.KANJIVG_SOURCES) {
+        const svgUrl = `${baseUrl}/${filename}.svg`;
+        console.log(`Récupération stroke order pour ${firstChar} depuis: ${svgUrl}`);
+
+        try {
+          const response = await fetch(svgUrl);
+          
+          if (response.ok) {
+            const svgData = await response.text();
+            console.log(`SVG récupéré avec succès depuis ${baseUrl}`);
+            console.log('Extrait SVG:', svgData.substring(0, 200) + '...');
+            
+            // Analyser le nombre de traits depuis le SVG
+            const strokeCount = this.extractStrokeCount(svgData);
+
+            return {
+              kanji: firstChar,
+              svgData,
+              strokeCount,
+              hasAnimation: true
+            };
+          }
+        } catch (fetchError) {
+          console.warn(`Échec récupération depuis ${baseUrl}:`, fetchError);
+          continue;
         }
-        throw new Error(`Erreur HTTP: ${response.status}`);
       }
-
-      const svgData = await response.text();
       
-      // Analyser le nombre de traits depuis le SVG
-      const strokeCount = this.extractStrokeCount(svgData);
-
-      return {
-        kanji: firstChar,
-        svgData,
-        strokeCount,
-        hasAnimation: true
-      };
+      console.warn(`Stroke order non disponible pour ${firstChar} sur toutes les sources`);
+      return null;
 
     } catch (error) {
       console.error('Erreur récupération stroke order:', error);
@@ -125,32 +136,32 @@ export class StrokeOrderService {
       }
 
       const filename = this.kanjiToKanjiVGFilename(kanji);
-      const svgUrl = `${this.KANJIVG_CDN_BASE}/${filename}.svg`;
-
-      console.log(`Récupération stroke order pour ${kanji} depuis: ${svgUrl}`);
-
-      const response = await fetch(svgUrl);
       
-      if (!response.ok) {
-        if (response.status === 404) {
-          console.warn(`Stroke order non disponible pour ${kanji} (404)`);
-          return null;
+      // Essayer plusieurs sources
+      for (const baseUrl of this.KANJIVG_SOURCES) {
+        const svgUrl = `${baseUrl}/${filename}.svg`;
+
+        try {
+          const response = await fetch(svgUrl);
+          
+          if (response.ok) {
+            const svgData = await response.text();
+            const strokeCount = this.extractStrokeCount(svgData);
+
+            return {
+              kanji,
+              svgData,
+              strokeCount,
+              hasAnimation: true
+            };
+          }
+        } catch (fetchError) {
+          console.warn(`Échec récupération ${kanji} depuis ${baseUrl}:`, fetchError);
+          continue;
         }
-        throw new Error(`Erreur HTTP: ${response.status}`);
       }
 
-      const svgData = await response.text();
-      
-      // Analyser le nombre de traits depuis le SVG
-      const strokeCount = this.extractStrokeCount(svgData);
-
-      return {
-        kanji,
-        svgData,
-        strokeCount,
-        hasAnimation: true
-      };
-
+      return null;
     } catch (error) {
       console.error(`Erreur récupération stroke order pour ${kanji}:`, error);
       return null;
