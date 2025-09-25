@@ -89,7 +89,7 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
           {/* Onyomi */}
           {kanji.onyomi.length > 0 && (
             <div>
-              <h4 className="font-medium text-gray-700 mb-1">On'yomi (音読み) :</h4>
+              <h4 className="font-medium text-gray-700 mb-1">On&apos;yomi (音読み) :</h4>
               <div className="flex flex-wrap gap-1">
                 {kanji.onyomi.map((reading, idx) => (
                   <span
@@ -106,7 +106,7 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
           {/* Kunyomi */}
           {kanji.kunyomi.length > 0 && (
             <div>
-              <h4 className="font-medium text-gray-700 mb-1">Kun'yomi (訓読み) :</h4>
+              <h4 className="font-medium text-gray-700 mb-1">Kun&apos;yomi (訓読み) :</h4>
               <div className="flex flex-wrap gap-1">
                 {kanji.kunyomi.map((reading, idx) => (
                   <span
@@ -307,7 +307,7 @@ export default function KanjiList({ kanjis, loading, onEdit, onDelete }: KanjiLi
             <label className="text-sm text-gray-600">Trier par :</label>
             <select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => setSortBy(e.target.value as 'date' | 'kanji' | 'frequency')}
               className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
             >
               <option value="date">Date d'ajout</option>

@@ -1,4 +1,4 @@
-import { JishoApiResponse, KanjiEntry, JishoEntry, KanjiDetails } from '@/types/kanji';
+import { JishoApiResponse, KanjiEntry, JishoEntry } from '@/types/kanji';
 
 // Service pour l'API Jisho (dictionnaire japonais gratuit)
 export class JishoApiService {
@@ -32,8 +32,7 @@ export class JishoApiService {
     const mainJapanese = jishoEntry.japanese[0];
     const kanji = mainJapanese.word || mainJapanese.reading || '';
     
-    // Extraire toutes les lectures
-    const allReadings = jishoEntry.japanese.map(j => j.reading).filter(Boolean) as string[];
+    // Extraire toutes les lectures disponibles dans japanese
     
     // Extraire toutes les significations
     const allMeanings = jishoEntry.senses.flatMap(s => s.english_definitions);
@@ -74,7 +73,7 @@ export class KanjiEnrichmentService {
       // Analyse basique des caractères pour séparer onyomi/kunyomi
       if (entry.kanji.length === 1) {
         // C'est un kanji individuel, on peut essayer d'enrichir
-        enrichedEntry.radicals = this.extractRadicals(entry.kanji);
+        enrichedEntry.radicals = this.extractRadicals();
       }
       
       return enrichedEntry;
@@ -87,7 +86,7 @@ export class KanjiEnrichmentService {
   /**
    * Extraction basique des radicaux (à améliorer plus tard)
    */
-  private static extractRadicals(kanji: string): string[] {
+  private static extractRadicals(): string[] {
     // Pour l'instant, retour vide
     // Plus tard, on intégrera une vraie base de données de radicaux
     return [];

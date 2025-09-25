@@ -20,12 +20,12 @@ export interface JapaneseReading {
 export interface Sense {
   english_definitions: string[];
   parts_of_speech: string[];
-  links: any[];
+  links: unknown[];
   tags: string[];
   restrictions: string[];
   see_also: string[];
   antonyms: string[];
-  source: any[];
+  source: unknown[];
   info: string[];
 }
 

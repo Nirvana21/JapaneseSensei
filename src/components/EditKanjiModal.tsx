@@ -36,7 +36,7 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
     }
   };
 
-  const handleInputChange = (field: keyof KanjiEntry, value: any) => {
+  const handleInputChange = (field: keyof KanjiEntry, value: string | number | undefined | KanjiEntry['studyData']) => {
     setFormData(prev => prev ? { ...prev, [field]: value } : null);
   };
 
@@ -227,10 +227,15 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
             </label>
             <select
               value={formData.studyData?.difficulty || 'medium'}
-              onChange={(e) => handleInputChange('studyData', {
-                ...formData.studyData,
-                difficulty: e.target.value as 'easy' | 'medium' | 'hard'
-              })}
+              onChange={(e) => {
+                const newStudyData = {
+                  timesStudied: formData.studyData?.timesStudied || 0,
+                  correctAnswers: formData.studyData?.correctAnswers || 0,
+                  lastStudied: formData.studyData?.lastStudied,
+                  difficulty: e.target.value as 'easy' | 'medium' | 'hard'
+                };
+                handleInputChange('studyData', newStudyData);
+              }}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="easy">Facile 😊</option>
