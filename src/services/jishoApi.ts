@@ -2,14 +2,15 @@ import { JishoApiResponse, KanjiEntry, JishoEntry } from '@/types/kanji';
 
 // Service pour l'API Jisho (dictionnaire japonais gratuit)
 export class JishoApiService {
-  private static readonly BASE_URL = 'https://jisho.org/api/v1';
+  private static readonly BASE_URL = '/api/jisho'; // Utilise notre API route
   
   /**
    * Recherche un kanji ou mot dans Jisho
    */
   static async searchKanji(query: string): Promise<JishoEntry[]> {
     try {
-      const response = await fetch(`${this.BASE_URL}/search/words?keyword=${encodeURIComponent(query)}`);
+      const response = await fetch(`${this.BASE_URL}?keyword=${encodeURIComponent(query)}`);
+      
       if (!response.ok) {
         throw new Error(`Erreur API Jisho: ${response.status}`);
       }
