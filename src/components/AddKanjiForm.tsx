@@ -9,10 +9,12 @@ interface AddKanjiFormProps {
 
 export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
   const [input, setInput] = useState('');
+  const [tags, setTags] = useState('');
+  const [customNotes, setCustomNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   
-  const { addKanjiFromCharacter, error } = useKanjis();
+  const { addKanjiFromCharacter, updateKanji, error } = useKanjis();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,8 +28,26 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
       const addedKanji = await addKanjiFromCharacter(input.trim());
       
       if (addedKanji) {
+        // Ajouter les tags et notes personnalisées si fournis
+        if (tags.trim() || customNotes.trim()) {
+          const updatedKanji = { ...addedKanji };
+          
+          if (tags.trim()) {
+            updatedKanji.tags = tags.split(',').map(tag => tag.trim()).filter(Boolean);
+          }
+          
+          if (customNotes.trim()) {
+            updatedKanji.customNotes = customNotes.trim();
+          }
+          
+          updatedKanji.lastModified = new Date();
+          await updateKanji(updatedKanji);
+        }
+        
         setSuccessMessage(`✅ "${addedKanji.kanji}" ajouté avec succès !`);
         setInput('');
+        setTags('');
+        setCustomNotes('');
         onKanjiAdded?.();
       }
     } catch (error) {
@@ -39,6 +59,16 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
+    setSuccessMessage('');
+  };
+
+  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTags(e.target.value);
+    setSuccessMessage('');
+  };
+
+  const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCustomNotes(e.target.value);
     setSuccessMessage('');
   };
 
@@ -81,6 +111,39 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
             </button>
           </div>
         </div>
+
+        {/* Tags personnalisés */}
+        <div>
+          <label htmlFor="tags-input" className="block text-sm font-medium text-gray-700 mb-2">
+            Tags personnalisés (optionnel) :
+          </label>
+          <input
+            id="tags-input"
+            type="text"
+            value={tags}
+            onChange={handleTagsChange}
+            placeholder="facile, important, examen, cours-1, ..."
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            disabled={isSubmitting}
+          />
+          <p className="text-xs text-gray-500 mt-1">Séparez les tags par des virgules</p>
+        </div>
+
+        {/* Notes personnelles */}
+        <div>
+          <label htmlFor="notes-input" className="block text-sm font-medium text-gray-700 mb-2">
+            Notes personnelles (optionnel) :
+          </label>
+          <textarea
+            id="notes-input"
+            value={customNotes}
+            onChange={handleNotesChange}
+            placeholder="Mnémotechnique, exemple de phrase, contexte d'apprentissage..."
+            rows={3}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            disabled={isSubmitting}
+          />
+        </div>
       </form>
 
       {/* Messages d'erreur et de succès */}
@@ -106,6 +169,8 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
           <li>• Utilisez votre clavier japonais mobile</li>
           <li>• L&apos;app récupèrera automatiquement les lectures et significations</li>
           <li>• Les radicaux/clés seront analysés automatiquement</li>
+          <li>• <strong>Nouveau :</strong> Ajoutez des tags pour organiser vos kanjis</li>
+          <li>• <strong>Nouveau :</strong> Ajoutez des notes pour mémoriser plus facilement</li>
         </ul>
       </div>
     </div>

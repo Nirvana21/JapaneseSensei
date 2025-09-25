@@ -1,7 +1,7 @@
 'use client';
 
 import { KanjiEntry } from '@/types/kanji';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { KanjiEnrichmentService } from '@/services/jishoApi';
 
 interface KanjiCardProps {
@@ -265,12 +265,18 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
                 <h4 className="font-medium text-gray-700 mb-1">Tags :</h4>
                 <div className="flex flex-wrap gap-1">
                   {kanji.tags.map((tag, idx) => (
-                    <span
+                    <button
                       key={idx}
-                      className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs"
+                      onClick={() => {
+                        // Remonter vers le parent pour déclencher le filtrage
+                        const event = new CustomEvent('filterByTag', { detail: tag });
+                        document.dispatchEvent(event);
+                      }}
+                      className="bg-gray-100 hover:bg-blue-100 text-gray-800 hover:text-blue-800 px-2 py-1 rounded text-xs cursor-pointer transition-colors"
+                      title={`Filtrer par le tag ${tag}`}
                     >
                       #{tag}
-                    </span>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -317,17 +323,60 @@ interface KanjiListProps {
 export default function KanjiList({ kanjis, loading, onEdit, onDelete }: KanjiListProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'date' | 'kanji' | 'frequency'>('date');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  // Extraire tous les tags uniques des kanjis
+  const allTags = Array.from(new Set(
+    kanjis.flatMap(kanji => kanji.tags || [])
+  )).sort();
+
+  // Fonctions pour gérer les tags
+  const toggleTag = (tag: string) => {
+    setSelectedTags(prev => 
+      prev.includes(tag) 
+        ? prev.filter(t => t !== tag)
+        : [...prev, tag]
+    );
+  };
+
+  const clearAllTags = () => {
+    setSelectedTags([]);
+  };
+
+  // Écouter les événements de filtrage par tag depuis les cartes
+  useEffect(() => {
+    const handleFilterByTag = (event: CustomEvent) => {
+      const tag = event.detail;
+      if (!selectedTags.includes(tag)) {
+        setSelectedTags(prev => [...prev, tag]);
+      }
+    };
+
+    document.addEventListener('filterByTag', handleFilterByTag as EventListener);
+    return () => {
+      document.removeEventListener('filterByTag', handleFilterByTag as EventListener);
+    };
+  }, [selectedTags]);
 
   // Filtrer et trier les kanjis
   const filteredAndSortedKanjis = kanjis
-    .filter(kanji => 
-      kanji.kanji.includes(searchQuery) ||
-      kanji.meanings.some(meaning => 
-        meaning.toLowerCase().includes(searchQuery.toLowerCase())
-      ) ||
-      kanji.onyomi.some(reading => reading.includes(searchQuery)) ||
-      kanji.kunyomi.some(reading => reading.includes(searchQuery))
-    )
+    .filter(kanji => {
+      // Filtrage par recherche textuelle
+      const matchesSearch = searchQuery === '' || (
+        kanji.kanji.includes(searchQuery) ||
+        kanji.meanings.some(meaning => 
+          meaning.toLowerCase().includes(searchQuery.toLowerCase())
+        ) ||
+        kanji.onyomi.some(reading => reading.includes(searchQuery)) ||
+        kanji.kunyomi.some(reading => reading.includes(searchQuery))
+      );
+
+      // Filtrage par tags sélectionnés
+      const matchesTags = selectedTags.length === 0 || 
+        selectedTags.every(tag => kanji.tags?.includes(tag));
+
+      return matchesSearch && matchesTags;
+    })
     .sort((a, b) => {
       switch (sortBy) {
         case 'kanji':
@@ -392,11 +441,49 @@ export default function KanjiList({ kanjis, loading, onEdit, onDelete }: KanjiLi
             </select>
           </div>
         </div>
+
+        {/* Sélecteur de tags */}
+        {allTags.length > 0 && (
+          <div className="mt-4 pt-4 border-t">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-medium text-gray-700">Filtrer par tags :</h3>
+              {selectedTags.length > 0 && (
+                <button
+                  onClick={clearAllTags}
+                  className="text-xs text-blue-600 hover:text-blue-800 underline"
+                >
+                  Effacer tout
+                </button>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {allTags.map(tag => {
+                const isSelected = selectedTags.includes(tag);
+                const kanjiCount = kanjis.filter(k => k.tags?.includes(tag)).length;
+                return (
+                  <button
+                    key={tag}
+                    onClick={() => toggleTag(tag)}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                      isSelected
+                        ? 'bg-blue-500 text-white shadow-md'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    #{tag}
+                    <span className="ml-1 text-xs opacity-75">({kanjiCount})</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
         
         {/* Statistiques */}
         <div className="mt-3 pt-3 border-t text-sm text-gray-600">
           {filteredAndSortedKanjis.length} kanji(s) 
           {searchQuery && ` trouvé(s) pour "${searchQuery}"`}
+          {selectedTags.length > 0 && ` avec les tags: ${selectedTags.map(t => `#${t}`).join(', ')}`}
           {kanjis.length > filteredAndSortedKanjis.length && 
             ` sur ${kanjis.length} au total`
           }
