@@ -141,7 +141,6 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
               <MultiStrokeOrderViewer 
                 text={kanji.kanji}
                 className="w-full"
-                showAnimation={true}
               />
             </div>
 
