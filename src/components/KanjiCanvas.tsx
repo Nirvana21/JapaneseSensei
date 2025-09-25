@@ -5,14 +5,12 @@ import { useRef, useEffect, useState, useCallback } from 'react';
 interface KanjiCanvasProps {
   width?: number;
   height?: number;
-  onDrawingComplete?: (imageData: string) => void;
   className?: string;
 }
 
 export default function KanjiCanvas({ 
   width = 300, 
   height = 300, 
-  onDrawingComplete,
   className = '' 
 }: KanjiCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -88,13 +86,7 @@ export default function KanjiCanvas({
     
     setIsDrawing(false);
     context.beginPath();
-    
-    // Optionnel: notifier que le dessin est terminé
-    if (onDrawingComplete && canvasRef.current) {
-      const imageData = canvasRef.current.toDataURL();
-      onDrawingComplete(imageData);
-    }
-  }, [isDrawing, context, onDrawingComplete]);
+  }, [isDrawing, context]);
 
   const stopDrawingTouch = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
     // Empêcher le comportement par défaut
@@ -104,13 +96,7 @@ export default function KanjiCanvas({
     
     setIsDrawing(false);
     context.beginPath();
-    
-    // Optionnel: notifier que le dessin est terminé
-    if (onDrawingComplete && canvasRef.current) {
-      const imageData = canvasRef.current.toDataURL();
-      onDrawingComplete(imageData);
-    }
-  }, [isDrawing, context, onDrawingComplete]);
+  }, [isDrawing, context]);
 
   const clearCanvas = () => {
     if (!context) return;
@@ -191,24 +177,12 @@ export default function KanjiCanvas({
       </div>
 
       {/* Boutons de contrôle */}
-      <div className="flex justify-center gap-4 mt-4">
+      <div className="flex justify-center mt-4">
         <button
           onClick={clearCanvas}
-          className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2"
+          className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2 font-medium"
         >
-          🗑️ Effacer
-        </button>
-        
-        <button
-          onClick={() => {
-            if (onDrawingComplete) {
-              const data = getDrawingData();
-              if (data) onDrawingComplete(data);
-            }
-          }}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
-        >
-          💾 Sauvegarder
+          �️ Effacer
         </button>
       </div>
 
