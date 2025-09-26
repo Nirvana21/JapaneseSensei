@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useKanjis } from '../../hooks/useKanjis';
 import SwipeCard from '../../components/SwipeCard';
 import KanjiCanvas from '../../components/KanjiCanvas';
+import StrokeOrderViewer from '../../components/StrokeOrderViewer';
 
 export default function TrainingPage() {
   const { kanjis } = useKanjis();
@@ -148,6 +149,14 @@ export default function TrainingPage() {
                             <p className="text-lg text-blue-800 font-medium">{currentKanji.readings.join(', ')}</p>
                           </div>
                         )}
+                        
+                        {/* Ordre des traits */}
+                        <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl">
+                          <p className="text-sm text-green-600 mb-3">Ordre des traits :</p>
+                          <div className="flex justify-center">
+                            <StrokeOrderViewer kanji={currentKanji.kanji} />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -169,29 +178,40 @@ export default function TrainingPage() {
 
                   {showAnswer && (
                     <div className="border-t border-gray-200 pt-6 mt-6 animate-in fade-in duration-300">
-                      <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl">
-                        <p className="text-sm text-green-600 mb-2">Signification :</p>
-                        <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                          {currentKanji.primaryMeaning || currentKanji.meanings[0]}
-                        </p>
-                        {currentKanji.meanings.length > 1 && (
-                          <p className="text-sm text-green-700 mt-2">
-                            Autres : {currentKanji.meanings.slice(1).join(', ')}
+                      <div className="space-y-4">
+                        <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl">
+                          <p className="text-sm text-green-600 mb-2">Signification :</p>
+                          <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                            {currentKanji.primaryMeaning || currentKanji.meanings[0]}
                           </p>
-                        )}
-                      </div>
-                      {currentKanji.tags && currentKanji.tags.length > 0 && (
-                        <div className="mt-4">
-                          <p className="text-sm text-gray-600 mb-2">Tags :</p>
-                          <div className="flex flex-wrap gap-2 mt-1 justify-center">
-                            {currentKanji.tags.map((tag: string, index: number) => (
-                              <span key={index} className="px-3 py-1 bg-gradient-to-r from-green-100 to-blue-100 text-green-800 text-xs font-medium rounded-full border border-green-200">
-                                {tag}
-                              </span>
-                            ))}
+                          {currentKanji.meanings.length > 1 && (
+                            <p className="text-sm text-green-700 mt-2">
+                              Autres : {currentKanji.meanings.slice(1).join(', ')}
+                            </p>
+                          )}
+                        </div>
+                        
+                        {/* Ordre des traits */}
+                        <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
+                          <p className="text-sm text-blue-600 mb-3">Ordre des traits :</p>
+                          <div className="flex justify-center">
+                            <StrokeOrderViewer kanji={currentKanji.kanji} />
                           </div>
                         </div>
-                      )}
+                        
+                        {currentKanji.tags && currentKanji.tags.length > 0 && (
+                          <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
+                            <p className="text-sm text-purple-600 mb-2">Tags :</p>
+                            <div className="flex flex-wrap gap-2 justify-center">
+                              {currentKanji.tags.map((tag: string, index: number) => (
+                                <span key={index} className="px-3 py-1 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 text-xs font-medium rounded-full border border-purple-200">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -201,13 +221,13 @@ export default function TrainingPage() {
         </div>
 
         {/* Zone Canvas pour le mode Français → Japonais */}
-        {trainingMode === 'fr-to-jp' && !showAnswer && (
+        {trainingMode === 'fr-to-jp' && (
           <div className="mb-6 sm:mb-8">
             <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-4 sm:p-6 border border-white/40">
               <div className="flex items-center justify-center gap-2 mb-4">
                 <span className="text-lg">✏️</span>
                 <h3 className="text-base sm:text-lg font-bold text-gray-800">
-                  Entraînez-vous à dessiner le kanji
+                  {showAnswer ? 'Comparez votre tracé avec l\'ordre officiel' : 'Entraînez-vous à dessiner le kanji'}
                 </h3>
               </div>
               <div className="flex justify-center">
