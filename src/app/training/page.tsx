@@ -6,22 +6,49 @@ import { useKanjis } from '../../hooks/useKanjis';
 import SwipeCard from '../../components/SwipeCard';
 import KanjiCanvas from '../../components/KanjiCanvas';
 import KanjiDetailModal from '../../components/KanjiDetailModal';
+import { adaptiveLearningService, LearningKanji } from '../../services/adaptiveLearningService';
 
 export default function TrainingPage() {
   const { kanjis } = useKanjis();
-  const [selectedKanjis, setSelectedKanjis] = useState<any[]>([]);
+  const [selectedKanjis, setSelectedKanjis] = useState<LearningKanji[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [trainingMode, setTrainingMode] = useState<'fr-to-jp' | 'jp-to-fr'>('fr-to-jp');
-  const [stats, setStats] = useState({ correct: 0, total: 0 });
-  const [selectedKanji, setSelectedKanji] = useState<any>(null);
+  const [stats, setStats] = useState({ correct: 0, total: 0, sessionComplete: false });
+  const [selectedKanji, setSelectedKanji] = useState<LearningKanji | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [clearCanvas, setClearCanvas] = useState(0); // Compteur pour déclencher le nettoyage
+  const [learningStats, setLearningStats] = useState<any>(null);
 
-  // Initialiser avec les kanjis disponibles
+  // Initialiser avec les kanjis disponibles et le système adaptatif
   useEffect(() => {
     if (kanjis.length > 0) {
-      setSelectedKanjis([...kanjis]);
+      // Convertir les kanjis en LearningKanji et sélectionner une session
+      const learningKanjis = kanjis.map(kanji => {
+        // Vérifier si on a déjà des données d'apprentissage stockées
+        const existingData = localStorage.getItem(`learning_${kanji.id}`);
+        if (existingData) {
+          const parsed = JSON.parse(existingData);
+          return {
+            ...kanji,
+            learningData: {
+              ...parsed.learningData,
+              lastSeen: new Date(parsed.learningData.lastSeen),
+              nextReview: new Date(parsed.learningData.nextReview)
+            },
+            studyData: parsed.studyData
+          };
+        }
+        return adaptiveLearningService.initializeLearningData(kanji);
+      });
+      
+      // Sélectionner les kanjis pour cette session (max 10)
+      const sessionKanjis = adaptiveLearningService.selectKanjisForSession(learningKanjis, 10);
+      setSelectedKanjis(sessionKanjis);
+      
+      // Calculer les statistiques d'apprentissage
+      const stats = adaptiveLearningService.getLearningStats(learningKanjis);
+      setLearningStats(stats);
     }
   }, [kanjis]);
 
@@ -29,26 +56,57 @@ export default function TrainingPage() {
 
   const handleSwipe = (direction: 'left' | 'right') => {
     const isCorrect = direction === 'right';
+    const currentKanji = selectedKanjis[currentIndex];
+    
+    // Mettre à jour les statistiques de session
     setStats(prev => ({
       correct: prev.correct + (isCorrect ? 1 : 0),
-      total: prev.total + 1
+      total: prev.total + 1,
+      sessionComplete: false
     }));
 
     // Déclencher le nettoyage du canvas
     setClearCanvas(prev => prev + 1);
+
+    // Mettre à jour les données d'apprentissage du kanji
+    const updatedKanji = adaptiveLearningService.updateLearningData(currentKanji, isCorrect);
+    
+    // Sauvegarder les données d'apprentissage
+    localStorage.setItem(`learning_${updatedKanji.id}`, JSON.stringify({
+      learningData: updatedKanji.learningData,
+      studyData: updatedKanji.studyData
+    }));
+
+    // Mettre à jour la liste des kanjis sélectionnés
+    setSelectedKanjis(prev => 
+      prev.map(k => k.id === updatedKanji.id ? updatedKanji : k)
+    );
 
     // Passer au kanji suivant
     if (currentIndex < selectedKanjis.length - 1) {
       setCurrentIndex(prev => prev + 1);
       setShowAnswer(false);
     } else {
-      // Fin de session - recommencer
-      setCurrentIndex(0);
-      setShowAnswer(false);
+      // Fin de session
+      setStats(prev => ({ ...prev, sessionComplete: true }));
+      
+      // Optionnel: recharger automatiquement une nouvelle session après un délai
+      setTimeout(() => {
+        const allLearningKanjis = JSON.parse(localStorage.getItem('allLearningKanjis') || '[]');
+        if (allLearningKanjis.length > 0) {
+          const newSession = adaptiveLearningService.selectKanjisForSession(allLearningKanjis, 10);
+          if (newSession.length > 0) {
+            setSelectedKanjis(newSession);
+            setCurrentIndex(0);
+            setShowAnswer(false);
+            setStats({ correct: 0, total: 0, sessionComplete: false });
+          }
+        }
+      }, 3000);
     }
   };
 
-  const openModal = (kanji: any) => {
+  const openModal = (kanji: LearningKanji) => {
     setSelectedKanji(kanji);
     setIsModalOpen(true);
   };
@@ -132,6 +190,31 @@ export default function TrainingPage() {
               </div>
             </div>
           </div>
+          
+          {/* Troisième ligne : Statistiques d'apprentissage */}
+          {learningStats && (
+            <div className="flex items-center justify-center mt-3">
+              <div className="flex items-center gap-3 text-xs">
+                <div className="px-2 py-1 bg-blue-900/30 text-blue-300 rounded border border-blue-700/30">
+                  🆕 {learningStats.new}
+                </div>
+                <div className="px-2 py-1 bg-yellow-900/30 text-yellow-300 rounded border border-yellow-700/30">
+                  📚 {learningStats.learning}
+                </div>
+                <div className="px-2 py-1 bg-red-900/30 text-red-300 rounded border border-red-700/30">
+                  😓 {learningStats.difficult}
+                </div>
+                <div className="px-2 py-1 bg-green-900/30 text-green-300 rounded border border-green-700/30">
+                  ✨ {learningStats.mastered}
+                </div>
+                {learningStats.overdue > 0 && (
+                  <div className="px-2 py-1 bg-orange-900/30 text-orange-300 rounded border border-orange-700/30 animate-pulse">
+                    ⏰ {learningStats.overdue}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
@@ -165,7 +248,10 @@ export default function TrainingPage() {
                       <div className="space-y-4">
                         {/* Kanji cliquable */}
                         <button
-                          onClick={() => openModal(currentKanji)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openModal(currentKanji);
+                          }}
                           className="w-full p-4 bg-slate-700/50 hover:bg-slate-600/50 rounded-xl border border-slate-600/30 hover:border-slate-500/50 transition-all group"
                         >
                           <p className="text-sm text-slate-400 mb-2">Kanji (cliquez pour les détails) :</p>
@@ -211,7 +297,10 @@ export default function TrainingPage() {
                       <span className="text-lg">🇫🇷</span>
                     </div>
                     <button
-                      onClick={() => openModal(currentKanji)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openModal(currentKanji);
+                      }}
                       className="inline-block p-3 hover:bg-slate-700/30 rounded-xl transition-all group"
                     >
                       <p className="text-4xl sm:text-6xl font-bold text-slate-100 mb-2 group-hover:scale-110 transition-transform">{currentKanji.kanji}</p>
@@ -326,13 +415,42 @@ export default function TrainingPage() {
           </div>
         )}
 
-        {/* Instructions centrées */}
+        {/* Instructions centrées ou message de fin de session */}
         <div className="text-center">
-          <div className="inline-block p-4 bg-gradient-to-r from-indigo-900/30 to-purple-900/30 rounded-xl border border-indigo-700/30 backdrop-blur-sm">
-            <p className="text-sm text-indigo-300 font-medium">
-              👆 Touchez la carte pour révéler la réponse • Swipez ← (pas sûr) ou → (je connais)
-            </p>
-          </div>
+          {stats.sessionComplete ? (
+            <div className="inline-block p-6 bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-xl border border-green-700/30 backdrop-blur-sm">
+              <div className="text-center">
+                <div className="text-4xl mb-4">🎉</div>
+                <h3 className="text-xl font-bold text-green-300 mb-2">Session terminée !</h3>
+                <p className="text-green-400 mb-4">
+                  Score : {stats.correct}/{stats.total} ({Math.round((stats.correct / stats.total) * 100)}%)
+                </p>
+                <div className="flex gap-3 justify-center">
+                  <Link
+                    href="/"
+                    className="px-4 py-2 bg-slate-700/80 text-slate-300 rounded-lg hover:bg-slate-600/80 transition-colors"
+                  >
+                    🏠 Menu
+                  </Link>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-700 text-white rounded-lg hover:from-indigo-700 hover:to-purple-800 transition-all"
+                  >
+                    🔄 Nouvelle session
+                  </button>
+                </div>
+                <p className="text-xs text-green-500 mt-3">
+                  Nouvelle session disponible dans 3 secondes...
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="inline-block p-4 bg-gradient-to-r from-indigo-900/30 to-purple-900/30 rounded-xl border border-indigo-700/30 backdrop-blur-sm">
+              <p className="text-sm text-indigo-300 font-medium">
+                👆 Touchez la carte pour révéler la réponse • Swipez ← (pas sûr) ou → (je connais)
+              </p>
+            </div>
+          )}
         </div>
       </main>
 
