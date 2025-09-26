@@ -80,6 +80,45 @@ export function useKanjis() {
     }
   };
 
+  const addKanjiManually = async (kanjiData: Omit<KanjiEntry, 'id' | 'dateAdded' | 'lastModified'>): Promise<KanjiEntry | null> => {
+    try {
+      setError(null);
+      
+      // Vérifier si le kanji existe déjà
+      const existing = await KanjiStorageService.getKanjiByCharacter(kanjiData.kanji);
+      if (existing) {
+        setError('Ce kanji est déjà dans votre collection');
+        return null;
+      }
+
+      // Créer l'entrée complète avec les champs requis
+      const now = new Date();
+      const kanjiEntry: KanjiEntry = {
+        id: crypto.randomUUID(),
+        dateAdded: now,
+        lastModified: now,
+        studyData: {
+          timesStudied: 0,
+          correctAnswers: 0,
+          difficulty: 'medium'
+        },
+        ...kanjiData
+      };
+
+      // Sauvegarder
+      await KanjiStorageService.saveKanji(kanjiEntry);
+      
+      // Recharger la liste
+      await loadKanjis();
+      
+      return kanjiEntry;
+    } catch (error) {
+      setError('Erreur lors de l\'ajout du kanji');
+      console.error(error);
+      return null;
+    }
+  };
+
   const updateKanji = async (updatedKanji: KanjiEntry) => {
     try {
       setError(null);
@@ -116,6 +155,7 @@ export function useKanjis() {
     loading,
     error,
     addKanjiFromCharacter,
+    addKanjiManually,
     updateKanji,
     deleteKanji,
     searchKanjis,

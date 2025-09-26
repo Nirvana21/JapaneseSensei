@@ -334,9 +334,10 @@ export default function KanjiList({ kanjis, loading, onEdit, onDelete }: KanjiLi
   const [sortBy, setSortBy] = useState<'date' | 'kanji' | 'frequency'>('date');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  // Extraire tous les tags uniques des kanjis
+  // Extraire tous les tags uniques des kanjis (normalisés en minuscules)
   const allTags = Array.from(new Set(
     kanjis.flatMap(kanji => kanji.tags || [])
+      .map(tag => tag.toLowerCase())
   )).sort();
 
   // Fonctions pour gérer les tags
@@ -380,9 +381,13 @@ export default function KanjiList({ kanjis, loading, onEdit, onDelete }: KanjiLi
         kanji.kunyomi.some(reading => reading.includes(searchQuery))
       );
 
-      // Filtrage par tags sélectionnés
+      // Filtrage par tags sélectionnés (insensible à la casse)
       const matchesTags = selectedTags.length === 0 || 
-        selectedTags.every(tag => kanji.tags?.includes(tag));
+        selectedTags.every(selectedTag => 
+          kanji.tags?.some(kanjiTag => 
+            kanjiTag.toLowerCase() === selectedTag.toLowerCase()
+          )
+        );
 
       return matchesSearch && matchesTags;
     })
@@ -468,7 +473,9 @@ export default function KanjiList({ kanjis, loading, onEdit, onDelete }: KanjiLi
             <div className="flex flex-wrap gap-2">
               {allTags.map(tag => {
                 const isSelected = selectedTags.includes(tag);
-                const kanjiCount = kanjis.filter(k => k.tags?.includes(tag)).length;
+                const kanjiCount = kanjis.filter(k => 
+                  k.tags?.some(kanjiTag => kanjiTag.toLowerCase() === tag.toLowerCase())
+                ).length;
                 return (
                   <button
                     key={tag}

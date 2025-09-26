@@ -42,22 +42,28 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
 
   const handleArrayChange = (field: 'onyomi' | 'kunyomi' | 'meanings' | 'tags', value: string) => {
     if (!formData) return;
-    const items = value.split(',').map(item => item.trim()).filter(Boolean);
+    let items = value.split(',').map(item => item.trim()).filter(Boolean);
+    
+    // Normaliser les tags en minuscules pour éviter les doublons de casse
+    if (field === 'tags') {
+      items = items.map(tag => tag.toLowerCase());
+    }
+    
     setFormData(prev => prev ? { ...prev, [field]: items } : null);
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-slate-800/95 backdrop-blur-md rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-700/50">
         {/* Header */}
-        <div className="bg-blue-600 text-white p-4 rounded-t-lg">
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white p-4 rounded-t-xl">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold">
               Modifier : {formData.kanji}
             </h2>
             <button
               onClick={onClose}
-              className="text-white hover:text-gray-200 text-2xl"
+              className="text-white hover:text-slate-300 text-2xl w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/20 transition-colors"
             >
               ×
             </button>
@@ -68,7 +74,7 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Significations */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Signification principale :
             </label>
             <input
@@ -76,10 +82,10 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
               value={formData.primaryMeaning || ''}
               onChange={(e) => handleInputChange('primaryMeaning', e.target.value)}
               placeholder="La signification que vous préférez retenir"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
             />
             
-            <label className="block text-sm font-medium text-gray-700 mt-4 mb-2">
+            <label className="block text-sm font-medium text-slate-300 mt-4 mb-2">
               Toutes les significations (séparées par des virgules) :
             </label>
             <textarea
@@ -87,14 +93,14 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
               onChange={(e) => handleArrayChange('meanings', e.target.value)}
               placeholder="signification 1, signification 2, ..."
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
             />
           </div>
 
           {/* Lectures */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Lectures On'yomi (séparées par des virgules) :
               </label>
               <input
@@ -102,12 +108,12 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
                 value={formData.onyomi.join(', ')}
                 onChange={(e) => handleArrayChange('onyomi', e.target.value)}
                 placeholder="オン, ダイ, ..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-mono"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Lectures Kun'yomi (séparées par des virgules) :
               </label>
               <input
@@ -115,14 +121,14 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
                 value={formData.kunyomi.join(', ')}
                 onChange={(e) => handleArrayChange('kunyomi', e.target.value)}
                 placeholder="おお.きい, だい, ..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+                className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-mono"
               />
             </div>
           </div>
 
           {/* Lecture principale */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Lecture principale :
             </label>
             <input
@@ -130,14 +136,14 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
               value={formData.primaryReading || ''}
               onChange={(e) => handleInputChange('primaryReading', e.target.value)}
               placeholder="La lecture que vous préférez retenir"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono"
+              className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-mono"
             />
           </div>
 
           {/* Informations supplémentaires */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Nombre de traits :
               </label>
               <input
@@ -146,18 +152,18 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
                 onChange={(e) => handleInputChange('strokeCount', parseInt(e.target.value) || undefined)}
                 min="1"
                 max="30"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-300 mb-2">
                 Niveau scolaire :
               </label>
               <select
                 value={formData.grade || ''}
                 onChange={(e) => handleInputChange('grade', parseInt(e.target.value) || undefined)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
               >
                 <option value="">Non défini</option>
                 <option value="1">1ère année</option>
@@ -175,13 +181,13 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
 
           {/* Niveau JLPT */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Niveau JLPT :
             </label>
             <select
               value={formData.jlptLevel || ''}
               onChange={(e) => handleInputChange('jlptLevel', e.target.value || undefined)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
             >
               <option value="">Non défini</option>
               <option value="jlpt-n5">JLPT N5</option>
@@ -194,7 +200,7 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
 
           {/* Notes personnelles */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Notes personnelles :
             </label>
             <textarea
@@ -202,27 +208,30 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
               onChange={(e) => handleInputChange('customNotes', e.target.value)}
               placeholder="Ajoutez vos propres notes, mnémotechniques, exemples..."
               rows={4}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
             />
           </div>
 
           {/* Tags */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Tags (séparés par des virgules) :
             </label>
-            <input
-              type="text"
+            <textarea
               value={(formData.tags || []).join(', ')}
               onChange={(e) => handleArrayChange('tags', e.target.value)}
-              placeholder="difficile, important, examen, ..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="difficile, important, examen, cours, révision, ..."
+              rows={2}
+              className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors resize-none"
             />
+            <p className="text-xs text-slate-400 mt-1">
+              💡 Utilisez des virgules pour séparer les tags. Ex: "difficile, important, N3"
+            </p>
           </div>
 
           {/* Difficulté */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
               Difficulté personnelle :
             </label>
             <select
@@ -236,7 +245,7 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
                 };
                 handleInputChange('studyData', newStudyData);
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
             >
               <option value="easy">Facile 😊</option>
               <option value="medium">Moyen 😐</option>
@@ -245,11 +254,11 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4 border-t">
+          <div className="flex gap-3 pt-4 border-t border-slate-600/30">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+              className="flex-1 px-4 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 text-slate-300 rounded-lg hover:bg-slate-700/50 transition-colors"
               disabled={isSaving}
             >
               Annuler
@@ -257,11 +266,11 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
             <button
               type="submit"
               disabled={isSaving}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
+              className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 transition-colors"
             >
               {isSaving ? (
                 <div className="flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-white border-t border-slate-600/30-transparent rounded-full animate-spin"></div>
                   Sauvegarde...
                 </div>
               ) : (
