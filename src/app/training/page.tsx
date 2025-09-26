@@ -87,6 +87,11 @@ export default function TrainingPage() {
   };
 
   const handleSwipe = (direction: 'left' | 'right') => {
+    // Empêcher les swipes si la session est déjà terminée
+    if (stats.sessionComplete) {
+      return;
+    }
+    
     const isCorrect = direction === 'right';
     const currentKanji = selectedKanjis[currentIndex];
     
@@ -117,18 +122,19 @@ export default function TrainingPage() {
     const learningStatsUpdate = simpleAdaptiveLearningService.getLearningStats(updatedAllKanjis);
     setLearningStats(learningStatsUpdate);
 
-    // Vérifier si c'est la fin de session
-    if (currentIndex < selectedKanjis.length - 1) {
-      // Continuer la session
-      setStats(newStats);
-      setCurrentIndex(prev => prev + 1);
-      setShowAnswer(false);
-    } else {
+    // Vérifier si c'est la fin de session (c'était la dernière carte)
+    if (currentIndex >= selectedKanjis.length - 1) {
       // Fin de session - marquer comme terminée
       setStats({
         ...newStats,
         sessionComplete: true
       });
+      // Ne pas incrémenter currentIndex pour rester sur la dernière carte
+    } else {
+      // Continuer la session
+      setStats(newStats);
+      setCurrentIndex(prev => prev + 1);
+      setShowAnswer(false);
     }
   };
 
