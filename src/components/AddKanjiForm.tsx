@@ -129,7 +129,6 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
     <div className="space-y-4">
       {/* Sélecteur de mode */}
       <div className="flex items-center gap-4 p-4 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50">
-        <span className="text-sm font-medium text-slate-300">Mode d'ajout :</span>
         <div className="flex gap-2">
           <button
             type="button"
@@ -154,9 +153,6 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
             ✏️ Saisie manuelle
           </button>
         </div>
-        <p className="text-xs text-slate-400 ml-auto">
-          {mode === 'api' ? 'Utilise l\'API Jisho pour récupérer les infos' : 'Tu remplis toutes les informations toi-même'}
-        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -197,12 +193,6 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
         ) : (
           // Mode manuel - Formulaire complet
           <div className="space-y-4">
-            <div className="bg-yellow-900/20 border border-yellow-700/30 rounded-xl p-4">
-              <p className="text-yellow-200 text-sm">
-                💡 <strong>Mode saisie manuelle</strong> - Tu contrôles toutes les informations. Parfait quand l'API ne trouve pas le bon kanji !
-              </p>
-            </div>
-            
             {/* Kanji et signification principale (obligatoires) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
