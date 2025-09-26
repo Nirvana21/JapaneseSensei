@@ -6,12 +6,14 @@ interface KanjiCanvasProps {
   width?: number;
   height?: number;
   className?: string;
+  clearTrigger?: number; // Prop pour déclencher le nettoyage
 }
 
 export default function KanjiCanvas({ 
   width = 300, 
   height = 300, 
-  className = '' 
+  className = '',
+  clearTrigger = 0
 }: KanjiCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -117,6 +119,13 @@ export default function KanjiCanvas({
       (canvasRef.current as any).getDrawingData = getDrawingData;
     }
   }, [context, width, height]);
+
+  // Effet pour nettoyer le canvas quand clearTrigger change
+  useEffect(() => {
+    if (clearTrigger > 0) {
+      clearCanvas();
+    }
+  }, [clearTrigger]);
 
   return (
     <div className={`kanjicanvas-container ${className}`}>
