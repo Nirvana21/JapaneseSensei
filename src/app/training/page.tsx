@@ -91,11 +91,11 @@ export default function TrainingPage() {
     const currentKanji = selectedKanjis[currentIndex];
     
     // Mettre à jour les statistiques de session
-    setStats(prev => ({
-      correct: prev.correct + (isCorrect ? 1 : 0),
-      total: prev.total + 1,
+    const newStats = {
+      correct: stats.correct + (isCorrect ? 1 : 0),
+      total: stats.total + 1,
       sessionComplete: false
-    }));
+    };
 
     // Déclencher le nettoyage du canvas
     setClearCanvas(prev => prev + 1);
@@ -114,16 +114,21 @@ export default function TrainingPage() {
     setAllLearningKanjis(updatedAllKanjis);
 
     // Mettre à jour les statistiques
-    const newStats = simpleAdaptiveLearningService.getLearningStats(updatedAllKanjis);
-    setLearningStats(newStats);
+    const learningStatsUpdate = simpleAdaptiveLearningService.getLearningStats(updatedAllKanjis);
+    setLearningStats(learningStatsUpdate);
 
-    // Passer au kanji suivant
+    // Vérifier si c'est la fin de session
     if (currentIndex < selectedKanjis.length - 1) {
+      // Continuer la session
+      setStats(newStats);
       setCurrentIndex(prev => prev + 1);
       setShowAnswer(false);
     } else {
-      // Fin de session
-      setStats(prev => ({ ...prev, sessionComplete: true }));
+      // Fin de session - marquer comme terminée
+      setStats({
+        ...newStats,
+        sessionComplete: true
+      });
     }
   };
 
@@ -457,7 +462,14 @@ export default function TrainingPage() {
 
         {/* Instructions ou écran final */}
         <div className="text-center">
-          {stats.sessionComplete ? (
+          {/* Debug temporaire */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mb-4 p-2 bg-yellow-900/30 text-yellow-300 text-xs rounded border border-yellow-700/30">
+              Debug: sessionComplete={String(stats.sessionComplete)}, total={stats.total}, currentIndex={currentIndex}, selectedLength={selectedKanjis.length}
+            </div>
+          )}
+          
+          {stats.sessionComplete && stats.total > 0 ? (
             <div className="max-w-md mx-auto">
               <div className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-2xl p-8">
                 {/* Icône et titre selon la performance */}
