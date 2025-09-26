@@ -455,29 +455,133 @@ export default function TrainingPage() {
           </>
         )}
 
-        {/* Instructions ou message de fin */}
+        {/* Instructions ou écran final */}
         <div className="text-center">
           {stats.sessionComplete ? (
-            <div className="inline-block p-6 bg-gradient-to-r from-green-900/30 to-emerald-900/30 rounded-xl border border-green-700/30 backdrop-blur-sm">
-              <div className="text-center">
-                <div className="text-4xl mb-4">🎉</div>
-                <h3 className="text-xl font-bold text-green-300 mb-2">Session terminée !</h3>
-                <p className="text-green-400 mb-4">
-                  Score : {stats.correct}/{stats.total} ({Math.round((stats.correct / stats.total) * 100)}%)
-                </p>
-                <div className="flex gap-3 justify-center">
-                  <Link
-                    href="/"
-                    className="px-4 py-2 bg-slate-700/80 text-slate-300 rounded-lg hover:bg-slate-600/80 transition-colors"
-                  >
-                    🏠 Menu
-                  </Link>
+            <div className="max-w-md mx-auto">
+              <div className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-2xl p-8">
+                {/* Icône et titre selon la performance */}
+                <div className="mb-6">
+                  {(() => {
+                    const percentage = Math.round((stats.correct / stats.total) * 100);
+                    const note = Math.round((stats.correct / stats.total) * 20);
+                    
+                    if (percentage >= 90) {
+                      return (
+                        <>
+                          <div className="text-6xl mb-4">🏆</div>
+                          <h3 className="text-2xl font-bold text-yellow-300 mb-2">Excellent !</h3>
+                        </>
+                      );
+                    } else if (percentage >= 75) {
+                      return (
+                        <>
+                          <div className="text-6xl mb-4">�</div>
+                          <h3 className="text-2xl font-bold text-green-300 mb-2">Très bien !</h3>
+                        </>
+                      );
+                    } else if (percentage >= 50) {
+                      return (
+                        <>
+                          <div className="text-6xl mb-4">📚</div>
+                          <h3 className="text-2xl font-bold text-blue-300 mb-2">Bon travail !</h3>
+                        </>
+                      );
+                    } else {
+                      return (
+                        <>
+                          <div className="text-6xl mb-4">💪</div>
+                          <h3 className="text-2xl font-bold text-orange-300 mb-2">Continue tes efforts !</h3>
+                        </>
+                      );
+                    }
+                  })()}
+                </div>
+
+                {/* Score et note */}
+                <div className="mb-6 space-y-4">
+                  {/* Statistiques */}
+                  <div className="flex items-center justify-center gap-4">
+                    <div className="text-center">
+                      <p className="text-3xl font-bold text-slate-100">{stats.correct}/{stats.total}</p>
+                      <p className="text-sm text-slate-400">Bonnes réponses</p>
+                    </div>
+                    <div className="h-12 w-px bg-slate-600"></div>
+                    <div className="text-center">
+                      <p className="text-3xl font-bold text-slate-100">{Math.round((stats.correct / stats.total) * 100)}%</p>
+                      <p className="text-sm text-slate-400">Réussite</p>
+                    </div>
+                    <div className="h-12 w-px bg-slate-600"></div>
+                    <div className="text-center">
+                      <p className="text-3xl font-bold text-slate-100">{Math.round((stats.correct / stats.total) * 20)}/20</p>
+                      <p className="text-sm text-slate-400">Note</p>
+                    </div>
+                  </div>
+
+                  {/* Barre de progression visuelle */}
+                  <div className="w-full bg-slate-700 rounded-full h-3 overflow-hidden">
+                    <div 
+                      className={`h-full transition-all duration-1000 ${
+                        Math.round((stats.correct / stats.total) * 100) >= 90 ? 'bg-gradient-to-r from-yellow-400 to-yellow-500' :
+                        Math.round((stats.correct / stats.total) * 100) >= 75 ? 'bg-gradient-to-r from-green-400 to-green-500' :
+                        Math.round((stats.correct / stats.total) * 100) >= 50 ? 'bg-gradient-to-r from-blue-400 to-blue-500' :
+                        'bg-gradient-to-r from-orange-400 to-orange-500'
+                      }`}
+                      style={{ width: `${(stats.correct / stats.total) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Commentaire personnalisé */}
+                <div className="mb-6 p-4 bg-slate-700/50 rounded-xl border border-slate-600/30">
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    {(() => {
+                      const percentage = Math.round((stats.correct / stats.total) * 100);
+                      const totalCards = stats.total;
+                      
+                      if (percentage >= 90) {
+                        return `🌟 Performance exceptionnelle ! Tu maîtrises vraiment bien ces ${totalCards} kanjis. Continue comme ça !`;
+                      } else if (percentage >= 75) {
+                        return `👏 Très bonne performance ! Tu es sur la bonne voie pour maîtriser ces ${totalCards} kanjis. Encore quelques révisions et ce sera parfait !`;
+                      } else if (percentage >= 50) {
+                        return `📈 Tu progresses bien ! Ces ${totalCards} kanjis commencent à rentrer. Continue à t'entraîner régulièrement !`;
+                      } else {
+                        return `� Ne te décourage pas ! Ces ${totalCards} kanjis sont nouveaux pour toi. Avec de la pratique régulière, tu vas y arriver !`;
+                      }
+                    })()}
+                  </p>
+                </div>
+
+                {/* Actions */}
+                <div className="space-y-3">
                   <button
                     onClick={startNewSession}
-                    className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-700 text-white rounded-lg hover:from-indigo-700 hover:to-purple-800 transition-all"
+                    className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-700 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-800 transition-all transform hover:scale-105 shadow-lg"
                   >
                     🔄 Nouvelle session
                   </button>
+                  <Link
+                    href="/"
+                    className="block w-full px-6 py-3 bg-slate-700/80 text-slate-300 font-medium text-center rounded-xl hover:bg-slate-600/80 transition-all"
+                  >
+                    🏠 Retour au menu
+                  </Link>
+                </div>
+
+                {/* Encouragement selon l'heure */}
+                <div className="mt-6 text-xs text-slate-500">
+                  {(() => {
+                    const hour = new Date().getHours();
+                    if (hour >= 6 && hour < 12) {
+                      return "☀️ Bonne matinée d'étude !";
+                    } else if (hour >= 12 && hour < 17) {
+                      return "🌤️ Bon après-midi d'apprentissage !";
+                    } else if (hour >= 17 && hour < 22) {
+                      return "🌆 Bonne soirée de révisions !";
+                    } else {
+                      return "🌙 Bonne séance de nuit !";
+                    }
+                  })()}
                 </div>
               </div>
             </div>
