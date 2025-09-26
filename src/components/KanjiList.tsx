@@ -23,9 +23,9 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+    <div className="bg-slate-800/90 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 overflow-hidden border border-slate-700/50">
       {/* Header avec le kanji principal */}
-      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-4">
+      <div className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <span className="text-4xl font-bold">{kanji.kanji}</span>
@@ -75,12 +75,12 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
       <div className="p-4 space-y-4">
         {/* Signification principale */}
         <div>
-          <h3 className="font-semibold text-gray-800 mb-1">Signification :</h3>
-          <p className="text-lg text-gray-700">
+          <h3 className="font-semibold text-slate-200 mb-1">Signification :</h3>
+          <p className="text-lg text-slate-100">
             {kanji.primaryMeaning || kanji.meanings[0] || 'Non définie'}
           </p>
           {kanji.meanings.length > 1 && (
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-slate-400 mt-1">
               Autres : {kanji.meanings.slice(1).join(', ')}
             </p>
           )}
@@ -91,12 +91,12 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
           {/* Onyomi */}
           {kanji.onyomi.length > 0 && (
             <div>
-              <h4 className="font-medium text-gray-700 mb-1">On&apos;yomi (音読み) :</h4>
+              <h4 className="font-medium text-slate-300 mb-1">On&apos;yomi (音読み) :</h4>
               <div className="flex flex-wrap gap-1">
                 {kanji.onyomi.map((reading, idx) => (
                   <span
                     key={idx}
-                    className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-mono"
+                    className="bg-red-900/30 text-red-300 border border-red-700/30 px-2 py-1 rounded text-sm font-mono"
                   >
                     {reading}
                   </span>
@@ -108,12 +108,12 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
           {/* Kunyomi */}
           {kanji.kunyomi.length > 0 && (
             <div>
-              <h4 className="font-medium text-gray-700 mb-1">Kun&apos;yomi (訓読み) :</h4>
+              <h4 className="font-medium text-slate-300 mb-1">Kun&apos;yomi (訓読み) :</h4>
               <div className="flex flex-wrap gap-1">
                 {kanji.kunyomi.map((reading, idx) => (
                   <span
                     key={idx}
-                    className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-mono"
+                    className="bg-blue-900/30 text-blue-300 border border-blue-700/30 px-2 py-1 rounded text-sm font-mono"
                   >
                     {reading}
                   </span>
@@ -126,8 +126,8 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
         {/* Lecture principale */}
         {kanji.primaryReading && (
           <div>
-            <h4 className="font-medium text-gray-700 mb-1">Lecture principale :</h4>
-            <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded font-mono font-medium">
+            <h4 className="font-medium text-slate-300 mb-1">Lecture principale :</h4>
+            <span className="bg-purple-900/30 text-purple-300 border border-purple-700/30 px-3 py-1 rounded font-mono font-medium">
               {kanji.primaryReading}
             </span>
           </div>
@@ -135,7 +135,7 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
 
         {/* Détails étendus */}
         {showDetails && (
-          <div className="border-t pt-4 space-y-4">
+          <div className="border-t border-slate-600/50 pt-4 space-y-4">
             {/* Ordre des traits */}
             <div>
               <MultiStrokeOrderViewer 
@@ -148,20 +148,20 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
             <div className="grid grid-cols-2 gap-4 text-sm">
               {kanji.strokeCount && (
                 <div>
-                  <span className="font-medium text-gray-600">Traits :</span>
-                  <span className="ml-2">{kanji.strokeCount}</span>
+                  <span className="font-medium text-slate-400">Traits :</span>
+                  <span className="ml-2 text-slate-200">{kanji.strokeCount}</span>
                 </div>
               )}
               {kanji.grade && (
                 <div>
-                  <span className="font-medium text-gray-600">Niveau :</span>
-                  <span className="ml-2">{kanji.grade}e année</span>
+                  <span className="font-medium text-slate-400">Niveau :</span>
+                  <span className="ml-2 text-slate-200">{kanji.grade}e année</span>
                 </div>
               )}
               {kanji.frequency && (
                 <div>
-                  <span className="font-medium text-gray-600">Fréquence :</span>
-                  <span className="ml-2">#{kanji.frequency}</span>
+                  <span className="font-medium text-slate-400">Fréquence :</span>
+                  <span className="ml-2 text-slate-200">#{kanji.frequency}</span>
                 </div>
               )}
             </div>
@@ -169,7 +169,7 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
             {/* Analyse des radicaux pour kanji individuel */}
             {kanji.kanji.length === 1 && (
               <div>
-                <h4 className="font-medium text-gray-700 mb-2">Analyse des radicaux :</h4>
+                <h4 className="font-medium text-slate-300 mb-2">Analyse des radicaux :</h4>
                 {(() => {
                   // Analyser les radicaux du kanji
                   const radicalAnalysis = KanjiEnrichmentService.analyzeRadicals(kanji.kanji);
@@ -178,10 +178,10 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
                       <div className="space-y-1">
                         {radicalAnalysis.map((analysis, idx) => (
                           <div key={idx} className="flex items-center gap-2 text-sm">
-                            <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded font-mono">
+                            <span className="bg-orange-900/30 text-orange-300 border border-orange-700/30 px-2 py-1 rounded font-mono">
                               {analysis.radical}
                             </span>
-                            <span className="text-gray-600">
+                            <span className="text-slate-400">
                               {analysis.name} - {analysis.meaning}
                             </span>
                           </div>
@@ -190,7 +190,7 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
                     );
                   }
                   return (
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-slate-500">
                       Aucun radical reconnu dans notre base de données
                     </p>
                   );
@@ -201,20 +201,20 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
             {/* Décomposition pour mots composés */}
             {kanji.kanjiComponents && kanji.kanjiComponents.length > 1 && (
               <div>
-                <h4 className="font-medium text-gray-700 mb-2">Décomposition :</h4>
+                <h4 className="font-medium text-slate-300 mb-2">Décomposition :</h4>
                 <div className="space-y-2">
                   {kanji.kanjiComponents.map((component, idx) => (
-                    <div key={idx} className="bg-gray-50 border rounded-lg p-3">
+                    <div key={idx} className="bg-slate-700/50 border border-slate-600/30 rounded-lg p-3">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className="text-2xl font-bold text-blue-600">
+                        <span className="text-2xl font-bold text-indigo-400">
                           {component.character}
                         </span>
                         <div>
-                          <div className="font-medium text-gray-800">
+                          <div className="font-medium text-slate-200">
                             {component.meaning || 'Signification non trouvée'}
                           </div>
                           {component.strokeCount && (
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-slate-500">
                               {component.strokeCount} traits
                             </div>
                           )}
@@ -222,12 +222,12 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
                       </div>
                       {component.radicals.length > 0 && (
                         <div>
-                          <span className="text-xs text-gray-600">Radicaux : </span>
+                          <span className="text-xs text-slate-400">Radicaux : </span>
                           <div className="flex flex-wrap gap-1 mt-1">
                             {component.radicals.map((radical, ridx) => (
                               <span
                                 key={ridx}
-                                className="bg-orange-100 text-orange-800 px-1 py-0.5 rounded text-xs"
+                                className="bg-orange-900/30 text-orange-300 border border-orange-700/30 px-1 py-0.5 rounded text-xs"
                               >
                                 {radical}
                               </span>
@@ -244,12 +244,12 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
             {/* Radicaux */}
             {kanji.radicals && kanji.radicals.length > 0 && (
               <div>
-                <h4 className="font-medium text-gray-700 mb-1">Clés/Radicaux :</h4>
+                <h4 className="font-medium text-slate-300 mb-1">Clés/Radicaux :</h4>
                 <div className="flex flex-wrap gap-1">
                   {kanji.radicals.map((radical, idx) => (
                     <span
                       key={idx}
-                      className="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm"
+                      className="bg-orange-900/30 text-orange-300 border border-orange-700/30 px-2 py-1 rounded text-sm"
                     >
                       {radical}
                     </span>
@@ -261,8 +261,8 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
             {/* Notes personnalisées */}
             {kanji.customNotes && (
               <div>
-                <h4 className="font-medium text-gray-700 mb-1">Notes personnelles :</h4>
-                <p className="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm text-gray-700">
+                <h4 className="font-medium text-slate-300 mb-1">Notes personnelles :</h4>
+                <p className="bg-yellow-900/20 border border-yellow-700/30 rounded p-3 text-sm text-yellow-200">
                   {kanji.customNotes}
                 </p>
               </div>
@@ -271,7 +271,7 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
             {/* Tags */}
             {kanji.tags && kanji.tags.length > 0 && (
               <div>
-                <h4 className="font-medium text-gray-700 mb-1">Tags :</h4>
+                <h4 className="font-medium text-slate-300 mb-1">Tags :</h4>
                 <div className="flex flex-wrap gap-1">
                   {kanji.tags.map((tag, idx) => (
                     <button
@@ -281,7 +281,7 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
                         const event = new CustomEvent('filterByTag', { detail: tag });
                         document.dispatchEvent(event);
                       }}
-                      className="bg-gray-100 hover:bg-blue-100 text-gray-800 hover:text-blue-800 px-2 py-1 rounded text-xs cursor-pointer transition-colors"
+                      className="bg-slate-700/50 hover:bg-indigo-700/50 text-slate-300 hover:text-indigo-200 border border-slate-600/30 hover:border-indigo-500/50 px-2 py-1 rounded text-xs cursor-pointer transition-colors"
                       title={`Filtrer par le tag ${tag}`}
                     >
                       #{tag}
@@ -293,9 +293,9 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
 
             {/* Statistiques d'étude */}
             {kanji.studyData && kanji.studyData.timesStudied > 0 && (
-              <div className="bg-indigo-50 border border-indigo-200 rounded p-3">
-                <h4 className="font-medium text-indigo-800 mb-2">Progression :</h4>
-                <div className="grid grid-cols-2 gap-2 text-sm">
+              <div className="bg-indigo-900/30 border border-indigo-700/30 rounded p-3">
+                <h4 className="font-medium text-indigo-300 mb-2">Progression :</h4>
+                <div className="grid grid-cols-2 gap-2 text-sm text-slate-300">
                   <div>Étudiée : {kanji.studyData.timesStudied} fois</div>
                   <div>Réussites : {kanji.studyData.correctAnswers}</div>
                   <div>
@@ -311,7 +311,7 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
             )}
 
             {/* Dates */}
-            <div className="text-xs text-gray-500 border-t pt-2">
+            <div className="text-xs text-slate-500 border-t border-slate-600/30 pt-2">
               <div>Ajouté le : {formatDate(kanji.dateAdded)}</div>
               <div>Modifié le : {formatDate(kanji.lastModified)}</div>
             </div>
@@ -402,8 +402,8 @@ export default function KanjiList({ kanjis, loading, onEdit, onDelete }: KanjiLi
     return (
       <div className="flex items-center justify-center py-12">
         <div className="flex items-center gap-3">
-          <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-gray-600">Chargement des kanjis...</span>
+          <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-slate-400">Chargement des kanjis...</span>
         </div>
       </div>
     );
@@ -411,12 +411,12 @@ export default function KanjiList({ kanjis, loading, onEdit, onDelete }: KanjiLi
 
   if (kanjis.length === 0) {
     return (
-      <div className="text-center py-12 bg-gray-50 rounded-lg">
+      <div className="text-center py-12 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50">
         <div className="text-6xl mb-4">📚</div>
-        <h3 className="text-lg font-medium text-gray-700 mb-2">
+        <h3 className="text-lg font-medium text-slate-200 mb-2">
           Aucun kanji dans votre collection
         </h3>
-        <p className="text-gray-500">
+        <p className="text-slate-400">
           Utilisez le formulaire ci-dessus pour ajouter votre premier kanji !
         </p>
       </div>
@@ -426,7 +426,7 @@ export default function KanjiList({ kanjis, loading, onEdit, onDelete }: KanjiLi
   return (
     <div className="space-y-4">
       {/* Barre de recherche et filtres */}
-      <div className="bg-white rounded-lg shadow-sm p-4">
+      <div className="bg-slate-800/90 backdrop-blur-sm rounded-xl shadow-lg p-4 border border-slate-700/50">
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
           <div className="flex-1">
             <input
@@ -434,15 +434,15 @@ export default function KanjiList({ kanjis, loading, onEdit, onDelete }: KanjiLi
               placeholder="Rechercher un kanji, signification, ou lecture..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
             />
           </div>
           <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-600">Trier par :</label>
+            <label className="text-sm text-slate-400">Trier par :</label>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'date' | 'kanji' | 'frequency')}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
             >
               <option value="date">Date d'ajout</option>
               <option value="kanji">Kanji (A-Z)</option>
@@ -453,13 +453,13 @@ export default function KanjiList({ kanjis, loading, onEdit, onDelete }: KanjiLi
 
         {/* Sélecteur de tags */}
         {allTags.length > 0 && (
-          <div className="mt-4 pt-4 border-t">
+          <div className="mt-4 pt-4 border-t border-slate-600/30">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-gray-700">Filtrer par tags :</h3>
+              <h3 className="text-sm font-medium text-slate-300">Filtrer par tags :</h3>
               {selectedTags.length > 0 && (
                 <button
                   onClick={clearAllTags}
-                  className="text-xs text-blue-600 hover:text-blue-800 underline"
+                  className="text-xs text-indigo-400 hover:text-indigo-300 underline"
                 >
                   Effacer tout
                 </button>
@@ -475,8 +475,8 @@ export default function KanjiList({ kanjis, loading, onEdit, onDelete }: KanjiLi
                     onClick={() => toggleTag(tag)}
                     className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
                       isSelected
-                        ? 'bg-blue-500 text-white shadow-md'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-indigo-600 text-white shadow-md border border-indigo-500'
+                        : 'bg-slate-700/50 text-slate-300 hover:bg-slate-600/50 border border-slate-600/30'
                     }`}
                   >
                     #{tag}
@@ -489,7 +489,7 @@ export default function KanjiList({ kanjis, loading, onEdit, onDelete }: KanjiLi
         )}
         
         {/* Statistiques */}
-        <div className="mt-3 pt-3 border-t text-sm text-gray-600">
+        <div className="mt-3 pt-3 border-t border-slate-600/30 text-sm text-slate-400">
           {filteredAndSortedKanjis.length} kanji(s) 
           {searchQuery && ` trouvé(s) pour "${searchQuery}"`}
           {selectedTags.length > 0 && ` avec les tags: ${selectedTags.map(t => `#${t}`).join(', ')}`}
