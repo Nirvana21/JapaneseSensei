@@ -54,14 +54,23 @@ export default function SwipeCard({
     }
   };
 
-  const handleEnd = (clientX: number, clientY: number) => {
+  const handleEnd = (clientX: number, clientY: number, target?: EventTarget | null) => {
     if (!isDragging) return;
 
     const deltaX = clientX - startX;
     const deltaY = clientY - startY;
 
+    // Vérifier si le clic est sur un bouton ou élément interactif
+    const isButton = target && (
+      (target as Element).tagName === 'BUTTON' ||
+      (target as Element).closest('button') ||
+      (target as Element).tagName === 'A' ||
+      (target as Element).closest('a') ||
+      (target as Element).hasAttribute('data-no-tap')
+    );
+
     // Vérifier si c'est un tap (pas de mouvement significatif)
-    if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10 && onTap) {
+    if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10 && onTap && !isButton) {
       onTap();
     }
     // Sinon vérifier si c'est un swipe
@@ -91,7 +100,7 @@ export default function SwipeCard({
 
   const handleMouseUp = (e: React.MouseEvent) => {
     e.preventDefault();
-    handleEnd(e.clientX, e.clientY);
+    handleEnd(e.clientX, e.clientY, e.target);
   };
 
   // Événements tactiles
@@ -110,7 +119,7 @@ export default function SwipeCard({
   const handleTouchEnd = (e: React.TouchEvent) => {
     e.preventDefault();
     const touch = e.changedTouches[0];
-    handleEnd(touch.clientX, touch.clientY);
+    handleEnd(touch.clientX, touch.clientY, e.target);
   };
 
   // Gérer les événements globaux quand on drag
@@ -123,7 +132,7 @@ export default function SwipeCard({
 
       const handleGlobalMouseUp = (e: MouseEvent) => {
         e.preventDefault();
-        handleEnd(e.clientX, e.clientY);
+        handleEnd(e.clientX, e.clientY, e.target);
       };
 
       document.addEventListener('mousemove', handleGlobalMouseMove);

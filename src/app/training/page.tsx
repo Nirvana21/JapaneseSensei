@@ -252,6 +252,7 @@ export default function TrainingPage() {
                             e.stopPropagation();
                             openModal(currentKanji);
                           }}
+                          data-no-tap="true"
                           className="w-full p-4 bg-slate-700/50 hover:bg-slate-600/50 rounded-xl border border-slate-600/30 hover:border-slate-500/50 transition-all group"
                         >
                           <p className="text-sm text-slate-400 mb-2">Kanji (cliquez pour les détails) :</p>
@@ -301,6 +302,7 @@ export default function TrainingPage() {
                         e.stopPropagation();
                         openModal(currentKanji);
                       }}
+                      data-no-tap="true"
                       className="inline-block p-3 hover:bg-slate-700/30 rounded-xl transition-all group"
                     >
                       <p className="text-4xl sm:text-6xl font-bold text-slate-100 mb-2 group-hover:scale-110 transition-transform">{currentKanji.kanji}</p>
