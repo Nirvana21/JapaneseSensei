@@ -23,7 +23,7 @@ export default function SwipeCard({
   const [startY, setStartY] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const SWIPE_THRESHOLD = 100; // Distance minimum pour déclencher un swipe
+  const SWIPE_THRESHOLD = 60; // Distance minimum pour déclencher un swipe (réduit pour plus de sensibilité)
   const VERTICAL_THRESHOLD = 50; // Distance verticale max pour considérer comme swipe horizontal
 
   const handleStart = (clientX: number, clientY: number) => {

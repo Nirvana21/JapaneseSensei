@@ -58,7 +58,18 @@ export default function TrainingPage() {
 
   // Générer une nouvelle session selon les tags sélectionnés
   const generateNewSession = (allKanjis: SimpleLearningKanji[], tags: string[]) => {
-    const sessionKanjis = simpleAdaptiveLearningService.selectKanjisForSession(allKanjis, tags, 20);
+    // Filtrer les kanjis par tags si spécifiés
+    let availableKanjis = allKanjis;
+    if (tags.length > 0) {
+      availableKanjis = allKanjis.filter(kanji => 
+        tags.some(tag => kanji.tags?.includes(tag))
+      );
+    }
+    
+    const maxPossible = availableKanjis.length;
+    const sessionSize = Math.min(20, maxPossible);
+    
+    const sessionKanjis = simpleAdaptiveLearningService.selectKanjisForSession(allKanjis, tags, sessionSize);
     setSelectedKanjis(sessionKanjis);
     setCurrentIndex(0);
     setShowAnswer(false);
@@ -169,7 +180,12 @@ export default function TrainingPage() {
             </Link>
             
             <h1 className="text-xl font-bold bg-gradient-to-r from-slate-100 to-indigo-300 bg-clip-text text-transparent text-center">
-              🎯 Entraînement (Sessions 20 cartes)
+              🎯 Entraînement ({selectedKanjis.length} carte{selectedKanjis.length > 1 ? 's' : ''})
+              {selectedKanjis.length < 20 && (
+                <span className="text-sm text-yellow-400 block mt-1">
+                  ℹ️ Toutes les cartes disponibles incluses
+                </span>
+              )}
             </h1>
             
             <button
@@ -468,7 +484,7 @@ export default function TrainingPage() {
           ) : (
             <div className="inline-block p-4 bg-gradient-to-r from-indigo-900/30 to-purple-900/30 rounded-xl border border-indigo-700/30 backdrop-blur-sm">
               <p className="text-sm text-indigo-300 font-medium">
-                👆 Touchez la carte pour révéler la réponse • Swipez ← (pas sûr) ou → (je connais)
+                👆 Touchez la carte pour révéler la réponse • Swipez doucement ← (pas sûr) ou → (je connais)
               </p>
             </div>
           )}
