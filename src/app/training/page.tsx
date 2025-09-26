@@ -6,6 +6,7 @@ import { useKanjis } from '../../hooks/useKanjis';
 import SwipeCard from '../../components/SwipeCard';
 import KanjiCanvas from '../../components/KanjiCanvas';
 import KanjiDetailModal from '../../components/KanjiDetailModal';
+import SessionCompleteModal from '../../components/SessionCompleteModal';
 import TagSelector from '../../components/TagSelector';
 import { simpleAdaptiveLearningService, SimpleLearningKanji } from '../../services/adaptiveLearningService';
 
@@ -150,6 +151,11 @@ export default function TrainingPage() {
 
   const startNewSession = () => {
     generateNewSession(allLearningKanjis, selectedTags);
+  };
+
+  const closeSessionModal = () => {
+    // Optionnel: remettre à zéro pour permettre un nouveau modal
+    setStats(prev => ({ ...prev, sessionComplete: false }));
   };
 
   if (selectedKanjis.length === 0 && allLearningKanjis.length === 0) {
@@ -475,7 +481,12 @@ export default function TrainingPage() {
             </div>
           )}
           
-          {stats.sessionComplete && stats.total > 0 ? (
+          {/* Le modal SessionCompleteModal gère désormais l'affichage de fin de session */}
+          <div className="inline-block p-4 bg-gradient-to-r from-indigo-900/30 to-purple-900/30 rounded-xl border border-indigo-700/30 backdrop-blur-sm">
+            <p className="text-sm text-indigo-300 font-medium">
+              👆 Touchez la carte pour révéler la réponse • Swipez doucement ← (pas sûr) ou → (je connais)
+            </p>
+          </div>
             <div className="max-w-md mx-auto">
               <div className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-2xl p-8">
                 {/* Icône et titre selon la performance */}
@@ -606,14 +617,11 @@ export default function TrainingPage() {
           ) : (
             <div className="inline-block p-4 bg-gradient-to-r from-indigo-900/30 to-purple-900/30 rounded-xl border border-indigo-700/30 backdrop-blur-sm">
               <p className="text-sm text-indigo-300 font-medium">
-                👆 Touchez la carte pour révéler la réponse • Swipez doucement ← (pas sûr) ou → (je connais)
-              </p>
-            </div>
-          )}
+              👆 Touchez la carte pour révéler la réponse • Swipez doucement ← (pas sûr) ou → (je connais)
+            </p>
+          </div>
         </div>
-      </main>
-
-      {/* Modal des détails */}
+      </main>      {/* Modal des détails */}
       {selectedKanji && (
         <KanjiDetailModal
           kanji={selectedKanji}
@@ -621,6 +629,14 @@ export default function TrainingPage() {
           onClose={closeModal}
         />
       )}
+
+      {/* Modal de fin de session */}
+      <SessionCompleteModal
+        isOpen={stats.sessionComplete}
+        stats={stats}
+        onNewSession={startNewSession}
+        onClose={closeSessionModal}
+      />
     </div>
   );
 }
