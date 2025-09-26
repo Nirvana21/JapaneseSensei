@@ -2,49 +2,45 @@
 
 import { KanjiEntry } from '@/types/kanji';
 
-// Interface pour les données d'apprentissage enrichies
-export interface LearningKanji extends KanjiEntry {
+// Interface simplifiée pour les données d'apprentissage
+export interface SimpleLearningKanji extends KanjiEntry {
   learningData: {
-    level: 'new' | 'learning' | 'difficult' | 'mastered';
+    score: 0 | 1 | 2 | 3; // 0=Nouveau, 1=Raté/pas connu, 2=Pas trop mal, 3=Vraiment connu
+    lastSeen: Date;
+    totalAttempts: number;
+    correctAttempts: number;
     consecutiveCorrect: number;
     consecutiveIncorrect: number;
-    lastSeen: Date;
-    nextReview: Date;
-    totalReviews: number;
-    successRate: number;
-    difficulty: number; // 0-1, plus élevé = plus difficile
   };
 }
 
-class AdaptiveLearningService {
-  private readonly DIFFICULTY_THRESHOLDS = {
-    MASTERED: 0.9, // 90% de réussite
-    LEARNING: 0.6, // 60% de réussite
-    DIFFICULT: 0.4, // Moins de 40% de réussite
+class SimpleAdaptiveLearningService {
+  private readonly PROBABILITY_FACTORS = {
+    0: 2.0,   // Nouveaux - priorité maximale
+    1: 1.66,  // Ratés régulièrement
+    2: 1.33,  // Pas trop mal
+    3: 1.0,   // Vraiment connus - priorité minimale
   };
 
-  private readonly REVIEW_INTERVALS = {
-    NEW: 1, // 1 minute pour les nouveaux
-    LEARNING: 10, // 10 minutes pour les en apprentissage
-    DIFFICULT: 5, // 5 minutes pour les difficiles (plus fréquent)
-    MASTERED: 60, // 1 heure pour les maîtrisés
+  private readonly DEGRADATION_THRESHOLDS = {
+    DAYS_TO_DEGRADE_3_TO_2: 7,    // 1 semaine sans voir un score 3 → devient 2
+    DAYS_TO_DEGRADE_2_TO_1: 14,   // 2 semaines sans voir un score 2 → devient 1
+    DAYS_TO_DEGRADE_ANY_TO_1: 30, // 1 mois sans voir → devient 1 (minimum)
   };
 
   /**
-   * Initialise les données d'apprentissage pour un kanji
+   * Initialise un nouveau kanji avec des données d'apprentissage par défaut
    */
-  initializeLearningData(kanji: KanjiEntry): LearningKanji {
+  initializeLearningData(kanji: KanjiEntry): SimpleLearningKanji {
     return {
       ...kanji,
       learningData: {
-        level: 'new',
+        score: 0, // Nouveau par défaut
+        lastSeen: new Date(),
+        totalAttempts: 0,
+        correctAttempts: 0,
         consecutiveCorrect: 0,
         consecutiveIncorrect: 0,
-        lastSeen: new Date(),
-        nextReview: new Date(Date.now() + this.REVIEW_INTERVALS.NEW * 60000),
-        totalReviews: 0,
-        successRate: 0,
-        difficulty: 0.5, // Commencer avec une difficulté moyenne
       },
     };
   }
@@ -52,168 +48,184 @@ class AdaptiveLearningService {
   /**
    * Met à jour les données d'apprentissage après une réponse
    */
-  updateLearningData(kanji: LearningKanji, isCorrect: boolean): LearningKanji {
-    const now = new Date();
+  updateLearningData(kanji: SimpleLearningKanji, isCorrect: boolean): SimpleLearningKanji {
     const learningData = { ...kanji.learningData };
-
-    // Mettre à jour les statistiques de base
-    learningData.totalReviews++;
-    learningData.lastSeen = now;
-
+    
+    learningData.lastSeen = new Date();
+    learningData.totalAttempts++;
+    
     if (isCorrect) {
+      learningData.correctAttempts++;
       learningData.consecutiveCorrect++;
       learningData.consecutiveIncorrect = 0;
+      
+      // Logique d'amélioration du score
+      if (learningData.consecutiveCorrect >= 3 && learningData.score < 3) {
+        learningData.score = Math.min(3, learningData.score + 1) as 0 | 1 | 2 | 3;
+      } else if (learningData.consecutiveCorrect >= 2 && learningData.score === 0) {
+        learningData.score = 1;
+      }
     } else {
       learningData.consecutiveIncorrect++;
       learningData.consecutiveCorrect = 0;
+      
+      // Logique de dégradation du score
+      if (learningData.consecutiveIncorrect >= 2 && learningData.score > 1) {
+        learningData.score = Math.max(1, learningData.score - 1) as 0 | 1 | 2 | 3;
+      } else if (learningData.score === 0) {
+        learningData.score = 1; // Premier échec d'un nouveau kanji
+      }
     }
-
-    // Calculer le nouveau taux de réussite
-    const studyData = kanji.studyData || { correctAnswers: 0, timesStudied: 0 };
-    const totalCorrect = studyData.correctAnswers + (isCorrect ? 1 : 0);
-    const totalAttempts = studyData.timesStudied + 1;
-    learningData.successRate = totalCorrect / totalAttempts;
-
-    // Ajuster la difficulté basée sur les performances récentes
-    if (isCorrect) {
-      learningData.difficulty = Math.max(0, learningData.difficulty - 0.1);
-    } else {
-      learningData.difficulty = Math.min(1, learningData.difficulty + 0.2);
-    }
-
-    // Déterminer le nouveau niveau
-    learningData.level = this.calculateLevel(learningData);
-
-    // Calculer le prochain moment de révision
-    learningData.nextReview = this.calculateNextReview(learningData, isCorrect);
 
     return {
       ...kanji,
       learningData,
       studyData: {
-        timesStudied: totalAttempts,
-        correctAnswers: totalCorrect,
-        lastStudied: now,
-        difficulty: learningData.difficulty > 0.7 ? 'hard' : 
-                   learningData.difficulty > 0.4 ? 'medium' : 'easy'
+        timesStudied: learningData.totalAttempts,
+        correctAnswers: learningData.correctAttempts,
+        lastStudied: learningData.lastSeen,
+        difficulty: learningData.score <= 1 ? 'hard' : 
+                   learningData.score === 2 ? 'medium' : 'easy'
       }
     };
   }
 
   /**
-   * Calcule le niveau d'apprentissage basé sur les performances
+   * Applique la dégradation temporelle des scores
    */
-  private calculateLevel(learningData: any): 'new' | 'learning' | 'difficult' | 'mastered' {
-    if (learningData.totalReviews === 0) return 'new';
+  applyTemporalDegradation(kanji: SimpleLearningKanji): SimpleLearningKanji {
+    const now = new Date();
+    const daysSinceLastSeen = Math.floor((now.getTime() - kanji.learningData.lastSeen.getTime()) / (1000 * 60 * 60 * 24));
     
-    if (learningData.successRate >= this.DIFFICULTY_THRESHOLDS.MASTERED && 
-        learningData.consecutiveCorrect >= 3) {
-      return 'mastered';
+    let newScore = kanji.learningData.score;
+    
+    // Appliquer la dégradation selon les seuils
+    if (daysSinceLastSeen >= this.DEGRADATION_THRESHOLDS.DAYS_TO_DEGRADE_ANY_TO_1) {
+      newScore = 1; // Après 1 mois, tout descend à 1
+    } else if (kanji.learningData.score === 3 && daysSinceLastSeen >= this.DEGRADATION_THRESHOLDS.DAYS_TO_DEGRADE_3_TO_2) {
+      newScore = 2; // Score 3 devient 2 après 1 semaine
+    } else if (kanji.learningData.score === 2 && daysSinceLastSeen >= this.DEGRADATION_THRESHOLDS.DAYS_TO_DEGRADE_2_TO_1) {
+      newScore = 1; // Score 2 devient 1 après 2 semaines
     }
     
-    if (learningData.successRate < this.DIFFICULTY_THRESHOLDS.DIFFICULT || 
-        learningData.consecutiveIncorrect >= 2) {
-      return 'difficult';
+    if (newScore !== kanji.learningData.score) {
+      return {
+        ...kanji,
+        learningData: {
+          ...kanji.learningData,
+          score: newScore as 0 | 1 | 2 | 3,
+        }
+      };
     }
     
-    return 'learning';
+    return kanji;
   }
 
   /**
-   * Calcule le prochain moment de révision
+   * Sélectionne 20 kanjis pour une session selon les probabilités pondérées
    */
-  private calculateNextReview(learningData: any, isCorrect: boolean): Date {
-    let intervalMinutes: number;
-
-    if (isCorrect) {
-      // Augmenter l'intervalle si correct
-      switch (learningData.level) {
-        case 'new':
-          intervalMinutes = this.REVIEW_INTERVALS.LEARNING;
-          break;
-        case 'learning':
-          intervalMinutes = this.REVIEW_INTERVALS.LEARNING * (learningData.consecutiveCorrect + 1);
-          break;
-        case 'difficult':
-          intervalMinutes = this.REVIEW_INTERVALS.LEARNING;
-          break;
-        case 'mastered':
-          intervalMinutes = this.REVIEW_INTERVALS.MASTERED * (learningData.consecutiveCorrect + 1);
-          break;
-        default:
-          intervalMinutes = this.REVIEW_INTERVALS.NEW;
+  selectKanjisForSession(
+    allKanjis: SimpleLearningKanji[], 
+    selectedTags: string[] = [], 
+    sessionSize: number = 20
+  ): SimpleLearningKanji[] {
+    // Filtrer par tags si spécifiés
+    let availableKanjis = allKanjis;
+    if (selectedTags.length > 0) {
+      availableKanjis = allKanjis.filter(kanji => 
+        selectedTags.some(tag => kanji.tags?.includes(tag))
+      );
+    }
+    
+    // Appliquer la dégradation temporelle
+    availableKanjis = availableKanjis.map(kanji => this.applyTemporalDegradation(kanji));
+    
+    // Si on a moins de kanjis que la taille de session, retourner tous
+    if (availableKanjis.length <= sessionSize) {
+      return this.shuffleArray(availableKanjis);
+    }
+    
+    // Créer un pool pondéré
+    const weightedPool: SimpleLearningKanji[] = [];
+    
+    availableKanjis.forEach(kanji => {
+      const factor = this.PROBABILITY_FACTORS[kanji.learningData.score];
+      const weight = Math.ceil(factor * 10); // Multiplier par 10 pour avoir des entiers
+      
+      // Ajouter le kanji 'weight' fois dans le pool
+      for (let i = 0; i < weight; i++) {
+        weightedPool.push(kanji);
       }
-    } else {
-      // Réduire l'intervalle si incorrect
-      switch (learningData.level) {
-        case 'new':
-          intervalMinutes = this.REVIEW_INTERVALS.NEW;
-          break;
-        case 'learning':
-        case 'difficult':
-          intervalMinutes = this.REVIEW_INTERVALS.DIFFICULT;
-          break;
-        case 'mastered':
-          // Rétrogradé à learning
-          intervalMinutes = this.REVIEW_INTERVALS.LEARNING;
-          break;
-        default:
-          intervalMinutes = this.REVIEW_INTERVALS.NEW;
+    });
+    
+    // Sélectionner aléatoirement sans répétition
+    const selected: SimpleLearningKanji[] = [];
+    const usedIds = new Set<string>();
+    
+    while (selected.length < sessionSize && usedIds.size < availableKanjis.length) {
+      const randomIndex = Math.floor(Math.random() * weightedPool.length);
+      const candidate = weightedPool[randomIndex];
+      
+      if (!usedIds.has(candidate.id)) {
+        selected.push(candidate);
+        usedIds.add(candidate.id);
       }
     }
-
-    return new Date(Date.now() + intervalMinutes * 60000);
+    
+    return this.shuffleArray(selected);
   }
 
   /**
-   * Sélectionne les kanjis pour une session d'entraînement
+   * Obtient les tags disponibles dans la collection
    */
-  selectKanjisForSession(kanjis: LearningKanji[], maxCount: number = 10): LearningKanji[] {
+  getAvailableTags(kanjis: SimpleLearningKanji[]): string[] {
+    const tagSet = new Set<string>();
+    
+    kanjis.forEach(kanji => {
+      kanji.tags?.forEach(tag => tagSet.add(tag));
+    });
+    
+    return Array.from(tagSet).sort();
+  }
+
+  /**
+   * Obtient des statistiques sur la collection
+   */
+  getLearningStats(kanjis: SimpleLearningKanji[]) {
+    // Appliquer la dégradation temporelle avant le calcul
+    const updatedKanjis = kanjis.map(kanji => this.applyTemporalDegradation(kanji));
+    
+    const stats = {
+      total: updatedKanjis.length,
+      byScore: {
+        0: 0, // Nouveaux
+        1: 0, // Ratés/pas connus
+        2: 0, // Pas trop mal
+        3: 0, // Vraiment connus
+      },
+      needsReview: 0, // Kanjis non vus depuis plus d'une semaine
+    };
+    
     const now = new Date();
     
-    // Séparer les kanjis par priorité
-    const overdue = kanjis.filter(k => k.learningData.nextReview <= now);
-    const difficult = kanjis.filter(k => k.learningData.level === 'difficult');
-    const learning = kanjis.filter(k => k.learningData.level === 'learning');
-    const newKanjis = kanjis.filter(k => k.learningData.level === 'new');
-    const mastered = kanjis.filter(k => k.learningData.level === 'mastered');
+    updatedKanjis.forEach(kanji => {
+      stats.byScore[kanji.learningData.score]++;
+      
+      const daysSinceLastSeen = Math.floor((now.getTime() - kanji.learningData.lastSeen.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysSinceLastSeen >= 7) {
+        stats.needsReview++;
+      }
+    });
+    
+    return stats;
+  }
 
-    // Priorité de sélection
-    let selected: LearningKanji[] = [];
-
-    // 1. Prendre les kanjis en retard (priorité absolue)
-    selected = selected.concat(overdue.slice(0, maxCount));
-
-    // 2. Compléter avec les difficiles si place disponible
-    if (selected.length < maxCount) {
-      const remaining = maxCount - selected.length;
-      const difficultNotSelected = difficult.filter(k => !selected.includes(k));
-      selected = selected.concat(difficultNotSelected.slice(0, Math.min(remaining, Math.ceil(remaining * 0.4))));
-    }
-
-    // 3. Ajouter des kanjis en apprentissage
-    if (selected.length < maxCount) {
-      const remaining = maxCount - selected.length;
-      const learningNotSelected = learning.filter(k => !selected.includes(k));
-      selected = selected.concat(learningNotSelected.slice(0, Math.min(remaining, Math.ceil(remaining * 0.4))));
-    }
-
-    // 4. Ajouter de nouveaux kanjis
-    if (selected.length < maxCount) {
-      const remaining = maxCount - selected.length;
-      const newNotSelected = newKanjis.filter(k => !selected.includes(k));
-      selected = selected.concat(newNotSelected.slice(0, Math.min(remaining, Math.ceil(remaining * 0.3))));
-    }
-
-    // 5. Compléter avec des kanjis maîtrisés si nécessaire
-    if (selected.length < maxCount) {
-      const remaining = maxCount - selected.length;
-      const masteredNotSelected = mastered.filter(k => !selected.includes(k));
-      selected = selected.concat(masteredNotSelected.slice(0, remaining));
-    }
-
-    // Mélanger la liste pour éviter la prévisibilité
-    return this.shuffleArray(selected);
+  /**
+   * Obtient des statistiques par tag
+   */
+  getTagStats(kanjis: SimpleLearningKanji[], tag: string) {
+    const tagKanjis = kanjis.filter(kanji => kanji.tags?.includes(tag));
+    return this.getLearningStats(tagKanjis);
   }
 
   /**
@@ -227,33 +239,6 @@ class AdaptiveLearningService {
     }
     return shuffled;
   }
-
-  /**
-   * Obtient des statistiques sur l'apprentissage
-   */
-  getLearningStats(kanjis: LearningKanji[]) {
-    const stats = {
-      total: kanjis.length,
-      new: 0,
-      learning: 0,
-      difficult: 0,
-      mastered: 0,
-      overdue: 0,
-    };
-
-    const now = new Date();
-    
-    kanjis.forEach(kanji => {
-      const level = kanji.learningData.level;
-      stats[level]++;
-      
-      if (kanji.learningData.nextReview <= now) {
-        stats.overdue++;
-      }
-    });
-
-    return stats;
-  }
 }
 
-export const adaptiveLearningService = new AdaptiveLearningService();
+export const simpleAdaptiveLearningService = new SimpleAdaptiveLearningService();
