@@ -46,7 +46,8 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
         
         setSuccessMessage(`✅ "${addedKanji.kanji}" ajouté avec succès !`);
         setInput('');
-        setTags('');
+        // Garder les tags pour faciliter l'ajout de plusieurs kanjis de la même catégorie
+        // setTags(''); // Ne plus effacer les tags
         setCustomNotes('');
         onKanjiAdded?.();
       }
@@ -73,15 +74,11 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">
-        Ajouter un kanji
-      </h2>
-      
+    <div className="space-y-4">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="kanji-input" className="block text-sm font-medium text-gray-700 mb-2">
-            Saisissez un kanji ou mot japonais :
+          <label htmlFor="kanji-input" className="block text-sm font-medium text-slate-300 mb-2">
+            Kanji ou mot japonais
           </label>
           <div className="flex gap-3">
             <input
@@ -90,7 +87,7 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
               value={input}
               onChange={handleInputChange}
               placeholder="漢字 ou ひらがな..."
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+              className="flex-1 px-4 py-3 border border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-lg bg-slate-700/80 text-slate-100 placeholder-slate-400"
               disabled={isSubmitting}
               autoComplete="off"
               spellCheck={false}
@@ -98,7 +95,7 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
             <button
               type="submit"
               disabled={!input.trim() || isSubmitting}
-              className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+              className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-700 text-white font-medium rounded-xl hover:from-indigo-700 hover:to-purple-800 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed transition-all shadow-lg"
             >
               {isSubmitting ? (
                 <div className="flex items-center gap-2">
@@ -112,67 +109,70 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
           </div>
         </div>
 
-        {/* Tags personnalisés */}
-        <div>
-          <label htmlFor="tags-input" className="block text-sm font-medium text-gray-700 mb-2">
-            Tags personnalisés (optionnel) :
-          </label>
-          <input
-            id="tags-input"
-            type="text"
-            value={tags}
-            onChange={handleTagsChange}
-            placeholder="facile, important, examen, cours-1, ..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            disabled={isSubmitting}
-          />
-          <p className="text-xs text-gray-500 mt-1">Séparez les tags par des virgules</p>
-        </div>
+        {/* Tags personnalisés simplifié */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label htmlFor="tags-input" className="block text-sm font-medium text-slate-300">
+                Tags (optionnel)
+              </label>
+              {tags && (
+                <button
+                  type="button"
+                  onClick={() => setTags('')}
+                  className="text-xs text-slate-500 hover:text-red-400 transition-colors"
+                  disabled={isSubmitting}
+                >
+                  🗑️ Effacer
+                </button>
+              )}
+            </div>
+            <input
+              id="tags-input"
+              type="text"
+              value={tags}
+              onChange={handleTagsChange}
+              placeholder="facile, important, cours-1..."
+              className="w-full px-3 py-2 border border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-slate-700/80 text-slate-100 placeholder-slate-400"
+              disabled={isSubmitting}
+            />
+            {tags && (
+              <p className="text-xs text-indigo-400 mt-1">
+                • Conservés pour le prochain ajout
+              </p>
+            )}
+          </div>
 
-        {/* Notes personnelles */}
-        <div>
-          <label htmlFor="notes-input" className="block text-sm font-medium text-gray-700 mb-2">
-            Notes personnelles (optionnel) :
-          </label>
-          <textarea
-            id="notes-input"
-            value={customNotes}
-            onChange={handleNotesChange}
-            placeholder="Mnémotechnique, exemple de phrase, contexte d'apprentissage..."
-            rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            disabled={isSubmitting}
-          />
+          {/* Notes personnelles simplifiées */}
+          <div>
+            <label htmlFor="notes-input" className="block text-sm font-medium text-slate-300 mb-2">
+              Notes (optionnel)
+            </label>
+            <textarea
+              id="notes-input"
+              value={customNotes}
+              onChange={handleNotesChange}
+              placeholder="Mnémotechnique, contexte..."
+              rows={2}
+              className="w-full px-3 py-2 border border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-slate-700/80 text-slate-100 placeholder-slate-400 resize-none"
+              disabled={isSubmitting}
+            />
+          </div>
         </div>
       </form>
 
       {/* Messages d'erreur et de succès */}
       {error && (
-        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-700 text-sm">{error}</p>
+        <div className="p-3 bg-red-900/30 backdrop-blur-sm border border-red-700/50 rounded-lg">
+          <p className="text-red-300 text-sm">{error}</p>
         </div>
       )}
       
       {successMessage && (
-        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-green-700 text-sm">{successMessage}</p>
+        <div className="p-3 bg-green-900/30 backdrop-blur-sm border border-green-700/50 rounded-lg">
+          <p className="text-green-300 text-sm">{successMessage}</p>
         </div>
       )}
-
-      {/* Instructions */}
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <h3 className="text-sm font-medium text-blue-900 mb-2">💡 Comment utiliser :</h3>
-        <ul className="text-sm text-blue-800 space-y-1">
-          <li>• Tapez directement un kanji : <span className="font-mono bg-white px-1 rounded">日</span></li>
-          <li>• Ou un mot complet : <span className="font-mono bg-white px-1 rounded">日本語</span></li>
-          <li>• Mots composés : <span className="font-mono bg-white px-1 rounded">花火</span> (décomposés automatiquement)</li>
-          <li>• Utilisez votre clavier japonais mobile</li>
-          <li>• L&apos;app récupèrera automatiquement les lectures et significations</li>
-          <li>• Les radicaux/clés seront analysés automatiquement</li>
-          <li>• <strong>Nouveau :</strong> Ajoutez des tags pour organiser vos kanjis</li>
-          <li>• <strong>Nouveau :</strong> Ajoutez des notes pour mémoriser plus facilement</li>
-        </ul>
-      </div>
     </div>
   );
 }

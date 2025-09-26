@@ -44,14 +44,14 @@ export default function TrainingPage() {
 
   if (selectedKanjis.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-100 to-purple-200">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900">
         <div className="container mx-auto px-4 py-8 text-center">
-          <div className="bg-white/80 backdrop-blur-sm rounded-xl p-8 shadow-lg">
-            <h1 className="text-2xl font-bold mb-4">📚 Aucun kanji disponible</h1>
-            <p className="text-gray-600 mb-6">Ajoutez des kanjis depuis la page d'accueil pour commencer l'entraînement.</p>
+          <div className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-8 shadow-2xl border border-slate-700/50">
+            <h1 className="text-2xl font-bold mb-4 text-slate-100">📚 Aucun kanji disponible</h1>
+            <p className="text-slate-400 mb-6">Ajoutez des kanjis depuis la page d'accueil pour commencer l'entraînement.</p>
             <Link 
               href="/"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
             >
               <span>🏠</span>
               <span>Retour au menu</span>
@@ -63,15 +63,15 @@ export default function TrainingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-100 to-purple-200">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900">
       {/* En-tête moderne avec bouton retour et contrôles */}
-      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-white/50 shadow-lg">
+      <header className="sticky top-0 z-50 bg-slate-800/90 backdrop-blur-md border-b border-slate-700/50 shadow-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
             {/* Bouton retour avec icône */}
             <Link 
               href="/" 
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 font-medium rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 border border-gray-200"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-slate-700/80 hover:bg-slate-600/80 text-slate-300 font-medium rounded-xl shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 border border-slate-600/50"
             >
               <span className="text-lg">🏠</span>
               <span className="text-sm sm:text-base">Menu</span>
@@ -120,39 +120,39 @@ export default function TrainingPage() {
             onTap={() => setShowAnswer(!showAnswer)}
             className="w-full max-w-lg"
           >
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl p-6 sm:p-8 border border-white/40">
+            <div className="bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-2xl p-6 sm:p-8 border border-slate-700/40">
               {trainingMode === 'fr-to-jp' ? (
                 // Mode: Français → Japonais
                 <div className="text-center">
                   <div className="mb-6">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full mb-4">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-900/50 to-purple-900/50 rounded-full mb-4 border border-indigo-700/30">
                       <span className="text-lg">🇫🇷</span>
-                      <span className="text-sm font-medium text-gray-700">Traduisez en japonais</span>
+                      <span className="text-sm font-medium text-slate-300">Traduisez en japonais</span>
                       <span className="text-lg">🇯🇵</span>
                     </div>
-                    <p className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent leading-relaxed">
+                    <p className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-slate-100 to-indigo-300 bg-clip-text text-transparent leading-relaxed">
                       {currentKanji.primaryMeaning || currentKanji.meanings[0]}
                     </p>
                   </div>
 
                   {showAnswer && (
-                    <div className="border-t border-gray-200 pt-6 mt-6 animate-in fade-in duration-300">
+                    <div className="border-t border-slate-600/50 pt-6 mt-6 animate-in fade-in duration-300">
                       <div className="space-y-4">
-                        <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl">
-                          <p className="text-sm text-gray-600 mb-2">Kanji :</p>
-                          <p className="text-4xl sm:text-6xl font-bold text-gray-800">{currentKanji.kanji}</p>
+                        <div className="p-4 bg-slate-700/50 rounded-xl border border-slate-600/30">
+                          <p className="text-sm text-slate-400 mb-2">Kanji :</p>
+                          <p className="text-4xl sm:text-6xl font-bold text-slate-100">{currentKanji.kanji}</p>
                         </div>
                         
                         {currentKanji.readings && (
-                          <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
-                            <p className="text-sm text-blue-600 mb-2">Lectures :</p>
-                            <p className="text-lg text-blue-800 font-medium">{currentKanji.readings.join(', ')}</p>
+                          <div className="p-4 bg-indigo-900/30 rounded-xl border border-indigo-700/30">
+                            <p className="text-sm text-indigo-400 mb-2">Lectures :</p>
+                            <p className="text-lg text-indigo-300 font-medium">{currentKanji.readings.join(', ')}</p>
                           </div>
                         )}
                         
                         {/* Ordre des traits */}
-                        <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl">
-                          <p className="text-sm text-green-600 mb-3">Ordre des traits :</p>
+                        <div className="p-4 bg-emerald-900/30 rounded-xl border border-emerald-700/30">
+                          <p className="text-sm text-emerald-400 mb-3">Ordre des traits :</p>
                           <div className="flex justify-center">
                             <StrokeOrderViewer kanji={currentKanji.kanji} />
                           </div>
@@ -165,46 +165,46 @@ export default function TrainingPage() {
                 // Mode: Japonais → Français
                 <div className="text-center">
                   <div className="mb-6">
-                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full mb-4">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-full mb-4 border border-purple-700/30">
                       <span className="text-lg">🇯🇵</span>
-                      <span className="text-sm font-medium text-gray-700">Traduisez en français</span>
+                      <span className="text-sm font-medium text-slate-300">Traduisez en français</span>
                       <span className="text-lg">🇫🇷</span>
                     </div>
-                    <p className="text-4xl sm:text-6xl font-bold text-gray-800 mb-2">{currentKanji.kanji}</p>
+                    <p className="text-4xl sm:text-6xl font-bold text-slate-100 mb-2">{currentKanji.kanji}</p>
                     {currentKanji.readings && (
-                      <p className="text-lg text-gray-600">{currentKanji.readings.join(', ')}</p>
+                      <p className="text-lg text-slate-400">{currentKanji.readings.join(', ')}</p>
                     )}
                   </div>
 
                   {showAnswer && (
-                    <div className="border-t border-gray-200 pt-6 mt-6 animate-in fade-in duration-300">
+                    <div className="border-t border-slate-600/50 pt-6 mt-6 animate-in fade-in duration-300">
                       <div className="space-y-4">
-                        <div className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl">
-                          <p className="text-sm text-green-600 mb-2">Signification :</p>
-                          <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                        <div className="p-4 bg-emerald-900/30 rounded-xl border border-emerald-700/30">
+                          <p className="text-sm text-emerald-400 mb-2">Signification :</p>
+                          <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-emerald-300 to-teal-300 bg-clip-text text-transparent">
                             {currentKanji.primaryMeaning || currentKanji.meanings[0]}
                           </p>
                           {currentKanji.meanings.length > 1 && (
-                            <p className="text-sm text-green-700 mt-2">
+                            <p className="text-sm text-emerald-300 mt-2">
                               Autres : {currentKanji.meanings.slice(1).join(', ')}
                             </p>
                           )}
                         </div>
                         
                         {/* Ordre des traits */}
-                        <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl">
-                          <p className="text-sm text-blue-600 mb-3">Ordre des traits :</p>
+                        <div className="p-4 bg-indigo-900/30 rounded-xl border border-indigo-700/30">
+                          <p className="text-sm text-indigo-400 mb-3">Ordre des traits :</p>
                           <div className="flex justify-center">
                             <StrokeOrderViewer kanji={currentKanji.kanji} />
                           </div>
                         </div>
                         
                         {currentKanji.tags && currentKanji.tags.length > 0 && (
-                          <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl">
-                            <p className="text-sm text-purple-600 mb-2">Tags :</p>
+                          <div className="p-4 bg-purple-900/30 rounded-xl border border-purple-700/30">
+                            <p className="text-sm text-purple-400 mb-2">Tags :</p>
                             <div className="flex flex-wrap gap-2 justify-center">
                               {currentKanji.tags.map((tag: string, index: number) => (
-                                <span key={index} className="px-3 py-1 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-800 text-xs font-medium rounded-full border border-purple-200">
+                                <span key={index} className="px-3 py-1 bg-purple-800/50 text-purple-300 text-xs font-medium rounded-full border border-purple-600/30">
                                   {tag}
                                 </span>
                               ))}
@@ -223,15 +223,15 @@ export default function TrainingPage() {
         {/* Zone Canvas pour le mode Français → Japonais */}
         {trainingMode === 'fr-to-jp' && (
           <div className="mb-6 sm:mb-8">
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-4 sm:p-6 border border-white/40">
+            <div className="bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-2xl p-4 sm:p-6 border border-slate-700/40">
               <div className="flex items-center justify-center gap-2 mb-4">
                 <span className="text-lg">✏️</span>
-                <h3 className="text-base sm:text-lg font-bold text-gray-800">
+                <h3 className="text-base sm:text-lg font-bold text-slate-100">
                   {showAnswer ? 'Comparez votre tracé avec l\'ordre officiel' : 'Entraînez-vous à dessiner le kanji'}
                 </h3>
               </div>
               <div className="flex justify-center">
-                <div className="p-2 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl shadow-inner">
+                <div className="p-2 bg-slate-700/50 rounded-xl shadow-inner border border-slate-600/30">
                   <KanjiCanvas 
                     width={280} 
                     height={280}
@@ -245,18 +245,18 @@ export default function TrainingPage() {
         {/* Progression et instructions simplifiées */}
         <div className="text-center space-y-6">
           <div className="flex items-center justify-center gap-4">
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full shadow-md border border-white/40">
-              <span className="text-blue-600">📈</span>
-              <span className="text-sm font-medium text-gray-700">
+            <div className="flex items-center gap-2 px-4 py-2 bg-slate-700/80 backdrop-blur-sm rounded-full shadow-md border border-slate-600/40">
+              <span className="text-indigo-400">📈</span>
+              <span className="text-sm font-medium text-slate-300">
                 Carte {currentIndex + 1} sur {selectedKanjis.length}
               </span>
             </div>
             
             {/* Barre de progression */}
             <div className="flex-1 max-w-xs">
-              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden border border-slate-600/30">
                 <div 
-                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 ease-out"
+                  className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-300 ease-out"
                   style={{ width: `${((currentIndex + 1) / selectedKanjis.length) * 100}%` }}
                 ></div>
               </div>
@@ -264,8 +264,8 @@ export default function TrainingPage() {
           </div>
 
           {/* Instructions simplifiées */}
-          <div className="p-4 bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl border border-blue-200">
-            <p className="text-sm text-blue-800 font-medium">
+          <div className="p-4 bg-gradient-to-r from-indigo-900/30 to-purple-900/30 rounded-xl border border-indigo-700/30 backdrop-blur-sm">
+            <p className="text-sm text-indigo-300 font-medium">
               👆 Touchez la carte pour révéler la réponse • Swipez ← (pas sûr) ou → (je connais)
             </p>
           </div>
