@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import StrokeOrderViewer from './StrokeOrderViewer';
+import MultiStrokeOrderViewer from './MultiStrokeOrderViewer';
 import { KanjiEntry } from '@/types/kanji';
 
 interface KanjiDetailModalProps {
@@ -136,7 +136,7 @@ export default function KanjiDetailModal({ kanji, isOpen, onClose }: KanjiDetail
             {showStrokeOrder && (
               <div className="flex justify-center">
                 <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600/30">
-                  <StrokeOrderViewer kanji={kanji.kanji} />
+                  <MultiStrokeOrderViewer text={kanji.kanji} />
                 </div>
               </div>
             )}

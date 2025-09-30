@@ -23,8 +23,8 @@ export default function SwipeCard({
   const [startY, setStartY] = useState(0);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const SWIPE_THRESHOLD = 60; // Distance minimum pour déclencher un swipe (réduit pour plus de sensibilité)
-  const VERTICAL_THRESHOLD = 50; // Distance verticale max pour considérer comme swipe horizontal
+  const SWIPE_THRESHOLD = 40; // Distance minimum pour déclencher un swipe (réduit pour plus de sensibilité)
+  const VERTICAL_THRESHOLD = 80; // Distance verticale max pour considérer comme swipe horizontal (augmenté pour plus de tolérance)
 
   const handleStart = (clientX: number, clientY: number) => {
     setIsDragging(true);
@@ -40,7 +40,7 @@ export default function SwipeCard({
     const deltaY = clientY - startY;
 
     // Vérifier si c'est un mouvement horizontal (swipe) et non vertical (scroll)
-    if (Math.abs(deltaY) > VERTICAL_THRESHOLD && Math.abs(deltaX) < 30) {
+    if (Math.abs(deltaY) > VERTICAL_THRESHOLD && Math.abs(deltaX) < 40) {
       // Si l'utilisateur fait un mouvement vertical, on considère que c'est un scroll
       // On arrête le drag
       setIsDragging(false);
@@ -70,7 +70,7 @@ export default function SwipeCard({
     );
 
     // Vérifier si c'est un tap (pas de mouvement significatif)
-    if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10 && onTap && !isButton) {
+    if (Math.abs(deltaX) < 15 && Math.abs(deltaY) < 15 && onTap && !isButton) {
       onTap();
     }
     // Sinon vérifier si c'est un swipe
