@@ -127,7 +127,8 @@ class SimpleAdaptiveLearningService {
   selectKanjisForSession(
     allKanjis: SimpleLearningKanji[], 
     selectedTags: string[] = [], 
-    sessionSize: number = 20
+    sessionSize: number = 20,
+    difficultyMode: 'normal' | 'hard' = 'normal'
   ): SimpleLearningKanji[] {
     // Filtrer par tags si spécifiés
     let availableKanjis = allKanjis;
@@ -140,16 +141,50 @@ class SimpleAdaptiveLearningService {
     // Appliquer la dégradation temporelle
     availableKanjis = availableKanjis.map(kanji => this.applyTemporalDegradation(kanji));
     
+    // Mode difficile : prioriser les kanjis mal maîtrisés (score 0-1)
+    if (difficultyMode === 'hard') {
+      // Filtrer d'abord pour avoir principalement des kanjis difficiles
+      const hardKanjis = availableKanjis.filter(kanji => kanji.learningData.score <= 1);
+      const mediumKanjis = availableKanjis.filter(kanji => kanji.learningData.score === 2);
+      
+      // Si on a assez de kanjis difficiles, en prendre 80% difficiles + 20% moyens
+      if (hardKanjis.length >= sessionSize * 0.8) {
+        const hardCount = Math.ceil(sessionSize * 0.8);
+        const mediumCount = sessionSize - hardCount;
+        
+        const selectedHard = this.shuffleArray(hardKanjis).slice(0, hardCount);
+        const selectedMedium = this.shuffleArray(mediumKanjis).slice(0, mediumCount);
+        
+        return this.shuffleArray([...selectedHard, ...selectedMedium]);
+      }
+      
+      // Sinon, priorité absolue aux difficiles
+      if (hardKanjis.length > 0) {
+        availableKanjis = [...hardKanjis, ...mediumKanjis, ...availableKanjis.filter(k => k.learningData.score === 3)];
+      }
+    }
+    
     // Si on a moins de kanjis que la taille de session, retourner tous
     if (availableKanjis.length <= sessionSize) {
       return this.shuffleArray(availableKanjis);
     }
     
-    // Créer un pool pondéré
+    // Créer un pool pondéré (logique normale ou ajustée pour le mode difficile)
     const weightedPool: SimpleLearningKanji[] = [];
     
     availableKanjis.forEach(kanji => {
-      const factor = this.PROBABILITY_FACTORS[kanji.learningData.score];
+      let factor = this.PROBABILITY_FACTORS[kanji.learningData.score];
+      
+      // En mode difficile, amplifier encore plus les kanjis difficiles
+      if (difficultyMode === 'hard') {
+        if (kanji.learningData.score <= 1) {
+          factor *= 3; // Triple la probabilité pour les scores 0-1
+        } else if (kanji.learningData.score === 2) {
+          factor *= 1.5; // Un peu plus pour les scores 2
+        }
+        // Les scores 3 gardent leur facteur normal (très faible)
+      }
+      
       const weight = Math.ceil(factor * 10); // Multiplier par 10 pour avoir des entiers
       
       // Ajouter le kanji 'weight' fois dans le pool

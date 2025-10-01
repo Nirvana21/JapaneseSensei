@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { KanjiEntry } from '@/types/kanji';
+import { simpleAdaptiveLearningService } from '@/services/adaptiveLearningService';
 
 interface EditKanjiModalProps {
   kanji: KanjiEntry | null;
@@ -13,10 +14,25 @@ interface EditKanjiModalProps {
 export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditKanjiModalProps) {
   const [formData, setFormData] = useState<KanjiEntry | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [masteryScore, setMasteryScore] = useState<0 | 1 | 2 | 3>(0);
 
   useEffect(() => {
     if (kanji) {
       setFormData({ ...kanji });
+      
+      // Charger le score de maîtrise depuis localStorage
+      const learningData = localStorage.getItem(`simple_learning_${kanji.id}`);
+      if (learningData) {
+        try {
+          const parsed = JSON.parse(learningData);
+          setMasteryScore(parsed.learningData?.score || 0);
+        } catch (error) {
+          console.error('Erreur chargement score maîtrise:', error);
+          setMasteryScore(0);
+        }
+      } else {
+        setMasteryScore(0);
+      }
     }
   }, [kanji]);
 
@@ -27,7 +43,27 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
     setIsSaving(true);
     
     try {
+      // Sauvegarder le kanji modifié
       await onSave(formData);
+      
+      // Sauvegarder le score de maîtrise modifié
+      if (kanji) {
+        const existingData = localStorage.getItem(`simple_learning_${kanji.id}`);
+        let learningData;
+        
+        if (existingData) {
+          learningData = JSON.parse(existingData);
+          learningData.learningData.score = masteryScore;
+        } else {
+          // Créer des données d'apprentissage basiques si elles n'existent pas
+          const simpleLearningKanji = simpleAdaptiveLearningService.initializeLearningData(kanji);
+          simpleLearningKanji.learningData.score = masteryScore;
+          learningData = simpleLearningKanji;
+        }
+        
+        localStorage.setItem(`simple_learning_${kanji.id}`, JSON.stringify(learningData));
+      }
+      
       onClose();
     } catch (error) {
       console.error('Erreur sauvegarde:', error);
@@ -196,6 +232,39 @@ export default function EditKanjiModal({ kanji, isOpen, onClose, onSave }: EditK
               <option value="jlpt-n2">JLPT N2</option>
               <option value="jlpt-n1">JLPT N1</option>
             </select>
+          </div>
+
+          {/* Score de maîtrise */}
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Niveau de maîtrise :
+            </label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {[
+                { value: 0, label: '🆕 Nouveau', color: 'bg-gray-600 hover:bg-gray-500', desc: 'Jamais étudié' },
+                { value: 1, label: '❌ Difficile', color: 'bg-red-600 hover:bg-red-500', desc: 'Souvent raté' },
+                { value: 2, label: '⚠️ Moyen', color: 'bg-orange-600 hover:bg-orange-500', desc: 'Parfois réussi' },
+                { value: 3, label: '✅ Maîtrisé', color: 'bg-green-600 hover:bg-green-500', desc: 'Bien connu' }
+              ].map((level) => (
+                <button
+                  key={level.value}
+                  type="button"
+                  onClick={() => setMasteryScore(level.value as 0 | 1 | 2 | 3)}
+                  className={`p-3 rounded-lg text-white text-sm font-medium transition-all border-2 ${
+                    masteryScore === level.value 
+                      ? `${level.color} border-white shadow-lg scale-105` 
+                      : `${level.color} border-transparent opacity-70 hover:opacity-100`
+                  }`}
+                  title={level.desc}
+                >
+                  <div className="font-bold">{level.label}</div>
+                  <div className="text-xs opacity-80 mt-1">{level.desc}</div>
+                </button>
+              ))}
+            </div>
+            <p className="text-xs text-slate-400 mt-2">
+              💡 Modifie le niveau de maîtrise pour influencer la fréquence d'apparition dans les sessions
+            </p>
           </div>
 
           {/* Notes personnelles */}

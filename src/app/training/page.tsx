@@ -16,6 +16,7 @@ export default function TrainingPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [trainingMode, setTrainingMode] = useState<'fr-to-jp' | 'jp-to-fr'>('fr-to-jp');
+  const [difficultyMode, setDifficultyMode] = useState<'normal' | 'hard'>('normal');
   const [stats, setStats] = useState({ correct: 0, total: 0, sessionComplete: false });
   const [selectedKanji, setSelectedKanji] = useState<SimpleLearningKanji | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,7 +71,7 @@ export default function TrainingPage() {
     const maxPossible = availableKanjis.length;
     const sessionSize = Math.min(20, maxPossible);
     
-    const sessionKanjis = simpleAdaptiveLearningService.selectKanjisForSession(allKanjis, tags, sessionSize);
+    const sessionKanjis = simpleAdaptiveLearningService.selectKanjisForSession(allKanjis, tags, sessionSize, difficultyMode);
     setSelectedKanjis(sessionKanjis);
     setCurrentIndex(0);
     setShowAnswer(false);
@@ -85,6 +86,12 @@ export default function TrainingPage() {
   const handleTagsChange = (tags: string[]) => {
     setSelectedTags(tags);
     generateNewSession(allLearningKanjis, tags);
+  };
+
+  // Gestionnaire pour le changement de mode de difficulté
+  const handleDifficultyModeChange = (mode: 'normal' | 'hard') => {
+    setDifficultyMode(mode);
+    generateNewSession(allLearningKanjis, selectedTags);
   };
 
   const handleSwipe = (direction: 'left' | 'right') => {
@@ -215,15 +222,26 @@ export default function TrainingPage() {
           
           {/* Deuxième ligne : Contrôles et statistiques */}
           <div className="flex items-center justify-between mb-3">
-            {/* Sélecteur de mode */}
-            <select
-              value={trainingMode}
-              onChange={(e) => setTrainingMode(e.target.value as 'fr-to-jp' | 'jp-to-fr')}
-              className="px-3 py-2 bg-slate-700/80 border border-slate-600/50 rounded-lg text-sm font-medium text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            >
-              <option value="fr-to-jp">🇫🇷 → 🇯🇵</option>
-              <option value="jp-to-fr">🇯🇵 → 🇫🇷</option>
-            </select>
+            {/* Sélecteurs de mode */}
+            <div className="flex items-center gap-2">
+              <select
+                value={trainingMode}
+                onChange={(e) => setTrainingMode(e.target.value as 'fr-to-jp' | 'jp-to-fr')}
+                className="px-3 py-2 bg-slate-700/80 border border-slate-600/50 rounded-lg text-sm font-medium text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option value="fr-to-jp">🇫🇷 → 🇯🇵</option>
+                <option value="jp-to-fr">🇯🇵 → 🇫🇷</option>
+              </select>
+              
+              <select
+                value={difficultyMode}
+                onChange={(e) => handleDifficultyModeChange(e.target.value as 'normal' | 'hard')}
+                className="px-3 py-2 bg-slate-700/80 border border-slate-600/50 rounded-lg text-sm font-medium text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-500"
+              >
+                <option value="normal">😊 Normal</option>
+                <option value="hard">💀 Mode difficile</option>
+              </select>
+            </div>
             
             {/* Statistiques centrées */}
             <div className="flex items-center gap-3">

@@ -13,6 +13,32 @@ interface KanjiCardProps {
 
 function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
   const [showDetails, setShowDetails] = useState(false);
+  const [masteryScore, setMasteryScore] = useState<0 | 1 | 2 | 3>(0);
+
+  // Charger le score de maîtrise
+  useEffect(() => {
+    const learningData = localStorage.getItem(`simple_learning_${kanji.id}`);
+    if (learningData) {
+      try {
+        const parsed = JSON.parse(learningData);
+        setMasteryScore(parsed.learningData?.score || 0);
+      } catch (error) {
+        setMasteryScore(0);
+      }
+    }
+  }, [kanji.id]);
+
+  const getMasteryBadge = (score: 0 | 1 | 2 | 3) => {
+    const badges = {
+      0: { icon: '🆕', label: 'Nouveau', color: 'bg-gray-500 text-gray-100' },
+      1: { icon: '❌', label: 'Difficile', color: 'bg-red-500 text-red-100' },
+      2: { icon: '⚠️', label: 'Moyen', color: 'bg-orange-500 text-orange-100' },
+      3: { icon: '✅', label: 'Maîtrisé', color: 'bg-green-500 text-green-100' }
+    };
+    return badges[score];
+  };
+
+  const masteryBadge = getMasteryBadge(masteryScore);
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('fr-FR', {
@@ -29,17 +55,20 @@ function KanjiCard({ kanji, onEdit, onDelete }: KanjiCardProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <span className="text-4xl font-bold">{kanji.kanji}</span>
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-1">
               {kanji.isCommon && (
                 <span className="bg-yellow-400 text-yellow-900 text-xs px-2 py-1 rounded-full font-medium">
                   Courant
                 </span>
               )}
               {kanji.jlptLevel && (
-                <span className="bg-green-400 text-green-900 text-xs px-2 py-1 rounded-full font-medium mt-1">
+                <span className="bg-green-400 text-green-900 text-xs px-2 py-1 rounded-full font-medium">
                   {kanji.jlptLevel}
                 </span>
               )}
+              <span className={`text-xs px-2 py-1 rounded-full font-medium ${masteryBadge.color}`} title={masteryBadge.label}>
+                {masteryBadge.icon} {masteryBadge.label}
+              </span>
             </div>
           </div>
           
