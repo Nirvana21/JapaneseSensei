@@ -50,8 +50,8 @@ export default function Home() {
         </header>
 
         {/* Menu Principal */}
-        <main className="max-w-4xl mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+        <main className="max-w-6xl mx-auto px-4 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
             
             {/* Bouton Quiz */}
             <Link href="/training" className="group">
@@ -101,6 +101,30 @@ export default function Home() {
                 </div>
               </div>
             </button>
+
+            {/* Bouton Statistiques */}
+            <Link href="/stats" className="group">
+              <div className="bg-slate-800/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl hover:shadow-blue-900/20 border border-slate-700/50 transition-all duration-300 hover:scale-105 h-full hover:border-blue-600/30">
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl shadow-lg mb-6 group-hover:scale-110 transition-transform">
+                    <span className="text-2xl">📊</span>
+                  </div>
+                  <h2 className="text-2xl font-bold text-slate-100 mb-3">Statistiques</h2>
+                  <p className="text-slate-400 leading-relaxed mb-4">
+                    Suivez votre progression et analysez vos performances
+                  </p>
+                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-400">
+                    <span>Analyser</span>
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </div>
+                  {kanjis.length > 0 && (
+                    <div className="mt-4 px-3 py-1 bg-blue-900/50 text-blue-300 rounded-full text-sm inline-block border border-blue-700/30">
+                      Données prêtes à analyser
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Link>
           </div>
 
           {/* Message d'encouragement si collection vide */}
