@@ -101,8 +101,8 @@ export default function StatsPage() {
 
     // Calculer streak et sessions (simulé pour l'instant)
     const studyStreak = calculateStudyStreak(learningKanjis);
-    const totalStudySessions = learningKanjis.reduce((sum, k) => sum + (k.learningData.timesStudied || 0), 0);
-    const totalCorrect = learningKanjis.reduce((sum, k) => sum + (k.learningData.correctAnswers || 0), 0);
+    const totalStudySessions = learningKanjis.reduce((sum, k) => sum + (k.learningData.totalAttempts || 0), 0);
+    const totalCorrect = learningKanjis.reduce((sum, k) => sum + (k.learningData.correctAttempts || 0), 0);
     const averageSessionScore = totalStudySessions > 0 ? (totalCorrect / totalStudySessions) * 100 : 0;
 
     const detailedStats: DetailedStats = {
@@ -325,7 +325,7 @@ export default function StatsPage() {
                       {getMasteryIcon(kanji.learningData.score)}
                     </span>
                     <span className="text-slate-400 text-sm">
-                      {kanji.learningData.timesStudied || 0} fois
+                      {kanji.learningData.totalAttempts || 0} fois
                     </span>
                   </div>
                 </div>
@@ -355,7 +355,7 @@ export default function StatsPage() {
                       {getMasteryIcon(kanji.learningData.score)}
                     </span>
                     <span className="text-slate-400 text-sm">
-                      {kanji.learningData.timesStudied || 0} fois
+                      {kanji.learningData.totalAttempts || 0} fois
                     </span>
                   </div>
                 </div>
