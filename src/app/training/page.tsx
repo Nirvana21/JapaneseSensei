@@ -16,7 +16,8 @@ export default function TrainingPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAnswer, setShowAnswer] = useState(false);
   const [trainingMode, setTrainingMode] = useState<'fr-to-jp' | 'jp-to-fr'>('fr-to-jp');
-  const [difficultyMode, setDifficultyMode] = useState<'normal' | 'hard'>('normal');
+  const [difficultyMode, setDifficultyMode] = useState<'normal' | 'hard' | 'hardcore'>('normal');
+  const [isHardcoreModeAvailable, setIsHardcoreModeAvailable] = useState(true);
   const [stats, setStats] = useState({ correct: 0, total: 0, sessionComplete: false });
   const [selectedKanji, setSelectedKanji] = useState<SimpleLearningKanji | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -80,6 +81,15 @@ export default function TrainingPage() {
     // Calculer les nouvelles statistiques
     const stats = simpleAdaptiveLearningService.getLearningStats(allKanjis);
     setLearningStats(stats);
+    
+    // Vérifier la disponibilité du mode hardcore
+    const hardcoreAvailable = simpleAdaptiveLearningService.isHardcoreModeAvailable(allKanjis, tags);
+    setIsHardcoreModeAvailable(hardcoreAvailable);
+    
+    // Si le mode hardcore n'est plus disponible et qu'on était en hardcore, basculer en hard
+    if (!hardcoreAvailable && difficultyMode === 'hardcore') {
+      setDifficultyMode('hard');
+    }
   };
 
   // Gestionnaire pour les changements de tags
@@ -89,7 +99,13 @@ export default function TrainingPage() {
   };
 
   // Gestionnaire pour le changement de mode de difficulté
-  const handleDifficultyModeChange = (mode: 'normal' | 'hard') => {
+  const handleDifficultyModeChange = (mode: 'normal' | 'hard' | 'hardcore') => {
+    // Vérifier si le mode hardcore est disponible avant de l'activer
+    if (mode === 'hardcore' && !isHardcoreModeAvailable) {
+      console.warn('Mode hardcore non disponible - tous les kanjis sont maîtrisés !');
+      return;
+    }
+    
     setDifficultyMode(mode);
     generateNewSession(allLearningKanjis, selectedTags);
   };
@@ -235,11 +251,20 @@ export default function TrainingPage() {
               
               <select
                 value={difficultyMode}
-                onChange={(e) => handleDifficultyModeChange(e.target.value as 'normal' | 'hard')}
-                className="px-3 py-2 bg-slate-700/80 border border-slate-600/50 rounded-lg text-sm font-medium text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-500"
+                onChange={(e) => handleDifficultyModeChange(e.target.value as 'normal' | 'hard' | 'hardcore')}
+                className={`px-3 py-2 bg-slate-700/80 border border-slate-600/50 rounded-lg text-sm font-medium text-slate-200 focus:outline-none focus:ring-2 transition-all ${
+                  difficultyMode === 'hardcore' ? 'focus:ring-purple-500 border-purple-500/50' : 'focus:ring-red-500'
+                }`}
               >
                 <option value="normal">😊 Normal</option>
                 <option value="hard">💀 Mode difficile</option>
+                <option 
+                  value="hardcore" 
+                  disabled={!isHardcoreModeAvailable}
+                  className={!isHardcoreModeAvailable ? 'opacity-50 cursor-not-allowed' : ''}
+                >
+                  🔥 HARDCORE {!isHardcoreModeAvailable ? '(tout maîtrisé!)' : ''}
+                </option>
               </select>
             </div>
             
@@ -263,6 +288,22 @@ export default function TrainingPage() {
               </div>
             </div>
           </div>
+          
+          {/* Message explicatif pour le mode hardcore */}
+          {difficultyMode === 'hardcore' && (
+            <div className="mb-2 text-center">
+              <span className="px-3 py-1 bg-purple-900/50 text-purple-300 text-xs rounded-full border border-purple-700/30">
+                🔥 Mode HARDCORE : Seulement tes pires kanjis (répétitions autorisées)
+              </span>
+            </div>
+          )}
+          {!isHardcoreModeAvailable && difficultyMode !== 'hardcore' && (
+            <div className="mb-2 text-center">
+              <span className="px-3 py-1 bg-green-900/50 text-green-300 text-xs rounded-full border border-green-700/30">
+                🎉 Bravo ! Tous tes kanjis sont maîtrisés - Mode hardcore indisponible
+              </span>
+            </div>
+          )}
           
           {/* Troisième ligne : Statistiques d'apprentissage */}
           {learningStats && (

@@ -128,7 +128,7 @@ class SimpleAdaptiveLearningService {
     allKanjis: SimpleLearningKanji[], 
     selectedTags: string[] = [], 
     sessionSize: number = 20,
-    difficultyMode: 'normal' | 'hard' = 'normal'
+    difficultyMode: 'normal' | 'hard' | 'hardcore' = 'normal'
   ): SimpleLearningKanji[] {
     // Filtrer par tags si spécifiés
     let availableKanjis = allKanjis;
@@ -140,6 +140,57 @@ class SimpleAdaptiveLearningService {
     
     // Appliquer la dégradation temporelle
     availableKanjis = availableKanjis.map(kanji => this.applyTemporalDegradation(kanji));
+    
+    // Mode hardcore : SEULEMENT les kanjis les moins maîtrisés (score 0-1)
+    if (difficultyMode === 'hardcore') {
+      const hardcoreKanjis = availableKanjis.filter(kanji => kanji.learningData.score <= 1);
+      
+      // Si pas assez de kanjis hardcore, on en répète pour remplir la session
+      if (hardcoreKanjis.length === 0) {
+        console.warn('Aucun kanji hardcore disponible pour la session');
+        return [];
+      }
+      
+      const selected: SimpleLearningKanji[] = [];
+      
+      // Prioriser les kanjis score 0 (nouveaux/inconnus) puis score 1 (ratés)
+      const score0Kanjis = hardcoreKanjis.filter(k => k.learningData.score === 0);
+      const score1Kanjis = hardcoreKanjis.filter(k => k.learningData.score === 1);
+      
+      // Pool pondéré pour les répétitions : 70% score 0, 30% score 1
+      const weightedHardcorePool: SimpleLearningKanji[] = [];
+      score0Kanjis.forEach(kanji => {
+        for (let i = 0; i < 7; i++) weightedHardcorePool.push(kanji); // Poids 7
+      });
+      score1Kanjis.forEach(kanji => {
+        for (let i = 0; i < 3; i++) weightedHardcorePool.push(kanji); // Poids 3
+      });
+      
+      // Remplir la session avec répétitions autorisées
+      const usedIds = new Set<string>();
+      const repetitionCounts = new Map<string, number>();
+      
+      while (selected.length < sessionSize && weightedHardcorePool.length > 0) {
+        const randomIndex = Math.floor(Math.random() * weightedHardcorePool.length);
+        const candidate = weightedHardcorePool[randomIndex];
+        
+        // Autoriser jusqu'à 3 répétitions du même kanji
+        const currentCount = repetitionCounts.get(candidate.id) || 0;
+        if (currentCount < 3) {
+          selected.push(candidate);
+          repetitionCounts.set(candidate.id, currentCount + 1);
+          usedIds.add(candidate.id);
+        }
+        
+        // Si tous les kanjis ont été utilisés 3 fois, recommencer
+        if (usedIds.size === hardcoreKanjis.length && 
+            Array.from(repetitionCounts.values()).every(count => count >= 3)) {
+          repetitionCounts.clear(); // Reset pour permettre plus de répétitions
+        }
+      }
+      
+      return this.shuffleArray(selected);
+    }
     
     // Mode difficile : prioriser les kanjis mal maîtrisés (score 0-1)
     if (difficultyMode === 'hard') {
@@ -261,6 +312,26 @@ class SimpleAdaptiveLearningService {
   getTagStats(kanjis: SimpleLearningKanji[], tag: string) {
     const tagKanjis = kanjis.filter(kanji => kanji.tags?.includes(tag));
     return this.getLearningStats(tagKanjis);
+  }
+
+  /**
+   * Vérifie si le mode hardcore est disponible (il faut des kanjis score 0-1)
+   */
+  isHardcoreModeAvailable(allKanjis: SimpleLearningKanji[], selectedTags: string[] = []): boolean {
+    // Filtrer par tags si spécifiés
+    let availableKanjis = allKanjis;
+    if (selectedTags.length > 0) {
+      availableKanjis = allKanjis.filter(kanji => 
+        selectedTags.some(tag => kanji.tags?.includes(tag))
+      );
+    }
+    
+    // Appliquer la dégradation temporelle
+    availableKanjis = availableKanjis.map(kanji => this.applyTemporalDegradation(kanji));
+    
+    // Vérifier s'il y a des kanjis score 0-1 disponibles
+    const hardcoreKanjis = availableKanjis.filter(kanji => kanji.learningData.score <= 1);
+    return hardcoreKanjis.length > 0;
   }
 
   /**
