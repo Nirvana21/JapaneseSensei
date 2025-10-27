@@ -60,7 +60,7 @@ export default function TrainingPage() {
   }, [kanjis]);
 
   // Générer une nouvelle session selon les tags sélectionnés
-  const generateNewSession = (allKanjis: SimpleLearningKanji[], tags: string[]) => {
+  const generateNewSession = (allKanjis: SimpleLearningKanji[], tags: string[], mode?: 'normal' | 'hard' | 'hardcore') => {
     // Filtrer les kanjis par tags si spécifiés
     let availableKanjis = allKanjis;
     if (tags.length > 0) {
@@ -72,7 +72,9 @@ export default function TrainingPage() {
     const maxPossible = availableKanjis.length;
     const sessionSize = Math.min(20, maxPossible);
     
-    const sessionKanjis = simpleAdaptiveLearningService.selectKanjisForSession(allKanjis, tags, sessionSize, difficultyMode);
+    // Utiliser le mode passé en paramètre ou celui du state
+    const currentMode = mode || difficultyMode;
+    const sessionKanjis = simpleAdaptiveLearningService.selectKanjisForSession(allKanjis, tags, sessionSize, currentMode);
     setSelectedKanjis(sessionKanjis);
     setCurrentIndex(0);
     setShowAnswer(false);
@@ -87,8 +89,9 @@ export default function TrainingPage() {
     setIsHardcoreModeAvailable(hardcoreAvailable);
     
     // Si le mode hardcore n'est plus disponible et qu'on était en hardcore, basculer en hard
-    if (!hardcoreAvailable && difficultyMode === 'hardcore') {
-      setDifficultyMode('hard');
+    const finalMode = currentMode === 'hardcore' && !hardcoreAvailable ? 'hard' : currentMode;
+    if (finalMode !== currentMode) {
+      setDifficultyMode(finalMode);
     }
   };
 
@@ -107,7 +110,8 @@ export default function TrainingPage() {
     }
     
     setDifficultyMode(mode);
-    generateNewSession(allLearningKanjis, selectedTags);
+    // Passer le nouveau mode directement pour éviter les problèmes de timing du state
+    generateNewSession(allLearningKanjis, selectedTags, mode);
   };
 
   const handleSwipe = (direction: 'left' | 'right') => {
