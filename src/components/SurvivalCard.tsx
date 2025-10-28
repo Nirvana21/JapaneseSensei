@@ -106,6 +106,25 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
           </div>
         </div>
 
+        {/* Canvas pour dessiner AVANT de révéler (FR → JP seulement) */}
+        {direction === 'fr-to-jp' && !showAnswer && (
+          <div className="mb-6 w-full">
+            <p className="text-xs text-orange-600 mb-3 text-center">
+              ✏️ Essayez d'écrire le kanji puis révélez la réponse
+            </p>
+            <div className="flex justify-center">
+              <div className="w-48 h-48 sm:w-60 sm:h-60">
+                <KanjiCanvas 
+                  width={240}
+                  height={240}
+                  clearTrigger={clearCanvas}
+                  className="mx-auto max-w-full max-h-full"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Séparateur avec animation */}
         <div className="w-full flex justify-center mb-6">
           <div className={`
@@ -127,21 +146,14 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
               {content.answer}
             </div>
             
-            {/* Canvas pour dessiner quand FR → JP */}
+            {/* Canvas pour comparer APRÈS révélation (FR → JP seulement) */}
             {direction === 'fr-to-jp' && (
               <div className="mt-4 w-full">
-                <p className="text-xs text-orange-600 mb-2">
-                  ✏️ Entraînez-vous à écrire le kanji
+                <p className="text-xs text-green-600 mb-2 text-center">
+                  ✏️ Comparez avec votre dessin ci-dessus
                 </p>
-                <div className="flex justify-center">
-                  <div className="w-48 h-48 sm:w-60 sm:h-60">
-                    <KanjiCanvas 
-                      width={240}
-                      height={240}
-                      clearTrigger={clearCanvas}
-                      className="mx-auto max-w-full max-h-full"
-                    />
-                  </div>
+                <div className="text-center text-sm text-green-700 mb-3">
+                  Votre tentative vs la réponse ⬆️
                 </div>
               </div>
             )}
