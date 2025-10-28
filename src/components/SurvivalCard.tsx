@@ -9,6 +9,7 @@ interface SurvivalCardProps {
   disabled?: boolean;
   clearCanvas?: number; // Pour réinitialiser le canvas
   onClearCanvas?: () => void; // Pour déclencher l'effacement manuel
+  strokeScale?: number; // Taille du trait externe
 }
 
 const SurvivalCard: React.FC<SurvivalCardProps> = ({
@@ -17,7 +18,8 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
   onAnswer,
   disabled = false,
   clearCanvas = 0,
-  onClearCanvas
+  onClearCanvas,
+  strokeScale
 }) => {
   const [showAnswer, setShowAnswer] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -132,6 +134,7 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
                   clearTrigger={clearCanvas}
                   className="w-full h-full"
                   showControls={false}
+                  strokeScale={strokeScale}
                 />
               </div>
             </div>

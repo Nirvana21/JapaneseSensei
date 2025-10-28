@@ -9,6 +9,8 @@ interface KanjiCanvasProps {
   clearTrigger?: number; // Prop pour déclencher le nettoyage
   showControls?: boolean; // Afficher les boutons internes (Effacer)
   fitToParent?: boolean; // Adapter automatiquement à la taille du conteneur
+  strokeScale?: number; // Ajustement externe de l'épaisseur du trait
+  showSizeControls?: boolean; // Afficher des contrôles internes (Fin/Moyen/Épais)
 }
 
 export default function KanjiCanvas({
@@ -18,6 +20,8 @@ export default function KanjiCanvas({
   clearTrigger = 0,
   showControls = true,
   fitToParent = false,
+  strokeScale,
+  showSizeControls = false,
 }: KanjiCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -31,6 +35,7 @@ export default function KanjiCanvas({
     w: width,
     h: height,
   });
+  const [userScale, setUserScale] = useState(1);
 
   // Met à jour la taille d'affichage depuis le parent si demandé
   useEffect(() => {
@@ -122,10 +127,18 @@ export default function KanjiCanvas({
     const smoothVelocity = currentVelocity * 0.3 + velocity * 0.7;
     setVelocity(smoothVelocity);
 
-    // Épaisseur plus importante pour un trait visible
-    const baseWidth = 12;
-    const maxWidth = 18;
-    const minWidth = 6;
+    // Épaisseur adaptative selon la taille du canvas et le scale utilisateur
+    const minDim = Math.max(
+      1,
+      Math.min(
+        fitToParent ? displaySize.w : width,
+        fitToParent ? displaySize.h : height
+      )
+    );
+    const scale = strokeScale ?? userScale;
+    const baseWidth = Math.max(3, Math.min(16, (minDim / 32) * scale));
+    const minWidth = Math.max(2, baseWidth * 0.45);
+    const maxWidth = Math.min(24, baseWidth * 1.35);
     const speedFactor = Math.min(smoothVelocity / 8, 1);
     const brushWidth = baseWidth - speedFactor * (baseWidth - minWidth) * 0.4; // Réduction moins agressive
     const finalWidth = Math.max(
@@ -175,13 +188,22 @@ export default function KanjiCanvas({
 
       setLastPoint({ x, y });
 
-      // Point de départ plus visible
+      // Point de départ plus visible, ajusté à la taille du canvas
+      const minDim = Math.max(
+        1,
+        Math.min(
+          fitToParent ? displaySize.w : width,
+          fitToParent ? displaySize.h : height
+        )
+      );
+      const scale = strokeScale ?? userScale;
+      const baseWidth = Math.max(3, Math.min(16, (minDim / 32) * scale));
       context.beginPath();
-      context.arc(x, y, 6, 0, Math.PI * 2);
+      context.arc(x, y, Math.max(3, baseWidth / 2), 0, Math.PI * 2);
       context.fillStyle = "rgba(26, 26, 26, 0.9)";
       context.fill();
     },
-    [context]
+    [context, fitToParent, displaySize, width, height, strokeScale, userScale]
   );
 
   const draw = useCallback(
@@ -345,7 +367,32 @@ export default function KanjiCanvas({
 
       {/* Boutons de contrôle */}
       {showControls && (
-        <div className="flex justify-center mt-4">
+        <div className="flex flex-col items-center gap-2 mt-4">
+          {showSizeControls && (
+            <div className="inline-flex items-center gap-1 bg-orange-100 rounded-lg p-1 border border-orange-200">
+              <button
+                onClick={() => setUserScale(0.8)}
+                className={`px-3 py-1 text-sm rounded-md ${ (strokeScale ?? userScale) < 0.9 ? 'bg-white text-orange-700 shadow-sm' : 'text-orange-700 hover:bg-orange-200'}`}
+                aria-label="Trait fin"
+              >
+                Fin
+              </button>
+              <button
+                onClick={() => setUserScale(1)}
+                className={`px-3 py-1 text-sm rounded-md ${ (strokeScale ?? userScale) >= 0.9 && (strokeScale ?? userScale) < 1.15 ? 'bg-white text-orange-700 shadow-sm' : 'text-orange-700 hover:bg-orange-200'}`}
+                aria-label="Trait moyen"
+              >
+                Moyen
+              </button>
+              <button
+                onClick={() => setUserScale(1.3)}
+                className={`px-3 py-1 text-sm rounded-md ${ (strokeScale ?? userScale) >= 1.15 ? 'bg-white text-orange-700 shadow-sm' : 'text-orange-700 hover:bg-orange-200'}`}
+                aria-label="Trait épais"
+              >
+                Épais
+              </button>
+            </div>
+          )}
           <button
             onClick={clearCanvas}
             className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2 font-medium"

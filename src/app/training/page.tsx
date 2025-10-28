@@ -59,6 +59,7 @@ function TrainingPageContent() {
   const [allLearningKanjis, setAllLearningKanjis] = useState<
     SimpleLearningKanji[]
   >([]);
+  const [survivalStrokeScale, setSurvivalStrokeScale] = useState<number>(1);
 
   // Initialiser avec les kanjis et le nouveau système simple
   useEffect(() => {
@@ -531,11 +532,35 @@ function TrainingPageContent() {
                   disabled={survivalState.isGameOver}
                   clearCanvas={clearCanvas}
                   onClearCanvas={() => setClearCanvas(prev => prev + 1)}
+                  strokeScale={survivalStrokeScale}
                 />
                 
                 {/* Bouton effacer en dehors de la carte pour éviter les conflits */}
                 {survivalState.currentDirection === 'fr-to-jp' && (
-                  <div className="flex justify-center mt-3">
+                  <div className="flex flex-col items-center gap-2 mt-3">
+                    <div className="inline-flex items-center gap-1 bg-orange-100 rounded-lg p-1 border border-orange-200">
+                      <button
+                        onClick={() => setSurvivalStrokeScale(0.8)}
+                        className={`px-3 py-1 text-sm rounded-md ${ survivalStrokeScale < 0.9 ? 'bg-white text-orange-700 shadow-sm' : 'text-orange-700 hover:bg-orange-200'}`}
+                        aria-label="Trait fin"
+                      >
+                        Fin
+                      </button>
+                      <button
+                        onClick={() => setSurvivalStrokeScale(1)}
+                        className={`px-3 py-1 text-sm rounded-md ${ survivalStrokeScale >= 0.9 && survivalStrokeScale < 1.15 ? 'bg-white text-orange-700 shadow-sm' : 'text-orange-700 hover:bg-orange-200'}`}
+                        aria-label="Trait moyen"
+                      >
+                        Moyen
+                      </button>
+                      <button
+                        onClick={() => setSurvivalStrokeScale(1.3)}
+                        className={`px-3 py-1 text-sm rounded-md ${ survivalStrokeScale >= 1.15 ? 'bg-white text-orange-700 shadow-sm' : 'text-orange-700 hover:bg-orange-200'}`}
+                        aria-label="Trait épais"
+                      >
+                        Épais
+                      </button>
+                    </div>
                     <button
                       onClick={() => setClearCanvas(prev => prev + 1)}
                       className="px-4 py-2 bg-orange-200 hover:bg-orange-300 text-orange-700 text-sm rounded-lg transition-colors shadow-md hover:shadow-lg"
@@ -824,7 +849,11 @@ function TrainingPageContent() {
                   </p>
                   <div className="flex justify-center">
                     <div className="w-72 h-72 sm:w-96 sm:h-96">
-                      <KanjiCanvas fitToParent clearTrigger={clearCanvas} />
+                      <KanjiCanvas 
+                        fitToParent 
+                        clearTrigger={clearCanvas}
+                        showSizeControls
+                      />
                     </div>
                   </div>
                 </div>

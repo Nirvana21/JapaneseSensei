@@ -43,14 +43,15 @@ class SurvivalService {
    * Calcule les probabilités de sélection selon le niveau
    */
   private getDifficultyDistribution(level: number): { easy: number; medium: number; hard: number; unknown: number } {
-    if (level <= 10) {
-      return { easy: 0.8, medium: 0.2, hard: 0.0, unknown: 0.0 };
-    } else if (level <= 25) {
-      return { easy: 0.6, medium: 0.3, hard: 0.1, unknown: 0.0 };
-    } else if (level <= 50) {
-      return { easy: 0.4, medium: 0.4, hard: 0.2, unknown: 0.0 };
-    } else if (level <= 100) {
-      return { easy: 0.2, medium: 0.4, hard: 0.3, unknown: 0.1 };
+    // Ramps up sooner to feel progression within the first dozen answers
+    if (level <= 1) {
+      return { easy: 0.7, medium: 0.3, hard: 0.0, unknown: 0.0 };
+    } else if (level <= 3) {
+      return { easy: 0.5, medium: 0.4, hard: 0.1, unknown: 0.0 };
+    } else if (level <= 6) {
+      return { easy: 0.35, medium: 0.45, hard: 0.2, unknown: 0.0 };
+    } else if (level <= 10) {
+      return { easy: 0.2, medium: 0.45, hard: 0.3, unknown: 0.05 };
     } else {
       return { easy: 0.1, medium: 0.3, hard: 0.4, unknown: 0.2 };
     }
@@ -127,8 +128,8 @@ class SurvivalService {
       newState.streak += 1;
       newState.score += Math.floor(10 * newState.difficultyMultiplier);
       
-      // Augmentation de niveau tous les 10 bonnes réponses
-      const newLevel = Math.floor(newState.streak / 10) + 1;
+      // Augmentation de niveau plus fréquente (tous les 5 bonnes réponses cumulées)
+      const newLevel = Math.floor(newState.streak / 5) + 1;
       if (newLevel > newState.level) {
         newState.level = newLevel;
         newState.difficultyMultiplier = 1 + (newLevel - 1) * 0.1; // +10% par niveau
@@ -209,7 +210,8 @@ class SurvivalService {
    * Calcule le niveau de difficulté actuel en pourcentage
    */
   getDifficultyPercentage(level: number): number {
-    return Math.min(100, level * 2); // 2% par niveau, max 100%
+    // Avec une progression plus rapide des niveaux, augmenter le pourcentage par niveau
+    return Math.min(100, level * 8); // 8% par niveau, max 100%
   }
 
   /**
