@@ -261,18 +261,7 @@ function TrainingPageContent() {
     setStats((prev) => ({ ...prev, sessionComplete: false }));
   };
 
-  // Debugging useEffect pour suivre les changements d'état
-  useEffect(() => {
-    if (survivalState) {
-      console.log('🔍 DEBUG: Survival state updated:', {
-        lives: survivalState.lives,
-        score: survivalState.score,
-        streak: survivalState.streak,
-        level: survivalState.level,
-        isGameOver: survivalState.isGameOver
-      });
-    }
-  }, [survivalState]);
+  // (logs de debug retirés)
 
   // ===== FONCTIONS MODE SURVIVAL =====
   
@@ -291,9 +280,6 @@ function TrainingPageContent() {
 
   const handleSurvivalAnswer = (isCorrect: boolean) => {
     if (!survivalState || !currentSurvivalKanji) return;
-
-    console.log('🔍 DEBUG: handleSurvivalAnswer called with isCorrect:', isCorrect);
-    console.log('🔍 DEBUG: Current lives before:', survivalState.lives);
 
     // Mettre à jour les données d'apprentissage du kanji
     const updatedKanji = simpleAdaptiveLearningService.updateLearningData(
@@ -314,9 +300,7 @@ function TrainingPageContent() {
     setAllLearningKanjis(updatedAllKanjis);
 
     // Traiter la réponse dans le contexte Survival
-    const newSurvivalState = survivalService.processAnswer(survivalState, isCorrect);
-    console.log('🔍 DEBUG: Lives after processAnswer:', newSurvivalState.lives);
-    console.log('🔍 DEBUG: New survival state:', newSurvivalState);
+  const newSurvivalState = survivalService.processAnswer(survivalState, isCorrect);
     
     // Force React à détecter le changement en créant un nouvel objet
     setSurvivalState({...newSurvivalState});

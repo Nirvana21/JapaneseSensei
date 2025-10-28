@@ -64,13 +64,9 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
 
   const handleAnswer = (isCorrect: boolean) => {
     if (disabled) return;
-    
-    console.log('🔍 DEBUG: SurvivalCard handleAnswer called with:', isCorrect);
     setSelectedAnswer(isCorrect ? 'correct' : 'incorrect');
-    
     // Petit délai pour l'animation
     setTimeout(() => {
-      console.log('🔍 DEBUG: SurvivalCard calling onAnswer with:', isCorrect);
       onAnswer(isCorrect);
       setShowAnswer(false);
       setSelectedAnswer(null);
@@ -130,17 +126,18 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
               ✏️ Essayez d'écrire le kanji puis révélez la réponse
             </p>
             <div className="flex justify-center">
-              <div className="w-48 h-48 sm:w-60 sm:h-60 bg-orange-50 rounded-xl border-2 border-orange-200 shadow-inner">
+              <div className="w-48 h-48 sm:w-60 sm:h-60 bg-orange-50 rounded-xl border-2 border-orange-200 shadow-inner relative z-0">
                 <KanjiCanvas 
                   width={240}
                   height={240}
                   clearTrigger={clearCanvas}
                   className="mx-auto max-w-full max-h-full"
+                  showControls={false}
                 />
               </div>
             </div>
             {/* Bouton explicite pour révéler afin d'éviter la superposition avec le canvas */}
-            <div className="flex justify-center mt-3">
+            <div className="flex justify-center mt-3 relative z-10">
               <button
                 onClick={(e) => { e.stopPropagation(); setShowAnswer(true); }}
                 className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg hover:from-green-600 hover:to-green-700 transition-colors shadow-md"

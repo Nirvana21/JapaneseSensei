@@ -7,6 +7,7 @@ interface KanjiCanvasProps {
   height?: number;
   className?: string;
   clearTrigger?: number; // Prop pour déclencher le nettoyage
+  showControls?: boolean; // Afficher les boutons internes (Effacer)
 }
 
 export default function KanjiCanvas({
@@ -14,6 +15,7 @@ export default function KanjiCanvas({
   height = 300,
   className = "",
   clearTrigger = 0,
+  showControls = true,
 }: KanjiCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -286,14 +288,16 @@ export default function KanjiCanvas({
       </div>
 
       {/* Boutons de contrôle */}
-      <div className="flex justify-center mt-4">
-        <button
-          onClick={clearCanvas}
-          className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2 font-medium"
-        >
-          �️ Effacer
-        </button>
-      </div>
+      {showControls && (
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={clearCanvas}
+            className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2 font-medium"
+          >
+            🗑️ Effacer
+          </button>
+        </div>
+      )}
     </div>
   );
 }
