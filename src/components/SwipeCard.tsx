@@ -173,8 +173,8 @@ export default function SwipeCard({
         className="absolute inset-0 flex items-center justify-start pl-8 pointer-events-none z-10"
         style={{ opacity: getIndicatorOpacity('left') }}
       >
-        <div className="bg-red-500 text-white px-4 py-2 rounded-full font-bold">
-          ❌ Pas connu
+        <div className="bg-red-600 text-white px-4 py-2 rounded-full font-bold">
+          ❌ 知らない Pas connu
         </div>
       </div>
 
@@ -182,15 +182,15 @@ export default function SwipeCard({
         className="absolute inset-0 flex items-center justify-end pr-8 pointer-events-none z-10"
         style={{ opacity: getIndicatorOpacity('right') }}
       >
-        <div className="bg-green-500 text-white px-4 py-2 rounded-full font-bold">
-          ✅ Connu
+        <div className="bg-green-600 text-white px-4 py-2 rounded-full font-bold">
+          ✅ 知ってる Connu
         </div>
       </div>
 
       {/* Carte principale */}
       <div
         ref={cardRef}
-        className="bg-white rounded-xl shadow-lg cursor-grab active:cursor-grabbing"
+        className="bg-gradient-to-br from-orange-50/95 to-red-50/95 backdrop-blur-sm rounded-xl shadow-lg cursor-grab active:cursor-grabbing border border-orange-200/50"
         style={getCardStyle()}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -204,8 +204,8 @@ export default function SwipeCard({
 
       {/* Instructions */}
       <div className="mt-4 text-center">
-        <p className="text-sm text-gray-600">
-          👆 Appuyez pour révéler • 👈 Pas connu • 👉 Connu
+        <p className="text-sm text-orange-700">
+          👆 タップで表示 Appuyez pour révéler • 👈 知らない Pas connu • 👉 知ってる Connu
         </p>
       </div>
     </div>

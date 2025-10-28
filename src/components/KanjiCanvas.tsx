@@ -261,7 +261,7 @@ export default function KanjiCanvas({
       <div className="flex justify-center mt-4">
         <button
           onClick={clearCanvas}
-          className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2 font-medium"
+          className="px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2 font-medium"
         >
           �️ Effacer
         </button>
@@ -269,11 +269,11 @@ export default function KanjiCanvas({
 
       {/* Instructions */}
       <div className="mt-2 text-center">
-        <p className="text-sm text-gray-600">
-          ✏️ Dessinez le kanji avec votre souris ou votre doigt
+        <p className="text-sm text-orange-700">
+          ✏️ マウスや指で漢字を描いてください Dessinez le kanji avec votre souris ou votre doigt
         </p>
-        <p className="text-xs text-gray-500 mt-1">
-          Utilisez les lignes de guidage pour respecter les proportions
+        <p className="text-xs text-orange-600 mt-1">
+          ガイドラインで比率を守ってください Utilisez les lignes de guidage pour respecter les proportions
         </p>
       </div>
     </div>

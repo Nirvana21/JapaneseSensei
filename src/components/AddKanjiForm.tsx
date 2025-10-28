@@ -128,29 +128,29 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
   return (
     <div className="space-y-4">
       {/* Sélecteur de mode */}
-      <div className="flex items-center gap-4 p-4 bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50">
+      <div className="flex items-center gap-4 p-4 bg-orange-100/90 backdrop-blur-sm rounded-xl border border-orange-200/50">
         <div className="flex gap-2">
           <button
             type="button"
             onClick={() => setMode('api')}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
               mode === 'api' 
-                ? 'bg-indigo-600 text-white shadow-md' 
-                : 'bg-slate-700/50 text-slate-300 hover:bg-slate-600/50'
+                ? 'bg-red-600 text-white shadow-md' 
+                : 'bg-orange-200 text-orange-800 hover:bg-orange-300'
             }`}
           >
-            🔍 Recherche API
+            🔍 検索 Recherche API
           </button>
           <button
             type="button"
             onClick={() => setMode('manual')}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
               mode === 'manual' 
-                ? 'bg-indigo-600 text-white shadow-md' 
-                : 'bg-slate-700/50 text-slate-300 hover:bg-slate-600/50'
+                ? 'bg-red-600 text-white shadow-md' 
+                : 'bg-orange-200 text-orange-800 hover:bg-orange-300'
             }`}
           >
-            ✏️ Saisie manuelle
+            ✏️ 手動 Saisie manuelle
           </button>
         </div>
       </div>
@@ -159,8 +159,8 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
         {mode === 'api' ? (
           // Mode API - Formulaire simple
           <div>
-            <label htmlFor="kanji-input" className="block text-sm font-medium text-slate-300 mb-2">
-              Kanji ou mot japonais
+            <label htmlFor="kanji-input" className="block text-sm font-medium text-red-800 mb-2">
+              漢字・日本語 Kanji ou mot japonais
             </label>
             <div className="flex gap-3">
               <input
@@ -168,8 +168,8 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
                 type="text"
                 value={input}
                 onChange={handleInputChange}
-                placeholder="漢字 ou ひらがな... (l'API va chercher les infos)"
-                className="flex-1 px-4 py-3 border border-slate-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-lg bg-slate-700/80 text-slate-100 placeholder-slate-400"
+                placeholder="漢字 ou ひらがな... (APIが情報を検索 l'API va chercher les infos)"
+                className="flex-1 px-4 py-3 border border-orange-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent text-lg bg-white/80 text-red-900 placeholder-orange-600"
                 disabled={isSubmitting}
                 autoComplete="off"
                 spellCheck={false}
@@ -177,15 +177,15 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
               <button
                 type="submit"
                 disabled={!input.trim() || isSubmitting}
-                className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-700 text-white font-medium rounded-xl hover:from-indigo-700 hover:to-purple-800 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed transition-all shadow-lg"
+                className="px-6 py-3 bg-gradient-to-r from-red-600 to-orange-700 text-white font-medium rounded-xl hover:from-red-700 hover:to-orange-800 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed transition-all shadow-lg"
               >
                 {isSubmitting ? (
                   <div className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Recherche...</span>
+                    <span>検索中... Recherche...</span>
                   </div>
                 ) : (
-                  'Rechercher'
+                  '検索 Rechercher'
                 )}
               </button>
             </div>
@@ -196,29 +196,29 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
             {/* Kanji et signification principale (obligatoires) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Kanji <span className="text-red-400">*</span>
+                <label className="block text-sm font-medium text-red-800 mb-2">
+                  漢字 Kanji <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
                   value={manualKanji}
                   onChange={(e) => setManualKanji(e.target.value)}
                   placeholder="漢字"
-                  className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors text-2xl text-center"
+                  className="w-full px-3 py-2 bg-white/80 border border-orange-300 text-red-900 placeholder-orange-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors text-2xl text-center"
                   disabled={isSubmitting}
                   maxLength={10}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Significations <span className="text-red-400">*</span>
+                <label className="block text-sm font-medium text-red-800 mb-2">
+                  意味 Significations <span className="text-red-600">*</span>
                 </label>
                 <textarea
                   value={manualMeanings}
                   onChange={(e) => setManualMeanings(e.target.value)}
                   placeholder="signification 1, signification 2, ..."
                   rows={2}
-                  className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors resize-none"
+                  className="w-full px-3 py-2 bg-white/80 border border-orange-300 text-red-900 placeholder-orange-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors resize-none"
                   disabled={isSubmitting}
                 />
               </div>
@@ -227,28 +227,28 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
             {/* Lectures */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Lectures On'yomi
+                <label className="block text-sm font-medium text-red-800 mb-2">
+                  音読み On'yomi
                 </label>
                 <input
                   type="text"
                   value={manualOnyomi}
                   onChange={(e) => setManualOnyomi(e.target.value)}
                   placeholder="オン, ダイ, ..."
-                  className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-mono"
+                  className="w-full px-3 py-2 bg-white/80 border border-orange-300 text-red-900 placeholder-orange-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors font-mono"
                   disabled={isSubmitting}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Lectures Kun'yomi
+                <label className="block text-sm font-medium text-red-800 mb-2">
+                  訓読み Kun'yomi
                 </label>
                 <input
                   type="text"
                   value={manualKunyomi}
                   onChange={(e) => setManualKunyomi(e.target.value)}
                   placeholder="おお.きい, だい, ..."
-                  className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-mono"
+                  className="w-full px-3 py-2 bg-white/80 border border-orange-300 text-red-900 placeholder-orange-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors font-mono"
                   disabled={isSubmitting}
                 />
               </div>
@@ -257,28 +257,28 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
             {/* Informations préférées */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Signification préférée
+                <label className="block text-sm font-medium text-red-800 mb-2">
+                  希望意味 Signification préférée
                 </label>
                 <input
                   type="text"
                   value={manualPrimaryMeaning}
                   onChange={(e) => setManualPrimaryMeaning(e.target.value)}
-                  placeholder="Celle que tu préfères retenir"
-                  className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                  placeholder="覚えたいもの Celle que tu préfères retenir"
+                  className="w-full px-3 py-2 bg-white/80 border border-orange-300 text-red-900 placeholder-orange-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
                   disabled={isSubmitting}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Lecture préférée
+                <label className="block text-sm font-medium text-red-800 mb-2">
+                  希望読み Lecture préférée
                 </label>
                 <input
                   type="text"
                   value={manualPrimaryReading}
                   onChange={(e) => setManualPrimaryReading(e.target.value)}
-                  placeholder="Celle que tu préfères retenir"
-                  className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors font-mono"
+                  placeholder="覚えたいもの Celle que tu préfères retenir"
+                  className="w-full px-3 py-2 bg-white/80 border border-orange-300 text-red-900 placeholder-orange-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors font-mono"
                   disabled={isSubmitting}
                 />
               </div>
@@ -287,31 +287,31 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
             {/* Informations complémentaires */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Nombre de traits
+                <label className="block text-sm font-medium text-red-800 mb-2">
+                  画数 Nombre de traits
                 </label>
                 <input
                   type="number"
                   value={manualStrokeCount}
                   onChange={(e) => setManualStrokeCount(e.target.value)}
-                  placeholder="Ex: 12"
+                  placeholder="例: 12"
                   min="1"
                   max="30"
-                  className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 placeholder-slate-400 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                  className="w-full px-3 py-2 bg-white/80 border border-orange-300 text-red-900 placeholder-orange-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
                   disabled={isSubmitting}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Niveau JLPT
+                <label className="block text-sm font-medium text-red-800 mb-2">
+                  JLPTレベル Niveau JLPT
                 </label>
                 <select
                   value={manualJlptLevel}
                   onChange={(e) => setManualJlptLevel(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-700/50 border border-slate-600/50 text-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                  className="w-full px-3 py-2 bg-white/80 border border-orange-300 text-red-900 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
                   disabled={isSubmitting}
                 >
-                  <option value="">Non défini</option>
+                  <option value="">未定義 Non défini</option>
                   <option value="jlpt-n5">JLPT N5</option>
                   <option value="jlpt-n4">JLPT N4</option>
                   <option value="jlpt-n3">JLPT N3</option>
@@ -325,35 +325,35 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
             <button
               type="submit"
               disabled={!manualKanji.trim() || !manualMeanings.trim() || isSubmitting}
-              className="w-full px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-medium rounded-xl hover:from-emerald-700 hover:to-teal-800 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed transition-all shadow-lg"
+              className="w-full px-6 py-3 bg-gradient-to-r from-red-600 to-orange-700 text-white font-medium rounded-xl hover:from-red-700 hover:to-orange-800 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed transition-all shadow-lg"
             >
               {isSubmitting ? (
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Ajout en cours...</span>
+                  <span>追加中... Ajout en cours...</span>
                 </div>
               ) : (
-                '✏️ Ajouter manuellement'
+                '✏️ 手動追加 Ajouter manuellement'
               )}
             </button>
           </div>
         )}
 
         {/* Tags et notes (communs aux deux modes) */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4 border-t border-slate-600/30">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4 border-t border-orange-300/50">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label htmlFor="tags-input" className="block text-sm font-medium text-slate-300">
-                Tags (optionnel)
+              <label htmlFor="tags-input" className="block text-sm font-medium text-red-800">
+                タグ Tags (任意 optionnel)
               </label>
               {tags && (
                 <button
                   type="button"
                   onClick={() => setTags('')}
-                  className="text-xs text-slate-500 hover:text-red-400 transition-colors"
+                  className="text-xs text-orange-600 hover:text-red-600 transition-colors"
                   disabled={isSubmitting}
                 >
-                  🗑️ Effacer
+                  🗑️ 削除 Effacer
                 </button>
               )}
             </div>
@@ -362,29 +362,29 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
               type="text"
               value={tags}
               onChange={handleTagsChange}
-              placeholder="facile, important, cours-1..."
-              className="w-full px-3 py-2 border border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-slate-700/80 text-slate-100 placeholder-slate-400"
+              placeholder="簡単 facile, 重要 important, 授業1 cours-1..."
+              className="w-full px-3 py-2 border border-orange-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white/80 text-red-900 placeholder-orange-600"
               disabled={isSubmitting}
             />
             {tags && (
-              <p className="text-xs text-indigo-400 mt-1">
-                • Conservés pour le prochain ajout
+              <p className="text-xs text-red-600 mt-1">
+                • 次回追加用に保存 Conservés pour le prochain ajout
               </p>
             )}
           </div>
 
           {/* Notes personnelles */}
           <div>
-            <label htmlFor="notes-input" className="block text-sm font-medium text-slate-300 mb-2">
-              Notes (optionnel)
+            <label htmlFor="notes-input" className="block text-sm font-medium text-red-800 mb-2">
+              メモ Notes (任意 optionnel)
             </label>
             <textarea
               id="notes-input"
               value={customNotes}
               onChange={handleNotesChange}
-              placeholder="Mnémotechnique, contexte..."
+              placeholder="記憶法、文脈... Mnémotechnique, contexte..."
               rows={2}
-              className="w-full px-3 py-2 border border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-slate-700/80 text-slate-100 placeholder-slate-400 resize-none"
+              className="w-full px-3 py-2 border border-orange-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white/80 text-red-900 placeholder-orange-600 resize-none"
               disabled={isSubmitting}
             />
           </div>
@@ -393,14 +393,14 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
 
       {/* Messages d'erreur et de succès */}
       {error && (
-        <div className="p-3 bg-red-900/30 backdrop-blur-sm border border-red-700/50 rounded-lg">
-          <p className="text-red-300 text-sm">{error}</p>
+        <div className="p-3 bg-red-100 backdrop-blur-sm border border-red-300 rounded-lg">
+          <p className="text-red-800 text-sm">❌ {error}</p>
         </div>
       )}
       
       {successMessage && (
-        <div className="p-3 bg-green-900/30 backdrop-blur-sm border border-green-700/50 rounded-lg">
-          <p className="text-green-300 text-sm">{successMessage}</p>
+        <div className="p-3 bg-green-100 backdrop-blur-sm border border-green-300 rounded-lg">
+          <p className="text-green-800 text-sm">{successMessage}</p>
         </div>
       )}
     </div>

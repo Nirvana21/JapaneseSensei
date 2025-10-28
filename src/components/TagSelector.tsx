@@ -34,20 +34,20 @@ export default function TagSelector({ availableTags, selectedTags, onTagsChange,
 
   return (
     <div className={`${className}`}>
-      <div className="bg-slate-700/50 rounded-xl p-4 border border-slate-600/50">
+      <div className="bg-orange-100/90 rounded-xl p-4 border border-orange-200">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-slate-300 flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-red-800 flex items-center gap-2">
             <span>🏷️</span>
-            <span>Filtrer par tags</span>
+            <span>タグフィルター Filtrer par tags</span>
             {selectedTags.length > 0 && (
-              <span className="px-2 py-1 bg-indigo-600 text-white text-xs rounded-full">
+              <span className="px-2 py-1 bg-red-600 text-white text-xs rounded-full">
                 {selectedTags.length}
               </span>
             )}
           </h3>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-slate-400 hover:text-slate-300 transition-colors"
+            className="text-orange-600 hover:text-red-700 transition-colors"
           >
             <svg 
               className={`w-4 h-4 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
@@ -65,15 +65,15 @@ export default function TagSelector({ availableTags, selectedTags, onTagsChange,
             <div className="flex gap-2">
               <button
                 onClick={selectAll}
-                className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs rounded-lg transition-colors"
+                className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs rounded-lg transition-colors"
               >
-                Tout sélectionner
+                全選択 Tout sélectionner
               </button>
               <button
                 onClick={clearAll}
-                className="px-3 py-1 bg-slate-600 hover:bg-slate-500 text-slate-300 text-xs rounded-lg transition-colors"
+                className="px-3 py-1 bg-orange-300 hover:bg-orange-400 text-orange-800 text-xs rounded-lg transition-colors"
               >
-                Tout désélectionner
+                全解除 Tout désélectionner
               </button>
             </div>
             
@@ -84,8 +84,8 @@ export default function TagSelector({ availableTags, selectedTags, onTagsChange,
                   onClick={() => toggleTag(tag)}
                   className={`px-3 py-1 text-xs rounded-lg border transition-all ${
                     selectedTags.includes(tag)
-                      ? 'bg-emerald-600 text-white border-emerald-500'
-                      : 'bg-slate-600/50 text-slate-300 border-slate-500/50 hover:bg-slate-500/50'
+                      ? 'bg-green-600 text-white border-green-500'
+                      : 'bg-orange-200 text-orange-800 border-orange-300 hover:bg-orange-300'
                   }`}
                 >
                   {tag}
@@ -93,10 +93,10 @@ export default function TagSelector({ availableTags, selectedTags, onTagsChange,
               ))}
             </div>
             
-            <div className="text-xs text-slate-500 mt-2">
+            <div className="text-xs text-orange-600 mt-2">
               {selectedTags.length === 0 
-                ? "Tous les kanjis seront inclus" 
-                : `${selectedTags.length} tag(s) sélectionné(s)`
+                ? "全漢字が含まれます Tous les kanjis seront inclus" 
+                : `${selectedTags.length} タグ選択中 tag(s) sélectionné(s)`
               }
             </div>
           </div>

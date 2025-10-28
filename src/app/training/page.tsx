@@ -376,12 +376,12 @@ export default function TrainingPage() {
                         <div className="space-y-4">
                           {/* Score et difficulté */}
                           <div className="flex justify-center mb-4">
-                            <div className="flex items-center gap-2 px-3 py-1 bg-slate-700/50 rounded-lg border border-slate-600/30">
-                              <span className="text-xs text-slate-400">Score:</span>
+                            <div className="flex items-center gap-2 px-3 py-1 bg-orange-200/90 rounded-lg border border-orange-300">
+                              <span className="text-xs text-orange-700">スコア Score:</span>
                               <div className={`flex items-center gap-1 text-sm font-medium ${
-                                currentKanji.learningData.score === 0 ? 'text-blue-400' :
-                                currentKanji.learningData.score === 1 ? 'text-red-400' :
-                                currentKanji.learningData.score === 2 ? 'text-yellow-400' : 'text-green-400'
+                                currentKanji.learningData.score === 0 ? 'text-blue-600' :
+                                currentKanji.learningData.score === 1 ? 'text-red-600' :
+                                currentKanji.learningData.score === 2 ? 'text-yellow-600' : 'text-green-600'
                               }`}>
                                 {currentKanji.learningData.score === 0 && '🆕'}
                                 {currentKanji.learningData.score === 1 && '😓'}
@@ -399,18 +399,18 @@ export default function TrainingPage() {
                               openModal(currentKanji);
                             }}
                             data-no-tap="true"
-                            className="w-full p-4 bg-slate-700/50 hover:bg-slate-600/50 rounded-xl border border-slate-600/30 hover:border-slate-500/50 transition-all group"
+                            className="w-full p-4 bg-orange-200/80 hover:bg-orange-300/80 rounded-xl border border-orange-300 hover:border-orange-400 transition-all group"
                           >
-                            <p className="text-sm text-slate-400 mb-2">Kanji (cliquez pour les détails) :</p>
+                            <p className="text-sm text-orange-700 mb-2">漢字詳細 Kanji (cliquez pour les détails) :</p>
                             <div className="flex items-center justify-center gap-3">
-                              <p className="text-4xl sm:text-6xl font-bold text-slate-100 group-hover:scale-110 transition-transform">{currentKanji.kanji}</p>
-                              <div className="text-slate-400 group-hover:text-slate-300 transition-colors">
+                              <p className="text-4xl sm:text-6xl font-bold text-red-900 group-hover:scale-110 transition-transform">{currentKanji.kanji}</p>
+                              <div className="text-orange-600 group-hover:text-red-700 transition-colors">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                               </div>
                             </div>
-                            <p className="text-xs text-slate-500 mt-2">Cliquez pour voir l'ordre des traits, lectures et plus de détails</p>
+                            <p className="text-xs text-orange-600 mt-2">筆順・読み方・詳細を見るためにクリック Cliquez pour voir l'ordre des traits, lectures et plus de détails</p>
                           </button>
                         </div>
                       )}
