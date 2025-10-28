@@ -8,10 +8,18 @@ import KanjiCanvas from "../../components/KanjiCanvas";
 import KanjiDetailModal from "../../components/KanjiDetailModal";
 import SessionCompleteModal from "../../components/SessionCompleteModal";
 import TagSelector from "../../components/TagSelector";
+import SurvivalCard from "../../components/SurvivalCard";
+import SurvivalHUD from "../../components/SurvivalHUD";
+import SurvivalGameOverModal from "../../components/SurvivalGameOverModal";
 import {
   simpleAdaptiveLearningService,
   SimpleLearningKanji,
 } from "../../services/adaptiveLearningService";
+import { 
+  survivalService, 
+  SurvivalState, 
+  SurvivalStats 
+} from "../../services/survivalService";
 
 export default function TrainingPage() {
   const { kanjis } = useKanjis();
@@ -39,6 +47,12 @@ export default function TrainingPage() {
   const [learningStats, setLearningStats] = useState<any>(null);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  
+  // États pour le mode Survival
+  const [gameMode, setGameMode] = useState<'normal' | 'survival'>('normal');
+  const [survivalState, setSurvivalState] = useState<SurvivalState | null>(null);
+  const [survivalStats, setSurvivalStats] = useState<SurvivalStats | null>(null);
+  const [currentSurvivalKanji, setCurrentSurvivalKanji] = useState<SimpleLearningKanji | null>(null);
   const [allLearningKanjis, setAllLearningKanjis] = useState<
     SimpleLearningKanji[]
   >([]);
@@ -227,6 +241,77 @@ export default function TrainingPage() {
     setStats((prev) => ({ ...prev, sessionComplete: false }));
   };
 
+  // ===== FONCTIONS MODE SURVIVAL =====
+  
+  const startSurvivalMode = () => {
+    if (allLearningKanjis.length === 0) return;
+    
+    setGameMode('survival');
+    const newSurvivalState = survivalService.initializeGame();
+    setSurvivalState(newSurvivalState);
+    setSurvivalStats(survivalService.getSurvivalStats());
+    
+    // Sélectionner le premier kanji
+    const firstKanji = survivalService.selectKanjiForSurvival(allLearningKanjis, 1);
+    setCurrentSurvivalKanji(firstKanji);
+  };
+
+  const handleSurvivalAnswer = (isCorrect: boolean) => {
+    if (!survivalState || !currentSurvivalKanji) return;
+
+    // Mettre à jour les données d'apprentissage du kanji
+    const updatedKanji = simpleAdaptiveLearningService.updateLearningData(
+      currentSurvivalKanji, 
+      isCorrect
+    );
+    
+    // Sauvegarder les données d'apprentissage
+    localStorage.setItem(`simple_learning_${updatedKanji.id}`, JSON.stringify({
+      learningData: updatedKanji.learningData,
+      studyData: updatedKanji.studyData
+    }));
+
+    // Mettre à jour la liste des kanjis
+    const updatedAllKanjis = allLearningKanjis.map(k => 
+      k.id === updatedKanji.id ? updatedKanji : k
+    );
+    setAllLearningKanjis(updatedAllKanjis);
+
+    // Traiter la réponse dans le contexte Survival
+    const newSurvivalState = survivalService.processAnswer(survivalState, isCorrect);
+    setSurvivalState(newSurvivalState);
+
+    if (newSurvivalState.isGameOver) {
+      // Fin du jeu - sauvegarder les stats
+      survivalService.saveSurvivalSession(newSurvivalState);
+      setSurvivalStats(survivalService.getSurvivalStats());
+    } else {
+      // Continuer - sélectionner le prochain kanji
+      const nextKanji = survivalService.selectKanjiForSurvival(
+        updatedAllKanjis, 
+        newSurvivalState.level
+      );
+      setCurrentSurvivalKanji(nextKanji);
+    }
+  };
+
+  const exitSurvivalMode = () => {
+    setGameMode('normal');
+    setSurvivalState(null);
+    setCurrentSurvivalKanji(null);
+  };
+
+  const startNewSurvivalGame = () => {
+    if (allLearningKanjis.length === 0) return;
+    
+    const newSurvivalState = survivalService.initializeGame();
+    setSurvivalState(newSurvivalState);
+    
+    // Sélectionner le premier kanji
+    const firstKanji = survivalService.selectKanjiForSurvival(allLearningKanjis, 1);
+    setCurrentSurvivalKanji(firstKanji);
+  };
+
   if (selectedKanjis.length === 0 && allLearningKanjis.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
@@ -280,12 +365,21 @@ export default function TrainingPage() {
               )}
             </h1>
 
-            <button
-              onClick={startNewSession}
-              className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all text-sm"
-            >
-              🔄 新セッション
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={startNewSession}
+                className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all text-sm"
+              >
+                🔄 新セッション
+              </button>
+              
+              <button
+                onClick={startSurvivalMode}
+                className="px-3 py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white font-medium rounded-lg hover:from-orange-600 hover:to-red-700 transition-all text-sm"
+              >
+                🔥 持久モード
+              </button>
+            </div>
           </div>
 
           {/* Deuxième ligne : Contrôles et statistiques zen */}
@@ -397,7 +491,40 @@ export default function TrainingPage() {
       </div>
       {/* Zone principale d'entraînement */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        {selectedKanjis.length > 0 && currentKanji && (
+        
+        {/* MODE SURVIVAL */}
+        {gameMode === 'survival' && survivalState && currentSurvivalKanji && (
+          <>
+            {/* HUD Survival */}
+            <SurvivalHUD 
+              survivalState={survivalState}
+              encouragementMessage={survivalService.getEncouragementMessage(survivalState.streak)}
+            />
+            
+            {/* Carte Survival */}
+            <div className="flex justify-center mb-6 sm:mb-8">
+              <SurvivalCard
+                kanji={currentSurvivalKanji}
+                direction={survivalState.currentDirection}
+                onAnswer={handleSurvivalAnswer}
+                disabled={survivalState.isGameOver}
+              />
+            </div>
+            
+            {/* Bouton retour */}
+            <div className="text-center">
+              <button
+                onClick={exitSurvivalMode}
+                className="px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white font-medium rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all"
+              >
+                ← Retour au mode normal
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* MODE NORMAL */}
+        {gameMode === 'normal' && selectedKanjis.length > 0 && currentKanji && (
           <>
             {/* Carte flashcard */}
             <div className="flex justify-center mb-6 sm:mb-8">
@@ -841,6 +968,17 @@ export default function TrainingPage() {
         onNewSession={startNewSession}
         onClose={closeSessionModal}
       />
+      
+      {/* Modal de fin de partie Survival */}
+      {survivalState && survivalStats && (
+        <SurvivalGameOverModal
+          isOpen={survivalState.isGameOver}
+          survivalState={survivalState}
+          stats={survivalStats}
+          onNewGame={startNewSurvivalGame}
+          onClose={exitSurvivalMode}
+        />
+      )}
     </div>
   );
 }
