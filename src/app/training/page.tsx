@@ -98,7 +98,8 @@ function TrainingPageContent() {
   // Détecter le mode Survival dans l'URL
   useEffect(() => {
     const mode = searchParams.get('mode');
-    if (mode === 'survival' && allLearningKanjis.length > 0) {
+    // Ne pas ré-initialiser si on a déjà un état de survie
+    if (mode === 'survival' && allLearningKanjis.length > 0 && !survivalState) {
       // Lancer le mode Survival directement
       setGameMode('survival');
       const newSurvivalState = survivalService.initializeGame();
@@ -109,7 +110,7 @@ function TrainingPageContent() {
       const firstKanji = survivalService.selectKanjiForSurvival(allLearningKanjis, 1);
       setCurrentSurvivalKanji(firstKanji);
     }
-  }, [searchParams, allLearningKanjis]);
+  }, [searchParams, allLearningKanjis, survivalState]);
 
   // Générer une nouvelle session selon les tags sélectionnés
   const generateNewSession = (
