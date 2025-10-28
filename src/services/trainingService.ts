@@ -1,11 +1,11 @@
 // Service pour gérer les données d'entraînement et de performance
-import { KanjiEntry } from '@/types/kanji';
+import { KanjiEntry } from "@/types/kanji";
 
 // Types pour les données d'entraînement
 export interface StudySession {
   id: string;
   kanjiId: string;
-  mode: 'fr-to-jp' | 'jp-to-fr';
+  mode: "fr-to-jp" | "jp-to-fr";
   correct: boolean;
   timestamp: Date;
   responseTime?: number; // en millisecondes
@@ -33,21 +33,22 @@ export interface TrainingFilters {
 }
 
 const STORAGE_KEYS = {
-  STUDY_SESSIONS: 'japaneseSensei_studySessions',
-  KANJI_PERFORMANCES: 'japaneseSensei_kanjiPerformances'
+  STUDY_SESSIONS: "japaneseSensei_studySessions",
+  KANJI_PERFORMANCES: "japaneseSensei_kanjiPerformances",
 };
 
 export class TrainingService {
-  
   /**
    * Sauvegarde une session d'entraînement
    */
-  static async saveStudySession(session: Omit<StudySession, 'id' | 'timestamp'>): Promise<StudySession> {
+  static async saveStudySession(
+    session: Omit<StudySession, "id" | "timestamp">
+  ): Promise<StudySession> {
     try {
       const fullSession: StudySession = {
         id: crypto.randomUUID(),
         timestamp: new Date(),
-        ...session
+        ...session,
       };
 
       // Récupérer les sessions existantes
@@ -58,14 +59,21 @@ export class TrainingService {
       const limitedSessions = updatedSessions.slice(-1000);
 
       // Sauvegarder
-      localStorage.setItem(STORAGE_KEYS.STUDY_SESSIONS, JSON.stringify(limitedSessions));
+      localStorage.setItem(
+        STORAGE_KEYS.STUDY_SESSIONS,
+        JSON.stringify(limitedSessions)
+      );
 
       // Mettre à jour les performances du kanji
-      await this.updateKanjiPerformance(session.kanjiId, session.correct, session.responseTime);
+      await this.updateKanjiPerformance(
+        session.kanjiId,
+        session.correct,
+        session.responseTime
+      );
 
       return fullSession;
     } catch (error) {
-      console.error('Erreur sauvegarde session d\'entraînement:', error);
+      console.error("Erreur sauvegarde session d'entraînement:", error);
       throw error;
     }
   }
@@ -81,10 +89,10 @@ export class TrainingService {
       const sessions = JSON.parse(data);
       return sessions.map((session: any) => ({
         ...session,
-        timestamp: new Date(session.timestamp)
+        timestamp: new Date(session.timestamp),
       }));
     } catch (error) {
-      console.error('Erreur récupération sessions:', error);
+      console.error("Erreur récupération sessions:", error);
       return [];
     }
   }
@@ -93,13 +101,13 @@ export class TrainingService {
    * Met à jour les performances d'un kanji
    */
   static async updateKanjiPerformance(
-    kanjiId: string, 
-    wasCorrect: boolean, 
+    kanjiId: string,
+    wasCorrect: boolean,
     responseTime?: number
   ): Promise<void> {
     try {
       const performances = await this.getKanjiPerformances();
-      const existing = performances.find(p => p.kanjiId === kanjiId);
+      const existing = performances.find((p) => p.kanjiId === kanjiId);
 
       if (existing) {
         // Mettre à jour les performances existantes
@@ -120,7 +128,8 @@ export class TrainingService {
 
         // Mettre à jour le temps de réponse moyen
         if (responseTime && existing.averageResponseTime) {
-          existing.averageResponseTime = (existing.averageResponseTime + responseTime) / 2;
+          existing.averageResponseTime =
+            (existing.averageResponseTime + responseTime) / 2;
         } else if (responseTime) {
           existing.averageResponseTime = responseTime;
         }
@@ -134,15 +143,18 @@ export class TrainingService {
           difficultyScore: wasCorrect ? 0.2 : 0.8,
           consecutiveCorrect: wasCorrect ? 1 : 0,
           consecutiveIncorrect: wasCorrect ? 0 : 1,
-          averageResponseTime: responseTime
+          averageResponseTime: responseTime,
         };
         performances.push(newPerformance);
       }
 
       // Sauvegarder
-      localStorage.setItem(STORAGE_KEYS.KANJI_PERFORMANCES, JSON.stringify(performances));
+      localStorage.setItem(
+        STORAGE_KEYS.KANJI_PERFORMANCES,
+        JSON.stringify(performances)
+      );
     } catch (error) {
-      console.error('Erreur mise à jour performances:', error);
+      console.error("Erreur mise à jour performances:", error);
       throw error;
     }
   }
@@ -158,10 +170,10 @@ export class TrainingService {
       const performances = JSON.parse(data);
       return performances.map((perf: any) => ({
         ...perf,
-        lastStudied: new Date(perf.lastStudied)
+        lastStudied: new Date(perf.lastStudied),
       }));
     } catch (error) {
-      console.error('Erreur récupération performances:', error);
+      console.error("Erreur récupération performances:", error);
       return [];
     }
   }
@@ -170,25 +182,31 @@ export class TrainingService {
    * Recommande des kanjis pour l'entraînement basé sur les performances
    */
   static async recommendKanjisForTraining(
-    availableKanjis: KanjiEntry[], 
+    availableKanjis: KanjiEntry[],
     filters: TrainingFilters = {},
     count: number = 20
   ): Promise<KanjiEntry[]> {
     try {
       const performances = await this.getKanjiPerformances();
-      
+
       // Filtrer les kanjis selon les critères
-      let filteredKanjis = availableKanjis.filter(kanji => {
+      let filteredKanjis = availableKanjis.filter((kanji) => {
         // Filtre par tags
         if (filters.tags && filters.tags.length > 0) {
-          if (!kanji.tags || !filters.tags.some(tag => kanji.tags!.includes(tag))) {
+          if (
+            !kanji.tags ||
+            !filters.tags.some((tag) => kanji.tags!.includes(tag))
+          ) {
             return false;
           }
         }
 
         // Filtre par niveaux JLPT
         if (filters.jlptLevels && filters.jlptLevels.length > 0) {
-          if (!kanji.jlptLevel || !filters.jlptLevels.includes(kanji.jlptLevel)) {
+          if (
+            !kanji.jlptLevel ||
+            !filters.jlptLevels.includes(kanji.jlptLevel)
+          ) {
             return false;
           }
         }
@@ -204,9 +222,9 @@ export class TrainingService {
       });
 
       // Associer les performances aux kanjis
-      const kanjisWithScores = filteredKanjis.map(kanji => {
-        const performance = performances.find(p => p.kanjiId === kanji.id);
-        
+      const kanjisWithScores = filteredKanjis.map((kanji) => {
+        const performance = performances.find((p) => p.kanjiId === kanji.id);
+
         let priorityScore = 0.5; // Score par défaut pour les nouveaux kanjis
 
         if (performance) {
@@ -214,21 +232,26 @@ export class TrainingService {
           priorityScore = performance.difficultyScore;
 
           // Bonus pour les kanjis pas étudiés récemment
-          const daysSinceLastStudy = (Date.now() - performance.lastStudied.getTime()) / (1000 * 60 * 60 * 24);
+          const daysSinceLastStudy =
+            (Date.now() - performance.lastStudied.getTime()) /
+            (1000 * 60 * 60 * 24);
           if (daysSinceLastStudy > 3) priorityScore += 0.2;
 
           // Malus pour les erreurs consécutives (ne pas marteler)
           if (performance.consecutiveIncorrect > 3) priorityScore -= 0.3;
 
           // Bonus pour les kanjis jamais réussis
-          if (performance.correctSessions === 0 && performance.totalSessions > 0) {
+          if (
+            performance.correctSessions === 0 &&
+            performance.totalSessions > 0
+          ) {
             priorityScore += 0.3;
           }
         }
 
         return {
           kanji,
-          priorityScore: Math.max(0, Math.min(1, priorityScore)) // Garder entre 0 et 1
+          priorityScore: Math.max(0, Math.min(1, priorityScore)), // Garder entre 0 et 1
         };
       });
 
@@ -237,35 +260,39 @@ export class TrainingService {
       if (filters.difficultyRange) {
         const [min, max] = filters.difficultyRange;
         scoredKanjis = kanjisWithScores.filter(
-          item => item.priorityScore >= min && item.priorityScore <= max
+          (item) => item.priorityScore >= min && item.priorityScore <= max
         );
       }
 
       // Filtrer seulement les difficiles si demandé
       if (filters.onlyDifficult) {
-        scoredKanjis = scoredKanjis.filter(item => item.priorityScore > 0.7);
+        scoredKanjis = scoredKanjis.filter((item) => item.priorityScore > 0.7);
       }
 
       // Exclure les récents si demandé
       if (filters.excludeRecent) {
         const recentKanjiIds = new Set(
           performances
-            .filter(p => (Date.now() - p.lastStudied.getTime()) < (1000 * 60 * 60 * 24)) // moins de 24h
-            .map(p => p.kanjiId)
+            .filter(
+              (p) => Date.now() - p.lastStudied.getTime() < 1000 * 60 * 60 * 24
+            ) // moins de 24h
+            .map((p) => p.kanjiId)
         );
-        scoredKanjis = scoredKanjis.filter(item => !recentKanjiIds.has(item.kanji.id));
+        scoredKanjis = scoredKanjis.filter(
+          (item) => !recentKanjiIds.has(item.kanji.id)
+        );
       }
 
       // Trier par score de priorité (plus élevé en premier) avec un peu de randomisation
       scoredKanjis.sort((a, b) => {
         const randomFactor = (Math.random() - 0.5) * 0.2; // ±0.1 de randomisation
-        return (b.priorityScore - a.priorityScore) + randomFactor;
+        return b.priorityScore - a.priorityScore + randomFactor;
       });
 
       // Retourner les kanjis recommandés
-      return scoredKanjis.slice(0, count).map(item => item.kanji);
+      return scoredKanjis.slice(0, count).map((item) => item.kanji);
     } catch (error) {
-      console.error('Erreur recommandation kanjis:', error);
+      console.error("Erreur recommandation kanjis:", error);
       // En cas d'erreur, retourner un mélange aléatoire
       return availableKanjis.sort(() => Math.random() - 0.5).slice(0, count);
     }
@@ -280,16 +307,19 @@ export class TrainingService {
       const performances = await this.getKanjiPerformances();
 
       const totalSessions = sessions.length;
-      const correctSessions = sessions.filter(s => s.correct).length;
-      const averageSuccessRate = totalSessions > 0 ? (correctSessions / totalSessions) : 0;
+      const correctSessions = sessions.filter((s) => s.correct).length;
+      const averageSuccessRate =
+        totalSessions > 0 ? correctSessions / totalSessions : 0;
 
       const studiedKanjis = performances.length;
-      const averageDifficulty = performances.length > 0 
-        ? performances.reduce((sum, p) => sum + p.difficultyScore, 0) / performances.length
-        : 0;
+      const averageDifficulty =
+        performances.length > 0
+          ? performances.reduce((sum, p) => sum + p.difficultyScore, 0) /
+            performances.length
+          : 0;
 
       const recentSessions = sessions.filter(
-        s => (Date.now() - s.timestamp.getTime()) < (1000 * 60 * 60 * 24 * 7) // 7 jours
+        (s) => Date.now() - s.timestamp.getTime() < 1000 * 60 * 60 * 24 * 7 // 7 jours
       );
 
       return {
@@ -299,10 +329,11 @@ export class TrainingService {
         studiedKanjis,
         averageDifficulty,
         recentSessionsCount: recentSessions.length,
-        lastStudyDate: sessions.length > 0 ? sessions[sessions.length - 1].timestamp : null
+        lastStudyDate:
+          sessions.length > 0 ? sessions[sessions.length - 1].timestamp : null,
       };
     } catch (error) {
-      console.error('Erreur calcul statistiques:', error);
+      console.error("Erreur calcul statistiques:", error);
       return {
         totalSessions: 0,
         correctSessions: 0,
@@ -310,7 +341,7 @@ export class TrainingService {
         studiedKanjis: 0,
         averageDifficulty: 0,
         recentSessionsCount: 0,
-        lastStudyDate: null
+        lastStudyDate: null,
       };
     }
   }

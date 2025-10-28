@@ -19,8 +19,8 @@ export interface MultiStrokeOrderData {
 export class StrokeOrderService {
   // Essayer plusieurs sources pour KanjiVG
   private static readonly KANJIVG_SOURCES = [
-    'https://raw.githubusercontent.com/KanjiVG/kanjivg/master/kanji',
-    'https://kanjivg.tagaini.net/kanjivg/kanji'
+    "https://raw.githubusercontent.com/KanjiVG/kanjivg/master/kanji",
+    "https://kanjivg.tagaini.net/kanjivg/kanji",
   ];
 
   /**
@@ -29,40 +29,44 @@ export class StrokeOrderService {
    */
   private static kanjiToKanjiVGFilename(kanji: string): string {
     const codePoint = kanji.codePointAt(0);
-    if (!codePoint) return '';
-    
+    if (!codePoint) return "";
+
     // Convertir en hexadécimal avec padding à 5 chiffres
-    return codePoint.toString(16).padStart(5, '0');
+    return codePoint.toString(16).padStart(5, "0");
   }
 
   /**
    * Récupère les données SVG d'un kanji depuis KanjiVG
    */
-  static async fetchStrokeOrderData(kanji: string): Promise<StrokeOrderData | null> {
+  static async fetchStrokeOrderData(
+    kanji: string
+  ): Promise<StrokeOrderData | null> {
     try {
       // Pour les mots composés, prendre seulement le premier caractère
       const firstChar = kanji.charAt(0);
-      
+
       if (!this.isKanji(firstChar)) {
         console.warn(`${firstChar} n'est pas un kanji valide`);
         return null;
       }
 
       const filename = this.kanjiToKanjiVGFilename(firstChar);
-      
+
       // Essayer plusieurs sources
       for (const baseUrl of this.KANJIVG_SOURCES) {
         const svgUrl = `${baseUrl}/${filename}.svg`;
-        console.log(`Récupération stroke order pour ${firstChar} depuis: ${svgUrl}`);
+        console.log(
+          `Récupération stroke order pour ${firstChar} depuis: ${svgUrl}`
+        );
 
         try {
           const response = await fetch(svgUrl);
-          
+
           if (response.ok) {
             const svgData = await response.text();
             console.log(`SVG récupéré avec succès depuis ${baseUrl}`);
-            console.log('Extrait SVG:', svgData.substring(0, 200) + '...');
-            
+            console.log("Extrait SVG:", svgData.substring(0, 200) + "...");
+
             // Analyser le nombre de traits depuis le SVG
             const strokeCount = this.extractStrokeCount(svgData);
 
@@ -70,7 +74,7 @@ export class StrokeOrderService {
               kanji: firstChar,
               svgData,
               strokeCount,
-              hasAnimation: true
+              hasAnimation: true,
             };
           }
         } catch (fetchError) {
@@ -78,12 +82,13 @@ export class StrokeOrderService {
           continue;
         }
       }
-      
-      console.warn(`Stroke order non disponible pour ${firstChar} sur toutes les sources`);
-      return null;
 
+      console.warn(
+        `Stroke order non disponible pour ${firstChar} sur toutes les sources`
+      );
+      return null;
     } catch (error) {
-      console.error('Erreur récupération stroke order:', error);
+      console.error("Erreur récupération stroke order:", error);
       return null;
     }
   }
@@ -91,16 +96,18 @@ export class StrokeOrderService {
   /**
    * Récupère l'ordre des traits pour TOUS les kanjis d'un mot composé
    */
-  static async fetchMultipleStrokeOrderData(text: string): Promise<MultiStrokeOrderData> {
+  static async fetchMultipleStrokeOrderData(
+    text: string
+  ): Promise<MultiStrokeOrderData> {
     const kanjis: StrokeOrderData[] = [];
     let totalStrokes = 0;
 
     for (let i = 0; i < text.length; i++) {
       const char = text.charAt(i);
-      
+
       if (this.isKanji(char)) {
         console.log(`Traitement du kanji ${i + 1}/${text.length}: ${char}`);
-        
+
         const strokeData = await this.fetchSingleKanjiStrokeOrder(char);
         if (strokeData) {
           kanjis.push(strokeData);
@@ -111,7 +118,7 @@ export class StrokeOrderService {
             kanji: char,
             svgData: this.generateFallbackSVG(char),
             strokeCount: 0,
-            hasAnimation: false
+            hasAnimation: false,
           };
           kanjis.push(fallbackData);
         }
@@ -121,14 +128,16 @@ export class StrokeOrderService {
     return {
       originalText: text,
       kanjis,
-      totalStrokes
+      totalStrokes,
     };
   }
 
   /**
    * Récupère les données d'un seul kanji
    */
-  private static async fetchSingleKanjiStrokeOrder(kanji: string): Promise<StrokeOrderData | null> {
+  private static async fetchSingleKanjiStrokeOrder(
+    kanji: string
+  ): Promise<StrokeOrderData | null> {
     try {
       if (!this.isKanji(kanji)) {
         console.warn(`${kanji} n'est pas un kanji valide`);
@@ -136,14 +145,14 @@ export class StrokeOrderService {
       }
 
       const filename = this.kanjiToKanjiVGFilename(kanji);
-      
+
       // Essayer plusieurs sources
       for (const baseUrl of this.KANJIVG_SOURCES) {
         const svgUrl = `${baseUrl}/${filename}.svg`;
 
         try {
           const response = await fetch(svgUrl);
-          
+
           if (response.ok) {
             const svgData = await response.text();
             const strokeCount = this.extractStrokeCount(svgData);
@@ -152,11 +161,14 @@ export class StrokeOrderService {
               kanji,
               svgData,
               strokeCount,
-              hasAnimation: true
+              hasAnimation: true,
             };
           }
         } catch (fetchError) {
-          console.warn(`Échec récupération ${kanji} depuis ${baseUrl}:`, fetchError);
+          console.warn(
+            `Échec récupération ${kanji} depuis ${baseUrl}:`,
+            fetchError
+          );
           continue;
         }
       }
@@ -177,10 +189,10 @@ export class StrokeOrderService {
 
     // Plages Unicode pour les kanjis
     return (
-      (code >= 0x4E00 && code <= 0x9FAF) || // CJK Unified Ideographs
-      (code >= 0x3400 && code <= 0x4DBF) || // CJK Extension A
-      (code >= 0x20000 && code <= 0x2A6DF) || // CJK Extension B
-      (code >= 0xF900 && code <= 0xFAFF)    // CJK Compatibility Ideographs
+      (code >= 0x4e00 && code <= 0x9faf) || // CJK Unified Ideographs
+      (code >= 0x3400 && code <= 0x4dbf) || // CJK Extension A
+      (code >= 0x20000 && code <= 0x2a6df) || // CJK Extension B
+      (code >= 0xf900 && code <= 0xfaff) // CJK Compatibility Ideographs
     );
   }
 
@@ -197,16 +209,18 @@ export class StrokeOrderService {
    * Optimise les données SVG pour l'affichage web
    */
   static optimizeSVGForDisplay(svgData: string): string {
-    return svgData
-      // Nettoyer les commentaires et espaces inutiles
-      .replace(/<!--[\s\S]*?-->/g, '')
-      .replace(/\s+/g, ' ')
-      .trim()
-      // S'assurer que les styles de base sont présents
-      .replace(
-        /<g([^>]*)>/,
-        '<g$1 style="fill:none;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;">'
-      );
+    return (
+      svgData
+        // Nettoyer les commentaires et espaces inutiles
+        .replace(/<!--[\s\S]*?-->/g, "")
+        .replace(/\s+/g, " ")
+        .trim()
+        // S'assurer que les styles de base sont présents
+        .replace(
+          /<g([^>]*)>/,
+          '<g$1 style="fill:none;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;">'
+        )
+    );
   }
 
   /**

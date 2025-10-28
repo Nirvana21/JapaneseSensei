@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from "react";
 
 interface SwipeCardProps {
   children: React.ReactNode;
@@ -10,12 +10,12 @@ interface SwipeCardProps {
   className?: string;
 }
 
-export default function SwipeCard({ 
-  children, 
-  onSwipeLeft, 
-  onSwipeRight, 
+export default function SwipeCard({
+  children,
+  onSwipeLeft,
+  onSwipeRight,
   onTap,
-  className = '' 
+  className = "",
 }: SwipeCardProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
@@ -54,27 +54,34 @@ export default function SwipeCard({
     }
   };
 
-  const handleEnd = (clientX: number, clientY: number, target?: EventTarget | null) => {
+  const handleEnd = (
+    clientX: number,
+    clientY: number,
+    target?: EventTarget | null
+  ) => {
     if (!isDragging) return;
 
     const deltaX = clientX - startX;
     const deltaY = clientY - startY;
 
     // Vérifier si le clic est sur un bouton ou élément interactif
-    const isButton = target && (
-      (target as Element).tagName === 'BUTTON' ||
-      (target as Element).closest('button') ||
-      (target as Element).tagName === 'A' ||
-      (target as Element).closest('a') ||
-      (target as Element).hasAttribute('data-no-tap')
-    );
+    const isButton =
+      target &&
+      ((target as Element).tagName === "BUTTON" ||
+        (target as Element).closest("button") ||
+        (target as Element).tagName === "A" ||
+        (target as Element).closest("a") ||
+        (target as Element).hasAttribute("data-no-tap"));
 
     // Vérifier si c'est un tap (pas de mouvement significatif)
     if (Math.abs(deltaX) < 15 && Math.abs(deltaY) < 15 && onTap && !isButton) {
       onTap();
     }
     // Sinon vérifier si c'est un swipe
-    else if (Math.abs(deltaX) > SWIPE_THRESHOLD && Math.abs(deltaY) < VERTICAL_THRESHOLD) {
+    else if (
+      Math.abs(deltaX) > SWIPE_THRESHOLD &&
+      Math.abs(deltaY) < VERTICAL_THRESHOLD
+    ) {
       if (deltaX > 0 && onSwipeRight) {
         onSwipeRight();
       } else if (deltaX < 0 && onSwipeLeft) {
@@ -135,12 +142,12 @@ export default function SwipeCard({
         handleEnd(e.clientX, e.clientY, e.target);
       };
 
-      document.addEventListener('mousemove', handleGlobalMouseMove);
-      document.addEventListener('mouseup', handleGlobalMouseUp);
+      document.addEventListener("mousemove", handleGlobalMouseMove);
+      document.addEventListener("mouseup", handleGlobalMouseUp);
 
       return () => {
-        document.removeEventListener('mousemove', handleGlobalMouseMove);
-        document.removeEventListener('mouseup', handleGlobalMouseUp);
+        document.removeEventListener("mousemove", handleGlobalMouseMove);
+        document.removeEventListener("mouseup", handleGlobalMouseUp);
       };
     }
   }, [isDragging, startX, startY]);
@@ -152,14 +159,14 @@ export default function SwipeCard({
     return {
       transform: `translateX(${dragOffset}px) rotate(${rotation}deg)`,
       opacity,
-      transition: isDragging ? 'none' : 'all 0.3s ease-out',
-      touchAction: 'none',
-      userSelect: 'none' as const
+      transition: isDragging ? "none" : "all 0.3s ease-out",
+      touchAction: "none",
+      userSelect: "none" as const,
     };
   };
 
-  const getIndicatorOpacity = (direction: 'left' | 'right') => {
-    if (direction === 'left') {
+  const getIndicatorOpacity = (direction: "left" | "right") => {
+    if (direction === "left") {
       return Math.min(1, Math.abs(Math.min(0, dragOffset)) / SWIPE_THRESHOLD);
     } else {
       return Math.min(1, Math.abs(Math.max(0, dragOffset)) / SWIPE_THRESHOLD);
@@ -169,18 +176,18 @@ export default function SwipeCard({
   return (
     <div className={`relative ${className}`}>
       {/* Indicateurs de swipe */}
-      <div 
+      <div
         className="absolute inset-0 flex items-center justify-start pl-8 pointer-events-none z-10"
-        style={{ opacity: getIndicatorOpacity('left') }}
+        style={{ opacity: getIndicatorOpacity("left") }}
       >
         <div className="bg-red-600 text-white px-4 py-2 rounded-full font-bold">
           ❌ 知らない Pas connu
         </div>
       </div>
 
-      <div 
+      <div
         className="absolute inset-0 flex items-center justify-end pr-8 pointer-events-none z-10"
-        style={{ opacity: getIndicatorOpacity('right') }}
+        style={{ opacity: getIndicatorOpacity("right") }}
       >
         <div className="bg-green-600 text-white px-4 py-2 rounded-full font-bold">
           ✅ 知ってる Connu
@@ -205,7 +212,8 @@ export default function SwipeCard({
       {/* Instructions */}
       <div className="mt-4 text-center">
         <p className="text-sm text-orange-700">
-          👆 タップで表示 Appuyez pour révéler • 👈 知らない Pas connu • 👉 知ってる Connu
+          👆 タップで表示 Appuyez pour révéler • 👈 知らない Pas connu • 👉
+          知ってる Connu
         </p>
       </div>
     </div>

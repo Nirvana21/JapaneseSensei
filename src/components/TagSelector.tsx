@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 interface TagSelectorProps {
   availableTags: string[];
@@ -9,12 +9,17 @@ interface TagSelectorProps {
   className?: string;
 }
 
-export default function TagSelector({ availableTags, selectedTags, onTagsChange, className = '' }: TagSelectorProps) {
+export default function TagSelector({
+  availableTags,
+  selectedTags,
+  onTagsChange,
+  className = "",
+}: TagSelectorProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleTag = (tag: string) => {
     if (selectedTags.includes(tag)) {
-      onTagsChange(selectedTags.filter(t => t !== tag));
+      onTagsChange(selectedTags.filter((t) => t !== tag));
     } else {
       onTagsChange([...selectedTags, tag]);
     }
@@ -49,13 +54,20 @@ export default function TagSelector({ availableTags, selectedTags, onTagsChange,
             onClick={() => setIsExpanded(!isExpanded)}
             className="text-orange-600 hover:text-red-700 transition-colors"
           >
-            <svg 
-              className={`w-4 h-4 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              className={`w-4 h-4 transform transition-transform ${
+                isExpanded ? "rotate-180" : ""
+              }`}
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
         </div>
@@ -76,28 +88,27 @@ export default function TagSelector({ availableTags, selectedTags, onTagsChange,
                 全解除 Tout désélectionner
               </button>
             </div>
-            
+
             <div className="flex flex-wrap gap-2">
-              {availableTags.map(tag => (
+              {availableTags.map((tag) => (
                 <button
                   key={tag}
                   onClick={() => toggleTag(tag)}
                   className={`px-3 py-1 text-xs rounded-lg border transition-all ${
                     selectedTags.includes(tag)
-                      ? 'bg-green-600 text-white border-green-500'
-                      : 'bg-orange-200 text-orange-800 border-orange-300 hover:bg-orange-300'
+                      ? "bg-green-600 text-white border-green-500"
+                      : "bg-orange-200 text-orange-800 border-orange-300 hover:bg-orange-300"
                   }`}
                 >
                   {tag}
                 </button>
               ))}
             </div>
-            
+
             <div className="text-xs text-orange-600 mt-2">
-              {selectedTags.length === 0 
-                ? "全漢字が含まれます Tous les kanjis seront inclus" 
-                : `${selectedTags.length} タグ選択中 tag(s) sélectionné(s)`
-              }
+              {selectedTags.length === 0
+                ? "全漢字が含まれます Tous les kanjis seront inclus"
+                : `${selectedTags.length} タグ選択中 tag(s) sélectionné(s)`}
             </div>
           </div>
         )}

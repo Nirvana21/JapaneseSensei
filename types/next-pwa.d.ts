@@ -1,4 +1,4 @@
-declare module 'next-pwa' {
+declare module "next-pwa" {
   interface PWAConfig {
     dest: string;
     disable?: boolean;

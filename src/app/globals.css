@@ -26,7 +26,8 @@ body {
 }
 
 /* Optimisations mobile pour le touch et le swipe */
-html, body {
+html,
+body {
   overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
@@ -38,7 +39,9 @@ html, body {
 }
 
 /* Permettre la sélection de texte seulement où nécessaire */
-input, textarea, .selectable-text {
+input,
+textarea,
+.selectable-text {
   -webkit-user-select: text;
   -khtml-user-select: text;
   -moz-user-select: text;

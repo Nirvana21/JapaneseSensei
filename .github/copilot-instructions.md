@@ -5,7 +5,7 @@ This is a Progressive Web App built with Next.js 15, TypeScript, and Tailwind CS
 ## Project Setup Complete
 
 - [x] Next.js 15 with App Router and TypeScript
-- [x] Tailwind CSS 4 for styling  
+- [x] Tailwind CSS 4 for styling
 - [x] PWA configuration with next-pwa (production-only service worker)
 - [x] Manifest.json with standalone mode and theme colors
 - [x] Homepage with online/offline status and storage monitoring

@@ -1,106 +1,133 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useKanjis } from '@/hooks/useKanjis';
+import { useState } from "react";
+import { useKanjis } from "@/hooks/useKanjis";
 
 interface AddKanjiFormProps {
   onKanjiAdded?: () => void;
 }
 
 export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
-  const [input, setInput] = useState('');
-  const [tags, setTags] = useState('');
-  const [customNotes, setCustomNotes] = useState('');
+  const [input, setInput] = useState("");
+  const [tags, setTags] = useState("");
+  const [customNotes, setCustomNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [mode, setMode] = useState<'api' | 'manual'>('api');
-  
+  const [successMessage, setSuccessMessage] = useState("");
+  const [mode, setMode] = useState<"api" | "manual">("api");
+
   // États pour le mode manuel
-  const [manualKanji, setManualKanji] = useState('');
-  const [manualMeanings, setManualMeanings] = useState('');
-  const [manualOnyomi, setManualOnyomi] = useState('');
-  const [manualKunyomi, setManualKunyomi] = useState('');
-  const [manualPrimaryMeaning, setManualPrimaryMeaning] = useState('');
-  const [manualPrimaryReading, setManualPrimaryReading] = useState('');
-  const [manualStrokeCount, setManualStrokeCount] = useState('');
-  const [manualJlptLevel, setManualJlptLevel] = useState('');
-  
-  const { addKanjiFromCharacter, addKanjiManually, updateKanji, error } = useKanjis();
+  const [manualKanji, setManualKanji] = useState("");
+  const [manualMeanings, setManualMeanings] = useState("");
+  const [manualOnyomi, setManualOnyomi] = useState("");
+  const [manualKunyomi, setManualKunyomi] = useState("");
+  const [manualPrimaryMeaning, setManualPrimaryMeaning] = useState("");
+  const [manualPrimaryReading, setManualPrimaryReading] = useState("");
+  const [manualStrokeCount, setManualStrokeCount] = useState("");
+  const [manualJlptLevel, setManualJlptLevel] = useState("");
+
+  const { addKanjiFromCharacter, addKanjiManually, updateKanji, error } =
+    useKanjis();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     setIsSubmitting(true);
-    setSuccessMessage('');
-    
+    setSuccessMessage("");
+
     try {
       let addedKanji: any = null;
-      
-      if (mode === 'api') {
+
+      if (mode === "api") {
         // Mode API : utiliser l'API Jisho
         if (!input.trim()) return;
-        
+
         addedKanji = await addKanjiFromCharacter(input.trim());
-        
+
         if (addedKanji) {
           // Ajouter les tags et notes personnalisées si fournis
           if (tags.trim() || customNotes.trim()) {
             const updatedKanji = { ...addedKanji };
-            
+
             if (tags.trim()) {
-              updatedKanji.tags = tags.split(',').map(tag => tag.trim().toLowerCase()).filter(Boolean);
+              updatedKanji.tags = tags
+                .split(",")
+                .map((tag) => tag.trim().toLowerCase())
+                .filter(Boolean);
             }
-            
+
             if (customNotes.trim()) {
               updatedKanji.customNotes = customNotes.trim();
             }
-            
+
             updatedKanji.lastModified = new Date();
             await updateKanji(updatedKanji);
           }
-          
-          setSuccessMessage(`✅ "${addedKanji.kanji}" ajouté via API avec succès !`);
-          setInput('');
+
+          setSuccessMessage(
+            `✅ "${addedKanji.kanji}" ajouté via API avec succès !`
+          );
+          setInput("");
         }
       } else {
         // Mode manuel : créer le kanji à la main
         if (!manualKanji.trim() || !manualMeanings.trim()) {
-          setSuccessMessage('❌ Le kanji et au moins une signification sont requis');
+          setSuccessMessage(
+            "❌ Le kanji et au moins une signification sont requis"
+          );
           return;
         }
-        
+
         const kanjiData = {
           kanji: manualKanji.trim(),
-          meanings: manualMeanings.split(',').map(m => m.trim()).filter(Boolean),
-          primaryMeaning: manualPrimaryMeaning.trim() || manualMeanings.split(',')[0]?.trim(),
-          onyomi: manualOnyomi.split(',').map(r => r.trim()).filter(Boolean),
-          kunyomi: manualKunyomi.split(',').map(r => r.trim()).filter(Boolean),
+          meanings: manualMeanings
+            .split(",")
+            .map((m) => m.trim())
+            .filter(Boolean),
+          primaryMeaning:
+            manualPrimaryMeaning.trim() || manualMeanings.split(",")[0]?.trim(),
+          onyomi: manualOnyomi
+            .split(",")
+            .map((r) => r.trim())
+            .filter(Boolean),
+          kunyomi: manualKunyomi
+            .split(",")
+            .map((r) => r.trim())
+            .filter(Boolean),
           primaryReading: manualPrimaryReading.trim(),
-          strokeCount: manualStrokeCount ? parseInt(manualStrokeCount) : undefined,
+          strokeCount: manualStrokeCount
+            ? parseInt(manualStrokeCount)
+            : undefined,
           jlptLevel: manualJlptLevel || undefined,
-          tags: tags.trim() ? tags.split(',').map(tag => tag.trim().toLowerCase()).filter(Boolean) : [],
+          tags: tags.trim()
+            ? tags
+                .split(",")
+                .map((tag) => tag.trim().toLowerCase())
+                .filter(Boolean)
+            : [],
           customNotes: customNotes.trim() || undefined,
           isCommon: false, // Par défaut pour les ajouts manuels
         };
-        
+
         addedKanji = await addKanjiManually(kanjiData);
-        
+
         if (addedKanji) {
-          setSuccessMessage(`✅ "${addedKanji.kanji}" ajouté manuellement avec succès !`);
+          setSuccessMessage(
+            `✅ "${addedKanji.kanji}" ajouté manuellement avec succès !`
+          );
           // Réinitialiser les champs manuels
-          setManualKanji('');
-          setManualMeanings('');
-          setManualOnyomi('');
-          setManualKunyomi('');
-          setManualPrimaryMeaning('');
-          setManualPrimaryReading('');
-          setManualStrokeCount('');
-          setManualJlptLevel('');
+          setManualKanji("");
+          setManualMeanings("");
+          setManualOnyomi("");
+          setManualKunyomi("");
+          setManualPrimaryMeaning("");
+          setManualPrimaryReading("");
+          setManualStrokeCount("");
+          setManualJlptLevel("");
         }
       }
-      
+
       if (addedKanji) {
-        setCustomNotes('');
+        setCustomNotes("");
         onKanjiAdded?.();
       }
     } catch (error) {
@@ -112,17 +139,17 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
-    setSuccessMessage('');
+    setSuccessMessage("");
   };
 
   const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTags(e.target.value);
-    setSuccessMessage('');
+    setSuccessMessage("");
   };
 
   const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCustomNotes(e.target.value);
-    setSuccessMessage('');
+    setSuccessMessage("");
   };
 
   return (
@@ -132,22 +159,22 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
         <div className="flex gap-2">
           <button
             type="button"
-            onClick={() => setMode('api')}
+            onClick={() => setMode("api")}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              mode === 'api' 
-                ? 'bg-red-600 text-white shadow-md' 
-                : 'bg-orange-200 text-orange-800 hover:bg-orange-300'
+              mode === "api"
+                ? "bg-red-600 text-white shadow-md"
+                : "bg-orange-200 text-orange-800 hover:bg-orange-300"
             }`}
           >
             🔍 検索 Recherche API
           </button>
           <button
             type="button"
-            onClick={() => setMode('manual')}
+            onClick={() => setMode("manual")}
             className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              mode === 'manual' 
-                ? 'bg-red-600 text-white shadow-md' 
-                : 'bg-orange-200 text-orange-800 hover:bg-orange-300'
+              mode === "manual"
+                ? "bg-red-600 text-white shadow-md"
+                : "bg-orange-200 text-orange-800 hover:bg-orange-300"
             }`}
           >
             ✏️ 手動 Saisie manuelle
@@ -156,10 +183,13 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {mode === 'api' ? (
+        {mode === "api" ? (
           // Mode API - Formulaire simple
           <div>
-            <label htmlFor="kanji-input" className="block text-sm font-medium text-red-800 mb-2">
+            <label
+              htmlFor="kanji-input"
+              className="block text-sm font-medium text-red-800 mb-2"
+            >
               漢字・日本語 Kanji ou mot japonais
             </label>
             <div className="flex gap-3">
@@ -185,7 +215,7 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
                     <span>検索中... Recherche...</span>
                   </div>
                 ) : (
-                  '検索 Rechercher'
+                  "検索 Rechercher"
                 )}
               </button>
             </div>
@@ -324,7 +354,9 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
             {/* Bouton d'ajout manuel */}
             <button
               type="submit"
-              disabled={!manualKanji.trim() || !manualMeanings.trim() || isSubmitting}
+              disabled={
+                !manualKanji.trim() || !manualMeanings.trim() || isSubmitting
+              }
               className="w-full px-6 py-3 bg-gradient-to-r from-red-600 to-orange-700 text-white font-medium rounded-xl hover:from-red-700 hover:to-orange-800 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed transition-all shadow-lg"
             >
               {isSubmitting ? (
@@ -333,7 +365,7 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
                   <span>追加中... Ajout en cours...</span>
                 </div>
               ) : (
-                '✏️ 手動追加 Ajouter manuellement'
+                "✏️ 手動追加 Ajouter manuellement"
               )}
             </button>
           </div>
@@ -343,13 +375,16 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-4 border-t border-orange-300/50">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label htmlFor="tags-input" className="block text-sm font-medium text-red-800">
+              <label
+                htmlFor="tags-input"
+                className="block text-sm font-medium text-red-800"
+              >
                 タグ Tags (任意 optionnel)
               </label>
               {tags && (
                 <button
                   type="button"
-                  onClick={() => setTags('')}
+                  onClick={() => setTags("")}
                   className="text-xs text-orange-600 hover:text-red-600 transition-colors"
                   disabled={isSubmitting}
                 >
@@ -375,7 +410,10 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
 
           {/* Notes personnelles */}
           <div>
-            <label htmlFor="notes-input" className="block text-sm font-medium text-red-800 mb-2">
+            <label
+              htmlFor="notes-input"
+              className="block text-sm font-medium text-red-800 mb-2"
+            >
               メモ Notes (任意 optionnel)
             </label>
             <textarea
@@ -397,7 +435,7 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
           <p className="text-red-800 text-sm">❌ {error}</p>
         </div>
       )}
-      
+
       {successMessage && (
         <div className="p-3 bg-green-100 backdrop-blur-sm border border-green-300 rounded-lg">
           <p className="text-green-800 text-sm">{successMessage}</p>

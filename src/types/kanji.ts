@@ -55,23 +55,23 @@ export interface KanjiDetails {
 export interface KanjiEntry {
   id: string; // UUID généré
   kanji: string; // Le kanji ou mot principal
-  
+
   // Lectures (de l'API + modifications manuelles)
   onyomi: string[]; // Lectures chinoises
   kunyomi: string[]; // Lectures japonaises
   primaryReading?: string; // Lecture principale choisie manuellement
-  
+
   // Significations (de l'API + modifications manuelles)
   meanings: string[]; // Significations de l'API
   primaryMeaning?: string; // Signification principale choisie manuellement
-  
+
   // Informations supplémentaires
   radicals?: string[]; // Clés/radicaux expliqués
   strokeCount?: number;
   grade?: number; // Niveau scolaire japonais
   jlptLevel?: string; // Niveau JLPT
   frequency?: number; // Fréquence d'usage
-  
+
   // Décomposition pour mots composés
   kanjiComponents?: Array<{
     character: string;
@@ -79,21 +79,21 @@ export interface KanjiEntry {
     meaning: string;
     strokeCount?: number;
   }>;
-  
+
   // Données personnalisées
   customNotes?: string; // Détails supplémentaires ajoutés à la main
   tags?: string[]; // Tags personnalisés
-  
+
   // Métadonnées
   dateAdded: Date;
   lastModified: Date;
   isCommon?: boolean;
-  
+
   // Données d'apprentissage (pour les cartes plus tard)
   studyData?: {
     timesStudied: number;
     correctAnswers: number;
     lastStudied?: Date;
-    difficulty: 'easy' | 'medium' | 'hard';
+    difficulty: "easy" | "medium" | "hard";
   };
 }
