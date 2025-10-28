@@ -74,12 +74,15 @@ export default function KanjiCanvas({
     const drawH = fitToParent ? displaySize.h : height;
 
     // Gérer la densité de pixels pour une netteté sur écrans Retina
-    const dpr = (typeof window !== 'undefined' && window.devicePixelRatio) ? window.devicePixelRatio : 1;
+    const dpr =
+      typeof window !== "undefined" && window.devicePixelRatio
+        ? window.devicePixelRatio
+        : 1;
     canvas.width = Math.floor(drawW * dpr);
     canvas.height = Math.floor(drawH * dpr);
     // Faire correspondre la taille d'affichage au conteneur
-    (canvas.style as any).width = drawW + 'px';
-    (canvas.style as any).height = drawH + 'px';
+    (canvas.style as any).width = drawW + "px";
+    (canvas.style as any).height = drawH + "px";
 
     ctx.setTransform(1, 0, 0, 1, 0, 0); // reset
     if (dpr !== 1) {
@@ -372,21 +375,34 @@ export default function KanjiCanvas({
             <div className="inline-flex items-center gap-1 bg-orange-100 rounded-lg p-1 border border-orange-200">
               <button
                 onClick={() => setUserScale(0.8)}
-                className={`px-3 py-1 text-sm rounded-md ${ (strokeScale ?? userScale) < 0.9 ? 'bg-white text-orange-700 shadow-sm' : 'text-orange-700 hover:bg-orange-200'}`}
+                className={`px-3 py-1 text-sm rounded-md ${
+                  (strokeScale ?? userScale) < 0.9
+                    ? "bg-white text-orange-700 shadow-sm"
+                    : "text-orange-700 hover:bg-orange-200"
+                }`}
                 aria-label="Trait fin"
               >
                 Fin
               </button>
               <button
                 onClick={() => setUserScale(1)}
-                className={`px-3 py-1 text-sm rounded-md ${ (strokeScale ?? userScale) >= 0.9 && (strokeScale ?? userScale) < 1.15 ? 'bg-white text-orange-700 shadow-sm' : 'text-orange-700 hover:bg-orange-200'}`}
+                className={`px-3 py-1 text-sm rounded-md ${
+                  (strokeScale ?? userScale) >= 0.9 &&
+                  (strokeScale ?? userScale) < 1.15
+                    ? "bg-white text-orange-700 shadow-sm"
+                    : "text-orange-700 hover:bg-orange-200"
+                }`}
                 aria-label="Trait moyen"
               >
                 Moyen
               </button>
               <button
                 onClick={() => setUserScale(1.3)}
-                className={`px-3 py-1 text-sm rounded-md ${ (strokeScale ?? userScale) >= 1.15 ? 'bg-white text-orange-700 shadow-sm' : 'text-orange-700 hover:bg-orange-200'}`}
+                className={`px-3 py-1 text-sm rounded-md ${
+                  (strokeScale ?? userScale) >= 1.15
+                    ? "bg-white text-orange-700 shadow-sm"
+                    : "text-orange-700 hover:bg-orange-200"
+                }`}
                 aria-label="Trait épais"
               >
                 Épais

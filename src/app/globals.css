@@ -136,7 +136,8 @@ button {
 }
 
 @keyframes wiggle {
-  0%, 7% {
+  0%,
+  7% {
     transform: rotateZ(0);
   }
   15% {
@@ -154,7 +155,8 @@ button {
   35% {
     transform: rotateZ(-4deg);
   }
-  40%, 100% {
+  40%,
+  100% {
     transform: rotateZ(0);
   }
 }
@@ -222,13 +224,18 @@ button {
 }
 
 .shine-effect::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
   transition: left 0.5s;
 }
 
@@ -255,7 +262,7 @@ button {
 }
 
 .floating-particles::before {
-  content: '✨';
+  content: "✨";
   position: absolute;
   top: 10%;
   left: 10%;
@@ -265,7 +272,7 @@ button {
 }
 
 .floating-particles::after {
-  content: '🌸';
+  content: "🌸";
   position: absolute;
   top: 20%;
   right: 15%;
@@ -275,7 +282,8 @@ button {
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px) rotate(0deg);
   }
   50% {

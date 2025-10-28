@@ -38,7 +38,9 @@ interface DetailedStats {
 export default function StatsPage() {
   const { kanjis } = useKanjis();
   const [stats, setStats] = useState<DetailedStats | null>(null);
-  const [survivalStats, setSurvivalStats] = useState<SurvivalStats | null>(null);
+  const [survivalStats, setSurvivalStats] = useState<SurvivalStats | null>(
+    null
+  );
   const [allLearningKanjis, setAllLearningKanjis] = useState<
     SimpleLearningKanji[]
   >([]);
@@ -131,11 +133,11 @@ export default function StatsPage() {
     };
 
     setStats(detailedStats);
-    
+
     // Charger les statistiques Survival
     const survivalData = survivalService.getSurvivalStats();
     setSurvivalStats(survivalData);
-    
+
     setLoading(false);
   };
 
@@ -296,7 +298,7 @@ export default function StatsPage() {
               <span>🔥</span>
               <span>持久モード Survival</span>
             </h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <div className="bg-gradient-to-br from-red-100/90 to-pink-100/90 rounded-2xl p-6 border border-red-200/50 shadow-sm">
                 <div className="flex items-center justify-between">

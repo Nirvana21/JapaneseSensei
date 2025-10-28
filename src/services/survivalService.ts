@@ -1,4 +1,4 @@
-import { SimpleLearningKanji } from './adaptiveLearningService';
+import { SimpleLearningKanji } from "./adaptiveLearningService";
 
 export interface SurvivalState {
   level: number;
@@ -7,7 +7,7 @@ export interface SurvivalState {
   maxLives: number;
   score: number;
   isGameOver: boolean;
-  currentDirection: 'jp-to-fr' | 'fr-to-jp';
+  currentDirection: "jp-to-fr" | "fr-to-jp";
   difficultyMultiplier: number;
 }
 
@@ -20,7 +20,7 @@ export interface SurvivalStats {
 }
 
 class SurvivalService {
-  private readonly STORAGE_KEY = 'survival_stats';
+  private readonly STORAGE_KEY = "survival_stats";
   private readonly INITIAL_LIVES = 3;
 
   /**
@@ -34,15 +34,20 @@ class SurvivalService {
       maxLives: this.INITIAL_LIVES,
       score: 0,
       isGameOver: false,
-      currentDirection: Math.random() > 0.5 ? 'jp-to-fr' : 'fr-to-jp',
-      difficultyMultiplier: 1.0
+      currentDirection: Math.random() > 0.5 ? "jp-to-fr" : "fr-to-jp",
+      difficultyMultiplier: 1.0,
     };
   }
 
   /**
    * Calcule les probabilités de sélection selon le niveau
    */
-  private getDifficultyDistribution(level: number): { easy: number; medium: number; hard: number; unknown: number } {
+  private getDifficultyDistribution(level: number): {
+    easy: number;
+    medium: number;
+    hard: number;
+    unknown: number;
+  } {
     // Ramps up sooner to feel progression within the first dozen answers
     if (level <= 1) {
       return { easy: 0.7, medium: 0.3, hard: 0.0, unknown: 0.0 };
@@ -60,16 +65,19 @@ class SurvivalService {
   /**
    * Sélectionne un kanji selon la difficulté progressive
    */
-  selectKanjiForSurvival(allKanjis: SimpleLearningKanji[], level: number): SimpleLearningKanji | null {
+  selectKanjiForSurvival(
+    allKanjis: SimpleLearningKanji[],
+    level: number
+  ): SimpleLearningKanji | null {
     if (allKanjis.length === 0) return null;
 
     const distribution = this.getDifficultyDistribution(level);
-    
+
     // Grouper les kanjis par niveau de maîtrise
-    const easyKanjis = allKanjis.filter(k => k.learningData.score === 3);
-    const mediumKanjis = allKanjis.filter(k => k.learningData.score === 2);
-    const hardKanjis = allKanjis.filter(k => k.learningData.score === 1);
-    const unknownKanjis = allKanjis.filter(k => k.learningData.score === 0);
+    const easyKanjis = allKanjis.filter((k) => k.learningData.score === 3);
+    const mediumKanjis = allKanjis.filter((k) => k.learningData.score === 2);
+    const hardKanjis = allKanjis.filter((k) => k.learningData.score === 1);
+    const unknownKanjis = allKanjis.filter((k) => k.learningData.score === 0);
 
     // Calculer les poids effectifs
     const totalEasy = easyKanjis.length;
@@ -78,23 +86,45 @@ class SurvivalService {
     const totalUnknown = unknownKanjis.length;
 
     // Si pas assez de kanjis dans certaines catégories, redistribuer
-    const availableCategories: Array<{ kanjis: SimpleLearningKanji[]; weight: number }> = [];
-    
-    if (totalEasy > 0) availableCategories.push({ kanjis: easyKanjis, weight: distribution.easy });
-    if (totalMedium > 0) availableCategories.push({ kanjis: mediumKanjis, weight: distribution.medium });
-    if (totalHard > 0) availableCategories.push({ kanjis: hardKanjis, weight: distribution.hard });
-    if (totalUnknown > 0) availableCategories.push({ kanjis: unknownKanjis, weight: distribution.unknown });
+    const availableCategories: Array<{
+      kanjis: SimpleLearningKanji[];
+      weight: number;
+    }> = [];
+
+    if (totalEasy > 0)
+      availableCategories.push({
+        kanjis: easyKanjis,
+        weight: distribution.easy,
+      });
+    if (totalMedium > 0)
+      availableCategories.push({
+        kanjis: mediumKanjis,
+        weight: distribution.medium,
+      });
+    if (totalHard > 0)
+      availableCategories.push({
+        kanjis: hardKanjis,
+        weight: distribution.hard,
+      });
+    if (totalUnknown > 0)
+      availableCategories.push({
+        kanjis: unknownKanjis,
+        weight: distribution.unknown,
+      });
 
     if (availableCategories.length === 0) return allKanjis[0];
 
     // Normaliser les poids
-    const totalWeight = availableCategories.reduce((sum, cat) => sum + cat.weight, 0);
-    availableCategories.forEach(cat => cat.weight /= totalWeight);
+    const totalWeight = availableCategories.reduce(
+      (sum, cat) => sum + cat.weight,
+      0
+    );
+    availableCategories.forEach((cat) => (cat.weight /= totalWeight));
 
     // Sélection pondérée
     const random = Math.random();
     let cumulative = 0;
-    
+
     for (const category of availableCategories) {
       cumulative += category.weight;
       if (random <= cumulative) {
@@ -110,7 +140,10 @@ class SurvivalService {
   /**
    * Traite une réponse et met à jour l'état du jeu
    */
-  processAnswer(currentState: SurvivalState, isCorrect: boolean): SurvivalState {
+  processAnswer(
+    currentState: SurvivalState,
+    isCorrect: boolean
+  ): SurvivalState {
     // Créer un nouvel objet état complètement nouveau
     const newState: SurvivalState = {
       level: currentState.level,
@@ -120,14 +153,14 @@ class SurvivalService {
       score: currentState.score,
       isGameOver: currentState.isGameOver,
       currentDirection: currentState.currentDirection,
-      difficultyMultiplier: currentState.difficultyMultiplier
+      difficultyMultiplier: currentState.difficultyMultiplier,
     };
 
     if (isCorrect) {
       // Bonne réponse
       newState.streak += 1;
       newState.score += Math.floor(10 * newState.difficultyMultiplier);
-      
+
       // Augmentation de niveau plus fréquente (tous les 5 bonnes réponses cumulées)
       const newLevel = Math.floor(newState.streak / 5) + 1;
       if (newLevel > newState.level) {
@@ -143,7 +176,7 @@ class SurvivalService {
     }
 
     // Changer la direction aléatoirement pour la prochaine question
-    newState.currentDirection = Math.random() > 0.5 ? 'jp-to-fr' : 'fr-to-jp';
+    newState.currentDirection = Math.random() > 0.5 ? "jp-to-fr" : "fr-to-jp";
 
     return newState;
   }
@@ -159,7 +192,7 @@ class SurvivalService {
         totalSessions: 0,
         totalQuestions: 0,
         averageStreak: 0,
-        livesLost: 0
+        livesLost: 0,
       };
     }
     return JSON.parse(stored);
@@ -170,18 +203,18 @@ class SurvivalService {
    */
   saveSurvivalSession(finalState: SurvivalState): void {
     const stats = this.getSurvivalStats();
-    
+
     // Mettre à jour les stats
     stats.totalSessions += 1;
     stats.totalQuestions += finalState.streak;
-    stats.livesLost += (this.INITIAL_LIVES - finalState.lives);
-    
+    stats.livesLost += this.INITIAL_LIVES - finalState.lives;
+
     if (finalState.streak > stats.bestStreak) {
       stats.bestStreak = finalState.streak;
     }
-    
+
     stats.averageStreak = stats.totalQuestions / stats.totalSessions;
-    
+
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(stats));
   }
 
@@ -190,19 +223,22 @@ class SurvivalService {
    */
   getEncouragementMessage(streak: number): { emoji: string; message: string } {
     if (streak === 0) {
-      return { emoji: '🌱', message: 'Premier pas vers la maîtrise !' };
+      return { emoji: "🌱", message: "Premier pas vers la maîtrise !" };
     } else if (streak < 5) {
-      return { emoji: '🔥', message: 'Bon début ! Continue !' };
+      return { emoji: "🔥", message: "Bon début ! Continue !" };
     } else if (streak < 10) {
-      return { emoji: '⚡', message: 'Tu chauffes ! Excellent !' };
+      return { emoji: "⚡", message: "Tu chauffes ! Excellent !" };
     } else if (streak < 20) {
-      return { emoji: '🚀', message: 'Fantastique ! Tu voles !' };
+      return { emoji: "🚀", message: "Fantastique ! Tu voles !" };
     } else if (streak < 50) {
-      return { emoji: '🌟', message: 'Incroyable série ! Maître en devenir !' };
+      return { emoji: "🌟", message: "Incroyable série ! Maître en devenir !" };
     } else if (streak < 100) {
-      return { emoji: '👑', message: 'Legendary ! Tu es un vrai sensei !' };
+      return { emoji: "👑", message: "Legendary ! Tu es un vrai sensei !" };
     } else {
-      return { emoji: '🐉', message: '竜 Dragon ! Niveau légendaire atteint !' };
+      return {
+        emoji: "🐉",
+        message: "竜 Dragon ! Niveau légendaire atteint !",
+      };
     }
   }
 
@@ -218,12 +254,12 @@ class SurvivalService {
    * Obtient la description du niveau actuel
    */
   getLevelDescription(level: number): string {
-    if (level === 1) return '初心者 Débutant';
-    if (level <= 5) return '学生 Étudiant';
-    if (level <= 10) return '練習生 Apprenti';
-    if (level <= 20) return '達人 Expert';
-    if (level <= 50) return '師範 Maître';
-    return '伝説 Légende';
+    if (level === 1) return "初心者 Débutant";
+    if (level <= 5) return "学生 Étudiant";
+    if (level <= 10) return "練習生 Apprenti";
+    if (level <= 20) return "達人 Expert";
+    if (level <= 50) return "師範 Maître";
+    return "伝説 Légende";
   }
 }
 
