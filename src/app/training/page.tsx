@@ -150,8 +150,9 @@ export default function TrainingPage() {
     const learningStatsUpdate = simpleAdaptiveLearningService.getLearningStats(updatedAllKanjis);
     setLearningStats(learningStatsUpdate);
 
-    // Vérifier si c'est la fin de session (c'était la dernière carte)
-    if (currentIndex >= selectedKanjis.length - 1) {
+    // Vérifier si c'est la fin de session (on vient de répondre à la dernière carte)
+    // La session est terminée quand le nombre total de réponses égale le nombre de cartes
+    if (newStats.total >= selectedKanjis.length) {
       // Fin de session - marquer comme terminée
       setStats({
         ...newStats,
@@ -159,7 +160,7 @@ export default function TrainingPage() {
       });
       // Ne pas incrémenter currentIndex pour rester sur la dernière carte
     } else {
-      // Continuer la session
+      // Continuer la session - passer à la carte suivante
       setStats(newStats);
       setCurrentIndex(prev => prev + 1);
       setShowAnswer(false);
