@@ -822,7 +822,11 @@ function TrainingPageContent() {
                   <p className="text-center text-slate-300 mb-3 text-sm">
                     ✏️ Entraînez-vous à écrire
                   </p>
-                  <KanjiCanvas clearTrigger={clearCanvas} />
+                  <div className="flex justify-center">
+                    <div className="w-72 h-72 sm:w-96 sm:h-96">
+                      <KanjiCanvas fitToParent clearTrigger={clearCanvas} />
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

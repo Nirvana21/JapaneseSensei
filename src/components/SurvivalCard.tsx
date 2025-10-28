@@ -74,7 +74,7 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
   };
 
   return (
-    <div className="relative max-w-md mx-auto px-2 sm:px-0">
+  <div className="relative max-w-lg mx-auto px-2 sm:px-0">
       
       {/* Carte principale */}
       <div
@@ -126,12 +126,11 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
               ✏️ Essayez d'écrire le kanji puis révélez la réponse
             </p>
             <div className="flex justify-center">
-              <div className="w-48 h-48 sm:w-60 sm:h-60 bg-orange-50 rounded-xl border-2 border-orange-200 shadow-inner relative z-0">
+              <div className="w-72 h-72 sm:w-96 sm:h-96 bg-orange-50 rounded-xl border-2 border-orange-200 shadow-inner relative z-0">
                 <KanjiCanvas 
-                  width={240}
-                  height={240}
+                  fitToParent
                   clearTrigger={clearCanvas}
-                  className="mx-auto max-w-full max-h-full"
+                  className="w-full h-full"
                   showControls={false}
                 />
               </div>
