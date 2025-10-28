@@ -61,10 +61,12 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
   const handleAnswer = (isCorrect: boolean) => {
     if (disabled) return;
     
+    console.log('SurvivalCard handleAnswer called with:', isCorrect); // Debug
     setSelectedAnswer(isCorrect ? 'correct' : 'incorrect');
     
     // Petit délai pour l'animation
     setTimeout(() => {
+      console.log('SurvivalCard calling onAnswer with:', isCorrect); // Debug
       onAnswer(isCorrect);
       setShowAnswer(false);
       setSelectedAnswer(null);
@@ -81,27 +83,38 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
           bg-gradient-to-br from-orange-50/95 to-red-50/95 
           backdrop-blur-md rounded-3xl border-2 shadow-2xl 
           min-h-[350px] sm:min-h-[400px] flex flex-col justify-center items-center p-4 sm:p-8 
-          transition-all duration-300 cursor-pointer
+          transition-all duration-500 ease-out cursor-pointer relative overflow-hidden
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
-          ${selectedAnswer === 'correct' ? 'border-green-500 bg-gradient-to-br from-green-50 to-green-100' : ''}
-          ${selectedAnswer === 'incorrect' ? 'border-red-500 bg-gradient-to-br from-red-50 to-red-100' : 'border-orange-200/80'}
-          ${!showAnswer ? 'hover:shadow-3xl hover:scale-105' : ''}
+          ${selectedAnswer === 'correct' ? 'border-green-500 bg-gradient-to-br from-green-50 to-green-100 scale-105' : ''}
+          ${selectedAnswer === 'incorrect' ? 'border-red-500 bg-gradient-to-br from-red-50 to-red-100 scale-105' : 'border-orange-200/80'}
+          ${!showAnswer && !disabled ? 'hover:shadow-3xl hover:scale-[1.02] hover:border-red-300' : ''}
+          ${showAnswer ? 'shadow-green-200/50' : 'shadow-orange-200/50'}
         `}
       >
         
-        {/* Indicateur de direction */}
-        <div className="absolute top-4 right-4 bg-white/80 rounded-full px-3 py-1 border border-orange-200/50">
+        {/* Effet de brillance au survol */}
+        {!showAnswer && !disabled && (
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none" />
+        )}
+        
+        {/* Particules flottantes d'ambiance */}
+        <div className="absolute top-2 left-4 w-2 h-2 bg-orange-300/30 rounded-full animate-pulse" />
+        <div className="absolute top-8 right-8 w-1 h-1 bg-red-400/40 rounded-full animate-ping" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-6 left-8 w-1.5 h-1.5 bg-yellow-400/30 rounded-full animate-bounce" style={{ animationDelay: '2s' }} />
+        
+        {/* Indicateur de direction avec animation */}
+        <div className="absolute top-4 right-4 bg-white/90 rounded-full px-3 py-1 border border-orange-200/50 transition-all duration-300 hover:scale-110 hover:bg-white">
           <p className="text-xs font-bold text-orange-700">
             {direction === 'jp-to-fr' ? '🇯🇵 → 🇫🇷' : '🇫🇷 → 🇯🇵'}
           </p>
         </div>
 
-        {/* Question */}
-        <div className="text-center mb-6">
-          <p className="text-sm text-orange-600 mb-2 font-medium">
+        {/* Question avec animation d'apparition */}
+        <div className="text-center mb-6 transform transition-all duration-500 ease-out">
+          <p className="text-sm text-orange-600 mb-2 font-medium opacity-80 animate-fade-in">
             {content.questionLabel}
           </p>
-          <div className={content.questionClass}>
+          <div className={`${content.questionClass} transition-all duration-300 hover:scale-105`}>
             {content.question}
           </div>
         </div>
@@ -125,24 +138,24 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
           </div>
         )}
 
-        {/* Séparateur avec animation */}
+        {/* Séparateur avec animation améliorée */}
         <div className="w-full flex justify-center mb-6">
           <div className={`
-            w-16 h-1 rounded-full transition-all duration-500
+            w-16 h-1 rounded-full transition-all duration-700 ease-out
             ${showAnswer 
-              ? 'bg-gradient-to-r from-green-400 to-green-600' 
-              : 'bg-gradient-to-r from-orange-400 to-red-500'
+              ? 'bg-gradient-to-r from-green-400 to-green-600 w-24 h-1.5' 
+              : 'bg-gradient-to-r from-orange-400 to-red-500 animate-pulse'
             }
           `} />
         </div>
 
-        {/* Réponse (visible après clic) */}
+        {/* Réponse avec animation d'entrée fluide */}
         {showAnswer ? (
-          <div className="text-center">
-            <p className="text-sm text-green-600 mb-2 font-medium">
+          <div className="text-center animate-fade-in-up">
+            <p className="text-sm text-green-600 mb-2 font-medium opacity-80">
               {content.answerLabel}
             </p>
-            <div className={content.answerClass}>
+            <div className={`${content.answerClass} transition-all duration-300 hover:scale-110`}>
               {content.answer}
             </div>
             
@@ -153,8 +166,22 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
                   ✏️ Comparez avec votre dessin ci-dessus
                 </p>
                 <div className="text-center text-sm text-green-700 mb-3">
-                  Votre tentative vs la réponse ⬆️
+                  Votre tentative ⬆️ vs la réponse ⬇️
                 </div>
+                {/* Canvas de comparaison - différent du premier */}
+                <div className="flex justify-center">
+                  <div className="w-48 h-48 sm:w-60 sm:h-60 bg-gray-100 rounded-lg border-2 border-dashed border-green-300">
+                    <KanjiCanvas 
+                      width={240}
+                      height={240}
+                      clearTrigger={clearCanvas + 1000} // Trigger différent pour éviter les conflits
+                      className="mx-auto max-w-full max-h-full opacity-70"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-green-600 mt-2 text-center">
+                  ⬆️ Canvas de comparaison - Vous pouvez dessiner ici aussi
+                </p>
               </div>
             )}
             
@@ -200,36 +227,47 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
             )}
           </div>
         ) : (
-          <div className="text-center text-orange-500">
+          <div className="text-center text-orange-500 animate-bounce">
             <p className="text-sm font-medium">
               👆 Touchez pour révéler
             </p>
+            <div className="mt-2 flex justify-center">
+              <div className="w-8 h-1 bg-orange-300 rounded-full animate-pulse" />
+            </div>
           </div>
         )}
 
-        {/* Animation de feedback */}
+        {/* Animation de feedback améliorée */}
         {selectedAnswer && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
             <div className={`
-              text-6xl animate-pulse
-              ${selectedAnswer === 'correct' ? 'text-green-500' : 'text-red-500'}
+              text-8xl transition-all duration-500 ease-out
+              ${selectedAnswer === 'correct' 
+                ? 'text-green-500 animate-bounce scale-110' 
+                : 'text-red-500 animate-pulse scale-110'
+              }
             `}>
               {selectedAnswer === 'correct' ? '✅' : '❌'}
             </div>
+            {/* Onde de choc visuelle */}
+            <div className={`
+              absolute w-32 h-32 rounded-full opacity-20 animate-ping
+              ${selectedAnswer === 'correct' ? 'bg-green-400' : 'bg-red-400'}
+            `} />
           </div>
         )}
       </div>
 
-      {/* Boutons de réponse (visibles après révélation) */}
+      {/* Boutons de réponse avec animations améliorées */}
       {showAnswer && !selectedAnswer && (
-        <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6 px-2 sm:px-0">
+        <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6 px-2 sm:px-0 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
           <button
             onClick={() => handleAnswer(false)}
             disabled={disabled}
-            className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-2xl transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-red-300/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none active:scale-95"
           >
             <div className="flex items-center justify-center gap-2">
-              <span className="text-xl sm:text-2xl">👈</span>
+              <span className="text-xl sm:text-2xl animate-pulse">👈</span>
               <div className="text-left">
                 <p className="text-sm">知らない</p>
                 <p className="text-xs opacity-90">Pas sûr</p>
@@ -240,14 +278,14 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
           <button
             onClick={() => handleAnswer(true)}
             disabled={disabled}
-            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-2xl transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-green-300/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none active:scale-95"
           >
             <div className="flex items-center justify-center gap-2">
               <div className="text-right">
                 <p className="text-sm">知ってる</p>
                 <p className="text-xs opacity-90">Je sais</p>
               </div>
-              <span className="text-xl sm:text-2xl">👉</span>
+              <span className="text-xl sm:text-2xl animate-pulse">👉</span>
             </div>
           </button>
         </div>

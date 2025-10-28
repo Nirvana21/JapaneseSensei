@@ -18,11 +18,15 @@ const SurvivalHUD: React.FC<SurvivalHUDProps> = ({
       hearts.push(
         <span
           key={i}
-          className={`text-lg transition-all duration-300 ${
+          className={`text-lg transition-all duration-500 ease-out ${
             isAlive 
-              ? 'text-red-500 transform scale-100' 
-              : 'text-gray-300 transform scale-75 opacity-50'
+              ? 'text-red-500 transform scale-100 animate-heartbeat' 
+              : 'text-gray-300 transform scale-75 opacity-50 animate-wiggle'
           }`}
+          style={{ 
+            animationDelay: `${i * 100}ms`,
+            animationDuration: isAlive ? '2s' : '1s'
+          }}
         >
           {isAlive ? '❤️' : '💔'}
         </span>
@@ -35,12 +39,12 @@ const SurvivalHUD: React.FC<SurvivalHUDProps> = ({
   const progressInLevel = (survivalState.streak % 10) / 10 * 100;
 
   return (
-    <div className="bg-gradient-to-r from-orange-100/90 to-red-100/90 backdrop-blur-sm rounded-2xl border border-orange-200/80 shadow-lg p-4 mb-4">
+    <div className="bg-gradient-to-r from-orange-100/90 to-red-100/90 backdrop-blur-sm rounded-2xl border border-orange-200/80 shadow-lg p-4 mb-4 animate-fade-in floating-particles shine-effect">
       
-      {/* Première ligne : Titre et direction */}
+      {/* Première ligne : Titre et direction avec animations */}
       <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">🔥</span>
+        <div className="flex items-center gap-2 animate-slide-in-left">
+          <span className="text-2xl animate-bounce">🔥</span>
           <div>
             <h2 className="text-lg font-bold text-orange-700">
               持久モード
@@ -49,8 +53,8 @@ const SurvivalHUD: React.FC<SurvivalHUDProps> = ({
           </div>
         </div>
         
-        {/* Direction de la question */}
-        <div className="text-center bg-white/70 rounded-lg px-3 py-1 border border-orange-200/50">
+        {/* Direction de la question avec animation */}
+        <div className="text-center bg-white/80 rounded-lg px-3 py-1 border border-orange-200/50 animate-slide-in-right transition-smooth hover:scale-105 hover:bg-white">
           <p className="text-sm font-bold text-orange-700">
             {survivalState.currentDirection === 'jp-to-fr' 
               ? '🇯🇵 → 🇫🇷' 
@@ -66,11 +70,11 @@ const SurvivalHUD: React.FC<SurvivalHUDProps> = ({
         </div>
       </div>
 
-      {/* Deuxième ligne : Stats principales */}
+      {/* Deuxième ligne : Stats principales avec animations staggerées */}
       <div className="grid grid-cols-4 gap-2 sm:gap-3 mb-3">
         
         {/* Vies */}
-        <div className="text-center bg-white/70 rounded-lg p-1 sm:p-2 border border-orange-200/50">
+        <div className="text-center bg-white/80 rounded-lg p-1 sm:p-2 border border-orange-200/50 animate-fade-in-up transition-smooth hover:scale-105 hover:shadow-glow-red" style={{ animationDelay: '100ms' }}>
           <div className="flex justify-center gap-0.5 mb-1">
             {renderHearts()}
           </div>
@@ -78,45 +82,48 @@ const SurvivalHUD: React.FC<SurvivalHUDProps> = ({
         </div>
         
         {/* Série */}
-        <div className="text-center bg-white/70 rounded-lg p-1 sm:p-2 border border-orange-200/50">
-          <p className="text-lg sm:text-xl font-bold text-orange-700">
+        <div className="text-center bg-white/80 rounded-lg p-1 sm:p-2 border border-orange-200/50 animate-fade-in-up transition-smooth hover:scale-105 hover:shadow-glow-orange" style={{ animationDelay: '200ms' }}>
+          <p className="text-lg sm:text-xl font-bold text-orange-700 transition-all duration-300 hover:scale-110">
             {survivalState.streak}
           </p>
           <p className="text-xs font-bold text-orange-600">Série</p>
         </div>
         
         {/* Niveau */}
-        <div className="text-center bg-white/70 rounded-lg p-1 sm:p-2 border border-orange-200/50">
-          <p className="text-lg sm:text-xl font-bold text-orange-700">
+        <div className="text-center bg-white/80 rounded-lg p-1 sm:p-2 border border-orange-200/50 animate-fade-in-up transition-smooth hover:scale-105 hover:shadow-glow-orange" style={{ animationDelay: '300ms' }}>
+          <p className="text-lg sm:text-xl font-bold text-orange-700 transition-all duration-300 hover:scale-110">
             {survivalState.level}
           </p>
           <p className="text-xs font-bold text-orange-600">Niveau</p>
         </div>
         
         {/* Score */}
-        <div className="text-center bg-white/70 rounded-lg p-1 sm:p-2 border border-orange-200/50">
-          <p className="text-sm sm:text-lg font-bold text-orange-700">
+        <div className="text-center bg-white/80 rounded-lg p-1 sm:p-2 border border-orange-200/50 animate-fade-in-up transition-smooth hover:scale-105 hover:shadow-glow-green" style={{ animationDelay: '400ms' }}>
+          <p className="text-sm sm:text-lg font-bold text-orange-700 transition-all duration-300 hover:scale-110">
             {survivalState.score.toLocaleString()}
           </p>
           <p className="text-xs font-bold text-orange-600">Score</p>
         </div>
       </div>
 
-      {/* Barre de progression vers le niveau suivant */}
-      <div className="mb-3">
+      {/* Barre de progression vers le niveau suivant avec animation */}
+      <div className="mb-3 animate-fade-in-up" style={{ animationDelay: '500ms' }}>
         <div className="flex justify-between items-center mb-1">
           <p className="text-xs text-orange-600">
             Progression niveau {survivalState.level + 1}
           </p>
-          <p className="text-xs text-orange-600">
+          <p className="text-xs text-orange-600 font-bold">
             {survivalState.streak % 10}/10
           </p>
         </div>
-        <div className="w-full bg-orange-200/50 rounded-full h-2 overflow-hidden">
+        <div className="w-full bg-orange-200/50 rounded-full h-2 overflow-hidden shadow-inner">
           <div
-            className="h-full bg-gradient-to-r from-orange-500 to-red-500 transition-all duration-500 ease-out"
+            className="h-full bg-gradient-to-r from-orange-500 to-red-500 transition-all duration-700 ease-out relative"
             style={{ width: `${progressInLevel}%` }}
-          />
+          >
+            {/* Effet de brillance sur la barre de progression */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse" />
+          </div>
         </div>
       </div>
 

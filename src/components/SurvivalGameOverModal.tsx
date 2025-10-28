@@ -32,11 +32,12 @@ const SurvivalGameOverModal: React.FC<SurvivalGameOverModalProps> = ({
   const isNewRecord = survivalState.streak > stats.bestStreak;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-gradient-to-br from-orange-50/95 to-red-50/95 backdrop-blur-md rounded-3xl border border-orange-200/80 shadow-2xl max-w-md w-full p-8 text-center">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
+      <div className="bg-gradient-to-br from-orange-50/95 to-red-50/95 backdrop-blur-md rounded-3xl border border-orange-200/80 shadow-2xl max-w-md w-full p-8 text-center animate-scale-in">
         
         {/* Titre Game Over avec animation */}
-        <div className="mb-6">
+        <div className="mb-6 animate-fade-in-up">
+          <div className="text-6xl mb-4 animate-wiggle">💥</div>
           <h2 className="text-3xl font-bold text-red-700 mb-2">
             ゲームオーバー
           </h2>
@@ -45,32 +46,33 @@ const SurvivalGameOverModal: React.FC<SurvivalGameOverModalProps> = ({
 
         {/* Record personnel si applicable */}
         {isNewRecord && (
-          <div className="mb-4 p-3 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-xl border border-yellow-300/50">
+          <div className="mb-4 p-3 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-xl border border-yellow-300/50 animate-fade-in-up shadow-glow-orange" style={{ animationDelay: '200ms' }}>
+            <div className="text-2xl mb-2 animate-bounce">🎉</div>
             <p className="text-sm font-bold text-yellow-700">
-              🎉 新記録！ Nouveau record personnel !
+              新記録！ Nouveau record personnel !
             </p>
           </div>
         )}
 
-        {/* Rang atteint */}
-        <div className="mb-6">
-          <div className="text-6xl mb-3">{rank.emoji}</div>
+        {/* Rang atteint avec animation */}
+        <div className="mb-6 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+          <div className="text-6xl mb-3 animate-bounce">{rank.emoji}</div>
           <h3 className="text-xl font-bold text-orange-700 mb-1">
             {rank.title}
           </h3>
           <p className="text-orange-600">{rank.subtitle}</p>
         </div>
 
-        {/* Statistiques de la partie */}
+        {/* Statistiques de la partie avec animations staggerées */}
         <div className="space-y-4 mb-6">
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/70 rounded-xl p-3 border border-orange-200/50">
+            <div className="bg-white/80 rounded-xl p-3 border border-orange-200/50 animate-fade-in-up transition-smooth hover:scale-105 hover:shadow-glow-orange" style={{ animationDelay: '400ms' }}>
               <p className="text-2xl font-bold text-orange-700">
                 {survivalState.streak}
               </p>
               <p className="text-sm text-orange-600">Série</p>
             </div>
-            <div className="bg-white/70 rounded-xl p-3 border border-orange-200/50">
+            <div className="bg-white/80 rounded-xl p-3 border border-orange-200/50 animate-fade-in-up transition-smooth hover:scale-105 hover:shadow-glow-orange" style={{ animationDelay: '500ms' }}>
               <p className="text-2xl font-bold text-orange-700">
                 {survivalState.level}
               </p>
@@ -78,7 +80,7 @@ const SurvivalGameOverModal: React.FC<SurvivalGameOverModalProps> = ({
             </div>
           </div>
           
-          <div className="bg-white/70 rounded-xl p-3 border border-orange-200/50">
+          <div className="bg-white/80 rounded-xl p-3 border border-orange-200/50 animate-fade-in-up transition-smooth hover:scale-105 hover:shadow-glow-green" style={{ animationDelay: '600ms' }}>
             <p className="text-2xl font-bold text-orange-700">
               {survivalState.score.toLocaleString()}
             </p>
@@ -112,7 +114,7 @@ const SurvivalGameOverModal: React.FC<SurvivalGameOverModalProps> = ({
         </div>
 
         {/* Message d'encouragement personnalisé */}
-        <div className="mb-6 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200/50">
+        <div className="mb-6 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200/50 animate-fade-in-up" style={{ animationDelay: '700ms' }}>
           <p className="text-sm text-blue-700">
             {survivalState.streak === 0 && "🌱 Premier essai ! Chaque maître a commencé par un premier pas."}
             {survivalState.streak >= 1 && survivalState.streak < 5 && "🔥 Bon début ! Continue à t'entraîner !"}
@@ -123,17 +125,17 @@ const SurvivalGameOverModal: React.FC<SurvivalGameOverModalProps> = ({
           </p>
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-3">
+        {/* Actions avec animations */}
+        <div className="flex gap-3 animate-fade-in-up" style={{ animationDelay: '800ms' }}>
           <button
             onClick={onNewGame}
-            className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
+            className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-glow-orange active:scale-95"
           >
             🎮 Nouvelle partie
           </button>
           <button
             onClick={onClose}
-            className="flex-1 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg"
+            className="flex-1 bg-gradient-to-r from-gray-400 to-gray-500 hover:from-gray-500 hover:to-gray-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-gray-300/50 active:scale-95"
           >
             🏠 Retour
           </button>

@@ -278,6 +278,9 @@ function TrainingPageContent() {
   const handleSurvivalAnswer = (isCorrect: boolean) => {
     if (!survivalState || !currentSurvivalKanji) return;
 
+    console.log('handleSurvivalAnswer called with:', isCorrect); // Debug
+    console.log('Current survival state before:', survivalState); // Debug
+
     // Mettre à jour les données d'apprentissage du kanji
     const updatedKanji = simpleAdaptiveLearningService.updateLearningData(
       currentSurvivalKanji, 
@@ -298,6 +301,7 @@ function TrainingPageContent() {
 
     // Traiter la réponse dans le contexte Survival
     const newSurvivalState = survivalService.processAnswer(survivalState, isCorrect);
+    console.log('New survival state after:', newSurvivalState); // Debug
     setSurvivalState(newSurvivalState);
 
     // Déclencher le nettoyage du canvas
@@ -395,81 +399,83 @@ function TrainingPageContent() {
             </button>
           </div>
 
-          {/* Deuxième ligne : Contrôles et statistiques zen */}
-          <div className="flex items-center justify-between mb-3">
-            {/* Sélecteurs de mode zen */}
-            <div className="flex items-center gap-2">
-              <select
-                value={trainingMode}
-                onChange={(e) =>
-                  setTrainingMode(e.target.value as "fr-to-jp" | "jp-to-fr")
-                }
-                className="px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 focus:ring-red-500"
-              >
-                <option value="fr-to-jp">🇫🇷 → 🇯🇵</option>
-                <option value="jp-to-fr">🇯🇵 → 🇫🇷</option>
-              </select>
-
-              <select
-                value={difficultyMode}
-                onChange={(e) =>
-                  handleDifficultyModeChange(
-                    e.target.value as "normal" | "hard" | "hardcore"
-                  )
-                }
-                className={`px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 transition-all ${
-                  difficultyMode === "hardcore"
-                    ? "focus:ring-purple-500 border-purple-500/50"
-                    : "focus:ring-red-500"
-                }`}
-              >
-                <option value="normal">😊 普通 Normal</option>
-                <option value="hard">💀 難しい Difficile</option>
-                <option
-                  value="hardcore"
-                  disabled={!isHardcoreModeAvailable}
-                  className={
-                    !isHardcoreModeAvailable
-                      ? "opacity-50 cursor-not-allowed"
-                      : ""
+          {/* Deuxième ligne : Contrôles et statistiques zen - uniquement en mode normal */}
+          {gameMode === 'normal' && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-3">
+              {/* Sélecteurs de mode zen */}
+              <div className="flex items-center gap-2">
+                <select
+                  value={trainingMode}
+                  onChange={(e) =>
+                    setTrainingMode(e.target.value as "fr-to-jp" | "jp-to-fr")
                   }
+                  className="px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 focus:ring-red-500"
                 >
-                  🔥 HARDCORE{" "}
-                  {!isHardcoreModeAvailable ? "(tout maîtrisé!)" : ""}
-                </option>
-              </select>
-            </div>
+                  <option value="fr-to-jp">🇫🇷 → 🇯🇵</option>
+                  <option value="jp-to-fr">🇯🇵 → 🇫🇷</option>
+                </select>
 
-            {/* Statistiques centrées zen - masquées pendant la session */}
-            <div className="flex items-center gap-3">
-              {/* Score masqué pendant la session pour éviter de spoiler */}
-              {stats.sessionComplete && (
-                <div className="px-3 py-1 bg-green-100/90 text-green-700 rounded-lg text-sm border border-green-300/50">
-                  ✅ {stats.correct}/{stats.total}
+                <select
+                  value={difficultyMode}
+                  onChange={(e) =>
+                    handleDifficultyModeChange(
+                      e.target.value as "normal" | "hard" | "hardcore"
+                    )
+                  }
+                  className={`px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 transition-all ${
+                    difficultyMode === "hardcore"
+                      ? "focus:ring-purple-500 border-purple-500/50"
+                      : "focus:ring-red-500"
+                  }`}
+                >
+                  <option value="normal">😊 普通 Normal</option>
+                  <option value="hard">💀 難しい Difficile</option>
+                  <option
+                    value="hardcore"
+                    disabled={!isHardcoreModeAvailable}
+                    className={
+                      !isHardcoreModeAvailable
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }
+                  >
+                    🔥 HARDCORE{" "}
+                    {!isHardcoreModeAvailable ? "(tout maîtrisé!)" : ""}
+                  </option>
+                </select>
+              </div>
+
+              {/* Statistiques centrées zen - masquées pendant la session */}
+              <div className="flex items-center gap-3">
+                {/* Score masqué pendant la session pour éviter de spoiler */}
+                {stats.sessionComplete && (
+                  <div className="px-3 py-1 bg-green-100/90 text-green-700 rounded-lg text-sm border border-green-300/50">
+                    ✅ {stats.correct}/{stats.total}
+                  </div>
+                )}
+                <div className="px-3 py-1 bg-blue-100/90 text-blue-700 rounded-lg text-sm border border-blue-300/50">
+                  📈 {currentIndex + 1}/{selectedKanjis.length}
                 </div>
-              )}
-              <div className="px-3 py-1 bg-blue-100/90 text-blue-700 rounded-lg text-sm border border-blue-300/50">
-                📈 {currentIndex + 1}/{selectedKanjis.length}
+              </div>
+
+              {/* Progression visuelle zen */}
+              <div className="hidden sm:block w-24">
+                <div className="h-2 bg-amber-200/50 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-red-500 to-orange-600 transition-all duration-300"
+                    style={{
+                      width: `${
+                        ((currentIndex + 1) / selectedKanjis.length) * 100
+                      }%`,
+                    }}
+                  ></div>
+                </div>
               </div>
             </div>
+          )}
 
-            {/* Progression visuelle zen */}
-            <div className="hidden sm:block w-24">
-              <div className="h-2 bg-amber-200/50 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-red-500 to-orange-600 transition-all duration-300"
-                  style={{
-                    width: `${
-                      ((currentIndex + 1) / selectedKanjis.length) * 100
-                    }%`,
-                  }}
-                ></div>
-              </div>
-            </div>
-          </div>
-
-          {/* Troisième ligne : Statistiques d'apprentissage zen */}
-          {learningStats && (
+          {/* Troisième ligne : Statistiques d'apprentissage zen - uniquement en mode normal */}
+          {gameMode === 'normal' && learningStats && (
             <div className="flex items-center justify-center">
               <div className="flex items-center gap-3 text-xs">
                 <div className="px-2 py-1 bg-blue-100/90 text-blue-700 rounded border border-blue-300/50">
@@ -507,7 +513,7 @@ function TrainingPageContent() {
         
         {/* MODE SURVIVAL */}
         {gameMode === 'survival' && survivalState && currentSurvivalKanji && (
-          <>
+          <div className="animate-fade-in">
             {/* HUD Survival */}
             <SurvivalHUD 
               survivalState={survivalState}
@@ -525,23 +531,22 @@ function TrainingPageContent() {
               />
             </div>
             
-            {/* Boutons d'action */}
-            <div className="text-center space-y-3">
+            {/* Boutons d'action Survival */}
+            <div className="flex justify-center gap-4 mt-6 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
               <button
                 onClick={exitSurvivalMode}
-                className="px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white font-medium rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all"
+                className="px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white font-medium rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all shadow-lg transform hover:scale-105 hover:-translate-y-1"
               >
-                ← Mode normal
+                ↩️ Quitter Survival
               </button>
-              <br />
               <Link
                 href="/"
-                className="inline-block px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all"
+                className="inline-block px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all shadow-lg transform hover:scale-105 hover:-translate-y-1"
               >
-                🏠 Menu principal
+                🏠 Menu
               </Link>
             </div>
-          </>
+          </div>
         )}
 
         {/* MODE NORMAL */}
