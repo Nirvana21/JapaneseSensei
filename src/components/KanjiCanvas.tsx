@@ -294,18 +294,6 @@ export default function KanjiCanvas({
           �️ Effacer
         </button>
       </div>
-
-      {/* Instructions */}
-      <div className="mt-2 text-center">
-        <p className="text-sm text-orange-700">
-          ✏️ マウスや指で漢字を描いてください Dessinez le kanji avec votre
-          souris ou votre doigt
-        </p>
-        <p className="text-xs text-orange-600 mt-1">
-          ガイドラインで比率を守ってください Utilisez les lignes de guidage pour
-          respecter les proportions
-        </p>
-      </div>
     </div>
   );
 }

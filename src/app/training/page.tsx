@@ -333,11 +333,14 @@ export default function TrainingPage() {
               </select>
             </div>
 
-            {/* Statistiques centrées zen */}
+            {/* Statistiques centrées zen - masquées pendant la session */}
             <div className="flex items-center gap-3">
-              <div className="px-3 py-1 bg-green-100/90 text-green-700 rounded-lg text-sm border border-green-300/50">
-                ✅ {stats.correct}/{stats.total}
-              </div>
+              {/* Score masqué pendant la session pour éviter de spoiler */}
+              {stats.sessionComplete && (
+                <div className="px-3 py-1 bg-green-100/90 text-green-700 rounded-lg text-sm border border-green-300/50">
+                  ✅ {stats.correct}/{stats.total}
+                </div>
+              )}
               <div className="px-3 py-1 bg-blue-100/90 text-blue-700 rounded-lg text-sm border border-blue-300/50">
                 📈 {currentIndex + 1}/{selectedKanjis.length}
               </div>
@@ -357,24 +360,6 @@ export default function TrainingPage() {
               </div>
             </div>
           </div>
-
-          {/* Message explicatif pour le mode hardcore zen */}
-          {difficultyMode === "hardcore" && (
-            <div className="mb-2 text-center">
-              <span className="px-3 py-1 bg-purple-100/90 text-purple-700 text-xs rounded-full border border-purple-300/50">
-                🔥 Mode HARDCORE : Seulement tes pires kanjis (répétitions
-                autorisées)
-              </span>
-            </div>
-          )}
-          {!isHardcoreModeAvailable && difficultyMode !== "hardcore" && (
-            <div className="mb-2 text-center">
-              <span className="px-3 py-1 bg-green-100/90 text-green-700 text-xs rounded-full border border-green-300/50">
-                🎉 Bravo ! Tous tes kanjis sont maîtrisés - Mode hardcore
-                indisponible
-              </span>
-            </div>
-          )}
 
           {/* Troisième ligne : Statistiques d'apprentissage zen */}
           {learningStats && (
@@ -687,14 +672,11 @@ export default function TrainingPage() {
           )}
 
           {/* Le modal SessionCompleteModal gère désormais l'affichage de fin de session */}
-          <div className="inline-block p-4 bg-gradient-to-r from-indigo-900/30 to-purple-900/30 rounded-xl border border-indigo-700/30 backdrop-blur-sm">
-            <p className="text-sm text-indigo-300 font-medium">
-              👆 Touchez la carte pour révéler la réponse • Swipez doucement ←
-              (pas sûr) ou → (je connais)
-            </p>
-          </div>
-          <div className="max-w-md mx-auto">
-            <div className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-2xl p-8">
+          {!stats.sessionComplete ? (
+            <div className="h-4"></div>
+          ) : (
+            <div className="max-w-md mx-auto">
+              <div className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-md rounded-2xl border border-slate-700/50 shadow-2xl p-8">
               {/* Icône et titre selon la performance */}
               <div className="mb-6">
                 {(() => {
@@ -840,13 +822,8 @@ export default function TrainingPage() {
                 })()}
               </div>
             </div>
-          </div>
-          <div className="inline-block p-4 bg-gradient-to-r from-indigo-900/30 to-purple-900/30 rounded-xl border border-indigo-700/30 backdrop-blur-sm">
-            <p className="text-sm text-indigo-300 font-medium">
-              👆 Touchez la carte pour révéler la réponse • Swipez doucement ←
-              (pas sûr) ou → (je connais)
-            </p>
-          </div>
+            </div>
+          )}
         </div>
       </main>{" "}
       {/* Modal des détails */}

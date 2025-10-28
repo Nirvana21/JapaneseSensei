@@ -208,14 +208,6 @@ export default function SwipeCard({
       >
         {children}
       </div>
-
-      {/* Instructions */}
-      <div className="mt-4 text-center">
-        <p className="text-sm text-orange-700">
-          👆 タップで表示 Appuyez pour révéler • 👈 知らない Pas connu • 👉
-          知ってる Connu
-        </p>
-      </div>
     </div>
   );
 }
