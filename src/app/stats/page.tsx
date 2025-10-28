@@ -304,9 +304,9 @@ export default function StatsPage() {
                     <span className="text-gray-700">{tagStat.tag}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-gray-500 text-sm">{tagStat.count}</span>
+                    <span className="text-gray-500 text-sm">{tagStat.count} kanjis</span>
                     <span className={`text-sm ${getMasteryColor(Math.round(tagStat.averageScore))}`}>
-                      {getMasteryIcon(Math.round(tagStat.averageScore))}
+                      {getMasteryIcon(Math.round(tagStat.averageScore))} {tagStat.averageScore.toFixed(1)}
                     </span>
                   </div>
                 </div>
@@ -328,11 +328,19 @@ export default function StatsPage() {
                 <div key={kanji.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{kanji.kanji}</span>
-                    <span className="text-gray-800 font-medium">{kanji.primaryMeaning || kanji.meanings[0]}</span>
+                    <div>
+                      <p className="text-gray-800 font-medium">{kanji.primaryMeaning || kanji.meanings[0]}</p>
+                      <p className="text-gray-500 text-sm">{kanji.primaryReading || kanji.onyomi[0] || kanji.kunyomi[0]}</p>
+                    </div>
                   </div>
-                  <span className={`text-lg ${getMasteryColor(kanji.learningData.score)}`}>
-                    {getMasteryIcon(kanji.learningData.score)}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-lg ${getMasteryColor(kanji.learningData.score)}`}>
+                      {getMasteryIcon(kanji.learningData.score)}
+                    </span>
+                    <span className="text-gray-400 text-sm">
+                      {kanji.learningData.totalAttempts || 0}x
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -349,11 +357,19 @@ export default function StatsPage() {
                 <div key={kanji.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{kanji.kanji}</span>
-                    <span className="text-gray-800 font-medium">{kanji.primaryMeaning || kanji.meanings[0]}</span>
+                    <div>
+                      <p className="text-gray-800 font-medium">{kanji.primaryMeaning || kanji.meanings[0]}</p>
+                      <p className="text-gray-500 text-sm">{kanji.primaryReading || kanji.onyomi[0] || kanji.kunyomi[0]}</p>
+                    </div>
                   </div>
-                  <span className={`text-lg ${getMasteryColor(kanji.learningData.score)}`}>
-                    {getMasteryIcon(kanji.learningData.score)}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-lg ${getMasteryColor(kanji.learningData.score)}`}>
+                      {getMasteryIcon(kanji.learningData.score)}
+                    </span>
+                    <span className="text-gray-400 text-sm">
+                      {kanji.learningData.totalAttempts || 0}x
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
