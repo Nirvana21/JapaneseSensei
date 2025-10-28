@@ -187,18 +187,18 @@ export default function TrainingPage() {
 
   if (selectedKanjis.length === 0 && allLearningKanjis.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
         <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center p-8 bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-700/50 max-w-md">
+          <div className="text-center p-8 bg-gradient-to-br from-orange-100/90 to-red-100/90 backdrop-blur-sm rounded-2xl shadow-lg border border-orange-200/50 max-w-md">
             <div className="text-6xl mb-6">📚</div>
-            <h2 className="text-2xl font-bold text-slate-100 mb-4">Aucun kanji disponible</h2>
-            <p className="text-slate-400 mb-6">Ajoutez des kanjis depuis la page d'accueil pour commencer l'entraînement.</p>
+            <h2 className="text-2xl font-bold text-red-800 mb-4">コレクション空 Collection vide</h2>
+            <p className="text-amber-700 mb-6">Ajoutez des kanjis depuis la page d'accueil pour commencer l'entraînement.</p>
             <Link 
               href="/"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-500 to-orange-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
             >
               <span>🏠</span>
-              <span>Retour au menu</span>
+              <span>戻る Menu</span>
             </Link>
           </div>
         </div>
@@ -209,24 +209,24 @@ export default function TrainingPage() {
   const currentKanji = selectedKanjis[currentIndex];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900">
-      {/* Header avec sélecteur de tags */}
-      <header className="sticky top-0 z-50 bg-slate-800/90 backdrop-blur-md border-b border-slate-700/50 shadow-xl">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+      {/* Header zen avec sélecteur de tags */}
+      <header className="sticky top-0 z-50 bg-gradient-to-r from-amber-100/90 to-orange-100/90 backdrop-blur-md border-b border-amber-200/50 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-4">
           {/* Première ligne : Navigation et titre */}
           <div className="flex items-center justify-between mb-3">
             <Link 
               href="/" 
-              className="flex items-center gap-2 px-3 py-2 bg-slate-700/80 hover:bg-slate-600/80 text-slate-300 font-medium rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-2 bg-amber-200/50 hover:bg-orange-200/50 text-amber-800 font-medium rounded-lg transition-colors"
             >
               <span>←</span>
-              <span className="hidden sm:inline">Menu</span>
+              <span className="hidden sm:inline">戻る</span>
             </Link>
             
-            <h1 className="text-xl font-bold bg-gradient-to-r from-slate-100 to-indigo-300 bg-clip-text text-transparent text-center">
-              🎯 Entraînement ({selectedKanjis.length} carte{selectedKanjis.length > 1 ? 's' : ''})
+            <h1 className="text-xl font-bold text-red-800 text-center">
+              🎯 練習 Entraînement ({selectedKanjis.length} carte{selectedKanjis.length > 1 ? 's' : ''})
               {selectedKanjis.length < 20 && (
-                <span className="text-sm text-yellow-400 block mt-1">
+                <span className="text-sm text-amber-700 block mt-1">
                   ℹ️ Toutes les cartes disponibles incluses
                 </span>
               )}
@@ -234,20 +234,20 @@ export default function TrainingPage() {
             
             <button
               onClick={startNewSession}
-              className="px-3 py-2 bg-gradient-to-r from-emerald-600 to-teal-700 text-white font-medium rounded-lg hover:from-emerald-700 hover:to-teal-800 transition-all text-sm"
+              className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all text-sm"
             >
-              🔄 Nouvelle session
+              🔄 新セッション
             </button>
           </div>
           
-          {/* Deuxième ligne : Contrôles et statistiques */}
+          {/* Deuxième ligne : Contrôles et statistiques zen */}
           <div className="flex items-center justify-between mb-3">
-            {/* Sélecteurs de mode */}
+            {/* Sélecteurs de mode zen */}
             <div className="flex items-center gap-2">
               <select
                 value={trainingMode}
                 onChange={(e) => setTrainingMode(e.target.value as 'fr-to-jp' | 'jp-to-fr')}
-                className="px-3 py-2 bg-slate-700/80 border border-slate-600/50 rounded-lg text-sm font-medium text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 focus:ring-red-500"
               >
                 <option value="fr-to-jp">🇫🇷 → 🇯🇵</option>
                 <option value="jp-to-fr">🇯🇵 → 🇫🇷</option>
@@ -256,12 +256,12 @@ export default function TrainingPage() {
               <select
                 value={difficultyMode}
                 onChange={(e) => handleDifficultyModeChange(e.target.value as 'normal' | 'hard' | 'hardcore')}
-                className={`px-3 py-2 bg-slate-700/80 border border-slate-600/50 rounded-lg text-sm font-medium text-slate-200 focus:outline-none focus:ring-2 transition-all ${
+                className={`px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 transition-all ${
                   difficultyMode === 'hardcore' ? 'focus:ring-purple-500 border-purple-500/50' : 'focus:ring-red-500'
                 }`}
               >
-                <option value="normal">😊 Normal</option>
-                <option value="hard">💀 Mode difficile</option>
+                <option value="normal">😊 普通 Normal</option>
+                <option value="hard">💀 難しい Difficile</option>
                 <option 
                   value="hardcore" 
                   disabled={!isHardcoreModeAvailable}
@@ -272,61 +272,61 @@ export default function TrainingPage() {
               </select>
             </div>
             
-            {/* Statistiques centrées */}
+            {/* Statistiques centrées zen */}
             <div className="flex items-center gap-3">
-              <div className="px-3 py-1 bg-green-900/50 text-green-300 rounded-lg text-sm border border-green-700/30">
+              <div className="px-3 py-1 bg-green-100/90 text-green-700 rounded-lg text-sm border border-green-300/50">
                 ✅ {stats.correct}/{stats.total}
               </div>
-              <div className="px-3 py-1 bg-indigo-900/50 text-indigo-300 rounded-lg text-sm border border-indigo-700/30">
+              <div className="px-3 py-1 bg-blue-100/90 text-blue-700 rounded-lg text-sm border border-blue-300/50">
                 📈 {currentIndex + 1}/{selectedKanjis.length}
               </div>
             </div>
             
-            {/* Progression visuelle */}
+            {/* Progression visuelle zen */}
             <div className="hidden sm:block w-24">
-              <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden">
+              <div className="h-2 bg-amber-200/50 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-300"
+                  className="h-full bg-gradient-to-r from-red-500 to-orange-600 transition-all duration-300"
                   style={{ width: `${((currentIndex + 1) / selectedKanjis.length) * 100}%` }}
                 ></div>
               </div>
             </div>
           </div>
           
-          {/* Message explicatif pour le mode hardcore */}
+          {/* Message explicatif pour le mode hardcore zen */}
           {difficultyMode === 'hardcore' && (
             <div className="mb-2 text-center">
-              <span className="px-3 py-1 bg-purple-900/50 text-purple-300 text-xs rounded-full border border-purple-700/30">
+              <span className="px-3 py-1 bg-purple-100/90 text-purple-700 text-xs rounded-full border border-purple-300/50">
                 🔥 Mode HARDCORE : Seulement tes pires kanjis (répétitions autorisées)
               </span>
             </div>
           )}
           {!isHardcoreModeAvailable && difficultyMode !== 'hardcore' && (
             <div className="mb-2 text-center">
-              <span className="px-3 py-1 bg-green-900/50 text-green-300 text-xs rounded-full border border-green-700/30">
+              <span className="px-3 py-1 bg-green-100/90 text-green-700 text-xs rounded-full border border-green-300/50">
                 🎉 Bravo ! Tous tes kanjis sont maîtrisés - Mode hardcore indisponible
               </span>
             </div>
           )}
           
-          {/* Troisième ligne : Statistiques d'apprentissage */}
+          {/* Troisième ligne : Statistiques d'apprentissage zen */}
           {learningStats && (
             <div className="flex items-center justify-center">
               <div className="flex items-center gap-3 text-xs">
-                <div className="px-2 py-1 bg-blue-900/30 text-blue-300 rounded border border-blue-700/30">
+                <div className="px-2 py-1 bg-blue-100/90 text-blue-700 rounded border border-blue-300/50">
                   🆕 {learningStats.byScore[0]}
                 </div>
-                <div className="px-2 py-1 bg-red-900/30 text-red-300 rounded border border-red-700/30">
+                <div className="px-2 py-1 bg-red-100/90 text-red-700 rounded border border-red-300/50">
                   😓 {learningStats.byScore[1]}
                 </div>
-                <div className="px-2 py-1 bg-yellow-900/30 text-yellow-300 rounded border border-yellow-700/30">
+                <div className="px-2 py-1 bg-yellow-100/90 text-yellow-700 rounded border border-yellow-300/50">
                   📚 {learningStats.byScore[2]}
                 </div>
-                <div className="px-2 py-1 bg-green-900/30 text-green-300 rounded border border-green-700/30">
+                <div className="px-2 py-1 bg-green-100/90 text-green-700 rounded border border-green-300/50">
                   ✨ {learningStats.byScore[3]}
                 </div>
                 {learningStats.needsReview > 0 && (
-                  <div className="px-2 py-1 bg-orange-900/30 text-orange-300 rounded border border-orange-700/30 animate-pulse">
+                  <div className="px-2 py-1 bg-orange-100/90 text-orange-700 rounded border border-orange-300/50 animate-pulse">
                     ⏰ {learningStats.needsReview}
                   </div>
                 )}
@@ -357,17 +357,17 @@ export default function TrainingPage() {
                 onTap={() => setShowAnswer(!showAnswer)}
                 className="w-full max-w-lg"
               >
-                <div className="bg-slate-800/90 backdrop-blur-sm rounded-2xl shadow-2xl p-6 sm:p-8 border border-slate-700/40">
+                <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 backdrop-blur-sm rounded-2xl shadow-lg p-6 sm:p-8 border border-orange-200/50">
                   {trainingMode === 'fr-to-jp' ? (
                     // Mode: Français → Japonais
                     <div className="text-center">
                       <div className="mb-6">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-900/50 to-purple-900/50 rounded-full mb-4 border border-indigo-700/30">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-200/80 to-orange-200/80 rounded-full mb-4 border border-red-300/50">
                           <span className="text-lg">🇫🇷</span>
-                          <span className="text-sm font-medium text-slate-300">Traduisez en japonais</span>
+                          <span className="text-sm font-medium text-red-800">翻訳してください</span>
                           <span className="text-lg">🇯🇵</span>
                         </div>
-                        <p className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-slate-100 to-indigo-300 bg-clip-text text-transparent leading-relaxed">
+                        <p className="text-2xl sm:text-4xl font-bold text-red-800 leading-relaxed">
                           {currentKanji.primaryMeaning || currentKanji.meanings[0]}
                         </p>
                       </div>
