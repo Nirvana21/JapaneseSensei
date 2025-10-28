@@ -8,6 +8,7 @@ interface SurvivalCardProps {
   onAnswer: (isCorrect: boolean) => void;
   disabled?: boolean;
   clearCanvas?: number; // Pour réinitialiser le canvas
+  onClearCanvas?: () => void; // Pour déclencher l'effacement manuel
 }
 
 const SurvivalCard: React.FC<SurvivalCardProps> = ({
@@ -15,7 +16,8 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
   direction,
   onAnswer,
   disabled = false,
-  clearCanvas = 0
+  clearCanvas = 0,
+  onClearCanvas
 }) => {
   const [showAnswer, setShowAnswer] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -61,12 +63,12 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
   const handleAnswer = (isCorrect: boolean) => {
     if (disabled) return;
     
-    console.log('SurvivalCard handleAnswer called with:', isCorrect); // Debug
+    console.log('🔍 DEBUG: SurvivalCard handleAnswer called with:', isCorrect);
     setSelectedAnswer(isCorrect ? 'correct' : 'incorrect');
     
     // Petit délai pour l'animation
     setTimeout(() => {
-      console.log('SurvivalCard calling onAnswer with:', isCorrect); // Debug
+      console.log('🔍 DEBUG: SurvivalCard calling onAnswer with:', isCorrect);
       onAnswer(isCorrect);
       setShowAnswer(false);
       setSelectedAnswer(null);
@@ -122,11 +124,11 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
         {/* Canvas pour dessiner AVANT de révéler (FR → JP seulement) */}
         {direction === 'fr-to-jp' && !showAnswer && (
           <div className="mb-6 w-full">
-            <p className="text-xs text-orange-600 mb-3 text-center">
+            <p className="text-xs text-orange-600 mb-3 text-center font-medium">
               ✏️ Essayez d'écrire le kanji puis révélez la réponse
             </p>
             <div className="flex justify-center">
-              <div className="w-48 h-48 sm:w-60 sm:h-60">
+              <div className="w-48 h-48 sm:w-60 sm:h-60 bg-orange-50 rounded-xl border-2 border-orange-200 shadow-inner">
                 <KanjiCanvas 
                   width={240}
                   height={240}
@@ -134,6 +136,14 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
                   className="mx-auto max-w-full max-h-full"
                 />
               </div>
+            </div>
+            <div className="flex justify-center mt-2">
+              <button
+                onClick={onClearCanvas}
+                className="px-3 py-1 bg-orange-200 hover:bg-orange-300 text-orange-700 text-xs rounded-lg transition-colors"
+              >
+                🗑️ Effacer
+              </button>
             </div>
           </div>
         )}
@@ -159,68 +169,62 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
               {content.answer}
             </div>
             
-            {/* Canvas pour comparer APRÈS révélation (FR → JP seulement) */}
+            {/* Message d'instruction pour la comparaison */}
             {direction === 'fr-to-jp' && (
-              <div className="mt-4 w-full">
-                <p className="text-xs text-green-600 mb-2 text-center">
-                  ✏️ Comparez avec votre dessin ci-dessus
-                </p>
-                <div className="text-center text-sm text-green-700 mb-3">
-                  Votre tentative ⬆️ vs la réponse ⬇️
+              <div className="mt-6 w-full border-t border-green-200 pt-4">
+                <div className="text-center bg-green-50 rounded-lg p-4 border border-green-200">
+                  <p className="text-sm font-medium text-green-700 mb-2">
+                    💡 Comparez mentalement
+                  </p>
+                  <p className="text-xs text-green-600">
+                    Regardez le kanji ci-dessus et comparez avec ce que vous avez dessiné. Cliquez sur "Effacer" pour réessayer.
+                  </p>
                 </div>
-                {/* Canvas de comparaison - différent du premier */}
-                <div className="flex justify-center">
-                  <div className="w-48 h-48 sm:w-60 sm:h-60 bg-gray-100 rounded-lg border-2 border-dashed border-green-300">
-                    <KanjiCanvas 
-                      width={240}
-                      height={240}
-                      clearTrigger={clearCanvas + 1000} // Trigger différent pour éviter les conflits
-                      className="mx-auto max-w-full max-h-full opacity-70"
-                    />
-                  </div>
-                </div>
-                <p className="text-xs text-green-600 mt-2 text-center">
-                  ⬆️ Canvas de comparaison - Vous pouvez dessiner ici aussi
-                </p>
               </div>
             )}
             
             {/* Informations supplémentaires selon la direction */}
             {direction === 'jp-to-fr' && (
-              <div className="mt-4 space-y-2">
+              <div className="mt-6 space-y-3 border-t border-green-200 pt-4">
+                <h4 className="text-sm font-bold text-green-700 text-center mb-3">
+                  📚 Lectures du kanji
+                </h4>
                 {kanji.onyomi && kanji.onyomi.length > 0 && (
-                  <div className="text-sm">
-                    <span className="text-blue-600 font-medium">On'yomi: </span>
-                    <span className="text-blue-700">{kanji.onyomi.join(', ')}</span>
+                  <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                    <span className="text-sm font-medium text-blue-700">On'yomi: </span>
+                    <span className="text-sm text-blue-800">{kanji.onyomi.join(', ')}</span>
                   </div>
                 )}
                 {kanji.kunyomi && kanji.kunyomi.length > 0 && (
-                  <div className="text-sm">
-                    <span className="text-purple-600 font-medium">Kun'yomi: </span>
-                    <span className="text-purple-700">{kanji.kunyomi.join(', ')}</span>
+                  <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
+                    <span className="text-sm font-medium text-purple-700">Kun'yomi: </span>
+                    <span className="text-sm text-purple-800">{kanji.kunyomi.join(', ')}</span>
                   </div>
                 )}
               </div>
             )}
             
             {direction === 'fr-to-jp' && (
-              <div className="mt-4 space-y-2">
+              <div className="mt-6 space-y-3 border-t border-green-200 pt-4">
+                <h4 className="text-sm font-bold text-green-700 text-center mb-3">
+                  📚 Informations du kanji
+                </h4>
                 {kanji.onyomi && kanji.onyomi.length > 0 && (
-                  <div className="text-sm">
-                    <span className="text-blue-600 font-medium">On'yomi: </span>
-                    <span className="text-blue-700">{kanji.onyomi.join(', ')}</span>
+                  <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
+                    <span className="text-sm font-medium text-blue-700">On'yomi: </span>
+                    <span className="text-sm text-blue-800">{kanji.onyomi.join(', ')}</span>
                   </div>
                 )}
                 {kanji.kunyomi && kanji.kunyomi.length > 0 && (
-                  <div className="text-sm">
-                    <span className="text-purple-600 font-medium">Kun'yomi: </span>
-                    <span className="text-purple-700">{kanji.kunyomi.join(', ')}</span>
+                  <div className="bg-purple-50 rounded-lg p-3 border border-purple-200">
+                    <span className="text-sm font-medium text-purple-700">Kun'yomi: </span>
+                    <span className="text-sm text-purple-800">{kanji.kunyomi.join(', ')}</span>
                   </div>
                 )}
                 {kanji.meanings && kanji.meanings.length > 1 && (
-                  <div className="text-sm">
-                    <span className="text-green-600 font-medium">Autres sens: </span>
-                    <span className="text-green-700">{kanji.meanings.slice(1).join(', ')}</span>
+                  <div className="bg-green-50 rounded-lg p-3 border border-green-200">
+                    <span className="text-sm font-medium text-green-700">Autres sens: </span>
+                    <span className="text-sm text-green-800">{kanji.meanings.slice(1).join(', ')}</span>
                   </div>
                 )}
               </div>

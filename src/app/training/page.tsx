@@ -278,8 +278,8 @@ function TrainingPageContent() {
   const handleSurvivalAnswer = (isCorrect: boolean) => {
     if (!survivalState || !currentSurvivalKanji) return;
 
-    console.log('handleSurvivalAnswer called with:', isCorrect); // Debug
-    console.log('Current survival state before:', survivalState); // Debug
+    console.log('🔍 DEBUG: handleSurvivalAnswer called with isCorrect:', isCorrect);
+    console.log('🔍 DEBUG: Current lives before:', survivalState.lives);
 
     // Mettre à jour les données d'apprentissage du kanji
     const updatedKanji = simpleAdaptiveLearningService.updateLearningData(
@@ -301,7 +301,8 @@ function TrainingPageContent() {
 
     // Traiter la réponse dans le contexte Survival
     const newSurvivalState = survivalService.processAnswer(survivalState, isCorrect);
-    console.log('New survival state after:', newSurvivalState); // Debug
+    console.log('🔍 DEBUG: Lives after processAnswer:', newSurvivalState.lives);
+    console.log('🔍 DEBUG: New survival state:', newSurvivalState);
     setSurvivalState(newSurvivalState);
 
     // Déclencher le nettoyage du canvas
@@ -528,6 +529,7 @@ function TrainingPageContent() {
                 onAnswer={handleSurvivalAnswer}
                 disabled={survivalState.isGameOver}
                 clearCanvas={clearCanvas}
+                onClearCanvas={() => setClearCanvas(prev => prev + 1)}
               />
             </div>
             

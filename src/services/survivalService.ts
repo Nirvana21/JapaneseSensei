@@ -110,9 +110,12 @@ class SurvivalService {
    * Traite une réponse et met à jour l'état du jeu
    */
   processAnswer(currentState: SurvivalState, isCorrect: boolean): SurvivalState {
+    console.log('🔍 DEBUG: survivalService.processAnswer called with:', { isCorrect, currentLives: currentState.lives });
+    
     const newState = { ...currentState };
 
     if (isCorrect) {
+      console.log('✅ Bonne réponse - augmentation score et série');
       // Bonne réponse
       newState.streak += 1;
       newState.score += Math.floor(10 * newState.difficultyMultiplier);
@@ -124,9 +127,13 @@ class SurvivalService {
         newState.difficultyMultiplier = 1 + (newLevel - 1) * 0.1; // +10% par niveau
       }
     } else {
+      console.log('❌ Mauvaise réponse - perte d\'une vie');
+      console.log('❌ Lives before:', newState.lives);
       // Mauvaise réponse
       newState.lives -= 1;
+      console.log('❌ Lives after:', newState.lives);
       if (newState.lives <= 0) {
+        console.log('💀 Game Over!');
         newState.isGameOver = true;
       }
     }
@@ -134,6 +141,7 @@ class SurvivalService {
     // Changer la direction aléatoirement pour la prochaine question
     newState.currentDirection = Math.random() > 0.5 ? 'jp-to-fr' : 'fr-to-jp';
 
+    console.log('🔍 DEBUG: Final state:', { lives: newState.lives, isGameOver: newState.isGameOver });
     return newState;
   }
 
