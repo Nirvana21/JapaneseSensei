@@ -69,18 +69,18 @@ export default function KanjiCanvas({
     const smoothVelocity = currentVelocity * 0.3 + velocity * 0.7;
     setVelocity(smoothVelocity);
     
-    // Épaisseur variable selon la vitesse (lissée)
-    const baseWidth = 8;
-    const maxWidth = 14;
-    const minWidth = 2;
+    // Épaisseur plus importante pour un trait visible
+    const baseWidth = 12;
+    const maxWidth = 18;
+    const minWidth = 6;
     const speedFactor = Math.min(smoothVelocity / 8, 1);
-    const brushWidth = baseWidth - (speedFactor * (baseWidth - minWidth));
+    const brushWidth = baseWidth - (speedFactor * (baseWidth - minWidth) * 0.4); // Réduction moins agressive
     const finalWidth = Math.max(minWidth, Math.min(maxWidth, brushWidth * pressure));
 
     // Dessiner une ligne lisse entre les deux points
     context.beginPath();
     context.lineWidth = finalWidth;
-    context.strokeStyle = `rgba(26, 26, 26, ${0.8 + pressure * 0.2})`;
+    context.strokeStyle = `rgba(26, 26, 26, ${0.9})`;
     context.moveTo(lastPoint.x, lastPoint.y);
     context.lineTo(x, y);
     context.stroke();
@@ -88,7 +88,7 @@ export default function KanjiCanvas({
     // Ajouter des points aux extrémités pour un rendu plus lisse
     context.beginPath();
     context.arc(x, y, finalWidth / 2, 0, Math.PI * 2);
-    context.fillStyle = `rgba(26, 26, 26, ${0.7 + pressure * 0.3})`;
+    context.fillStyle = `rgba(26, 26, 26, 0.85)`;
     context.fill();
     
     setLastPoint({ x, y });
@@ -114,9 +114,9 @@ export default function KanjiCanvas({
     
     setLastPoint({ x, y });
     
-    // Point de départ plus propre
+    // Point de départ plus visible
     context.beginPath();
-    context.arc(x, y, 4, 0, Math.PI * 2);
+    context.arc(x, y, 6, 0, Math.PI * 2);
     context.fillStyle = 'rgba(26, 26, 26, 0.9)';
     context.fill();
   }, [context]);
