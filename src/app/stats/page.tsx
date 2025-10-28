@@ -185,8 +185,9 @@ export default function StatsPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900">
       {/* Header */}
       <header className="bg-slate-800/90 backdrop-blur-md border-b border-slate-700/50 shadow-xl">
-        <div className="max-w-6xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          {/* Navigation et titre */}
+          <div className="flex items-center justify-between mb-4">
             <Link 
               href="/" 
               className="group flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
@@ -195,20 +196,20 @@ export default function StatsPage() {
               <span className="text-slate-100 font-medium text-sm">Menu</span>
             </Link>
             
-            <div className="text-center">
-              <h1 className="text-3xl font-bold text-white flex items-center gap-3 justify-center">
-                <span className="text-4xl">📊</span>
-                <span>Statistiques d'apprentissage</span>
+            <div className="text-center flex-1 mx-4">
+              <h1 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-2 justify-center">
+                <span className="text-3xl md:text-4xl">📊</span>
+                <span className="hidden sm:inline">Statistiques</span>
+                <span className="sm:hidden">Stats</span>
               </h1>
-              <p className="text-slate-400 mt-1">Analysez votre progression et vos performances</p>
             </div>
             
             <button
               onClick={resetGlobalStats}
-              className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="group flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
-              <span className="text-xl group-hover:scale-110 transition-transform">🗑️</span>
-              <span className="text-red-100 font-semibold">Reset stats</span>
+              <span className="text-lg group-hover:scale-110 transition-transform">🗑️</span>
+              <span className="text-red-100 font-medium text-sm hidden sm:inline">Reset</span>
             </button>
           </div>
         </div>
