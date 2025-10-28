@@ -112,7 +112,17 @@ class SurvivalService {
   processAnswer(currentState: SurvivalState, isCorrect: boolean): SurvivalState {
     console.log('🔍 DEBUG: survivalService.processAnswer called with:', { isCorrect, currentLives: currentState.lives });
     
-    const newState = { ...currentState };
+    // Créer un nouvel objet état complètement nouveau
+    const newState: SurvivalState = {
+      level: currentState.level,
+      streak: currentState.streak,
+      lives: currentState.lives,
+      maxLives: currentState.maxLives,
+      score: currentState.score,
+      isGameOver: currentState.isGameOver,
+      currentDirection: currentState.currentDirection,
+      difficultyMultiplier: currentState.difficultyMultiplier
+    };
 
     if (isCorrect) {
       console.log('✅ Bonne réponse - augmentation score et série');
@@ -129,8 +139,8 @@ class SurvivalService {
     } else {
       console.log('❌ Mauvaise réponse - perte d\'une vie');
       console.log('❌ Lives before:', newState.lives);
-      // Mauvaise réponse
-      newState.lives -= 1;
+      // Mauvaise réponse - FORCAGE de la diminution des vies
+      newState.lives = Math.max(0, newState.lives - 1);
       console.log('❌ Lives after:', newState.lives);
       if (newState.lives <= 0) {
         console.log('💀 Game Over!');
@@ -141,7 +151,7 @@ class SurvivalService {
     // Changer la direction aléatoirement pour la prochaine question
     newState.currentDirection = Math.random() > 0.5 ? 'jp-to-fr' : 'fr-to-jp';
 
-    console.log('🔍 DEBUG: Final state:', { lives: newState.lives, isGameOver: newState.isGameOver });
+    console.log('🔍 DEBUG: Final state:', { lives: newState.lives, isGameOver: newState.isGameOver, score: newState.score, streak: newState.streak });
     return newState;
   }
 

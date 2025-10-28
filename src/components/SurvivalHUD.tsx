@@ -10,6 +10,14 @@ const SurvivalHUD: React.FC<SurvivalHUDProps> = ({
   survivalState,
   encouragementMessage
 }) => {
+  // Debug pour voir si le HUD reçoit les bonnes valeurs
+  console.log('🔍 DEBUG: SurvivalHUD render with:', {
+    lives: survivalState.lives,
+    maxLives: survivalState.maxLives,
+    score: survivalState.score,
+    streak: survivalState.streak
+  });
+
   // Animation pour les vies perdues
   const renderHearts = () => {
     const hearts = [];

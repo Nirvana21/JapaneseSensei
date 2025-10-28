@@ -137,14 +137,6 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
                 />
               </div>
             </div>
-            <div className="flex justify-center mt-2">
-              <button
-                onClick={onClearCanvas}
-                className="px-3 py-1 bg-orange-200 hover:bg-orange-300 text-orange-700 text-xs rounded-lg transition-colors"
-              >
-                🗑️ Effacer
-              </button>
-            </div>
           </div>
         )}
 
@@ -169,15 +161,12 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
               {content.answer}
             </div>
             
-            {/* Message d'instruction pour la comparaison */}
+            {/* Espace pour éviter confusion après révélation en mode FR→JP */}
             {direction === 'fr-to-jp' && (
               <div className="mt-6 w-full border-t border-green-200 pt-4">
-                <div className="text-center bg-green-50 rounded-lg p-4 border border-green-200">
-                  <p className="text-sm font-medium text-green-700 mb-2">
-                    💡 Comparez mentalement
-                  </p>
-                  <p className="text-xs text-green-600">
-                    Regardez le kanji ci-dessus et comparez avec ce que vous avez dessiné. Cliquez sur "Effacer" pour réessayer.
+                <div className="text-center bg-green-50 rounded-lg p-3 border border-green-200">
+                  <p className="text-sm font-medium text-green-700">
+                    ✅ Réponse révélée ! Vous pouvez continuer.
                   </p>
                 </div>
               </div>

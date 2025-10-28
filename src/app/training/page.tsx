@@ -260,6 +260,19 @@ function TrainingPageContent() {
     setStats((prev) => ({ ...prev, sessionComplete: false }));
   };
 
+  // Debugging useEffect pour suivre les changements d'état
+  useEffect(() => {
+    if (survivalState) {
+      console.log('🔍 DEBUG: Survival state updated:', {
+        lives: survivalState.lives,
+        score: survivalState.score,
+        streak: survivalState.streak,
+        level: survivalState.level,
+        isGameOver: survivalState.isGameOver
+      });
+    }
+  }, [survivalState]);
+
   // ===== FONCTIONS MODE SURVIVAL =====
   
   const startSurvivalMode = () => {
@@ -303,7 +316,9 @@ function TrainingPageContent() {
     const newSurvivalState = survivalService.processAnswer(survivalState, isCorrect);
     console.log('🔍 DEBUG: Lives after processAnswer:', newSurvivalState.lives);
     console.log('🔍 DEBUG: New survival state:', newSurvivalState);
-    setSurvivalState(newSurvivalState);
+    
+    // Force React à détecter le changement en créant un nouvel objet
+    setSurvivalState({...newSurvivalState});
 
     // Déclencher le nettoyage du canvas
     setClearCanvas(prev => prev + 1);
@@ -523,14 +538,28 @@ function TrainingPageContent() {
             
             {/* Carte Survival */}
             <div className="flex justify-center mb-6 sm:mb-8">
-              <SurvivalCard
-                kanji={currentSurvivalKanji}
-                direction={survivalState.currentDirection}
-                onAnswer={handleSurvivalAnswer}
-                disabled={survivalState.isGameOver}
-                clearCanvas={clearCanvas}
-                onClearCanvas={() => setClearCanvas(prev => prev + 1)}
-              />
+              <div className="w-full max-w-lg">
+                <SurvivalCard
+                  kanji={currentSurvivalKanji}
+                  direction={survivalState.currentDirection}
+                  onAnswer={handleSurvivalAnswer}
+                  disabled={survivalState.isGameOver}
+                  clearCanvas={clearCanvas}
+                  onClearCanvas={() => setClearCanvas(prev => prev + 1)}
+                />
+                
+                {/* Bouton effacer en dehors de la carte pour éviter les conflits */}
+                {survivalState.currentDirection === 'fr-to-jp' && (
+                  <div className="flex justify-center mt-3">
+                    <button
+                      onClick={() => setClearCanvas(prev => prev + 1)}
+                      className="px-4 py-2 bg-orange-200 hover:bg-orange-300 text-orange-700 text-sm rounded-lg transition-colors shadow-md hover:shadow-lg"
+                    >
+                      🗑️ Effacer le dessin
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
             
             {/* Boutons d'action Survival */}
