@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import { SimpleLearningKanji } from '../services/adaptiveLearningService';
+import KanjiCanvas from './KanjiCanvas';
 
 interface SurvivalCardProps {
   kanji: SimpleLearningKanji;
   direction: 'jp-to-fr' | 'fr-to-jp';
   onAnswer: (isCorrect: boolean) => void;
   disabled?: boolean;
+  clearCanvas?: number; // Pour réinitialiser le canvas
 }
 
 const SurvivalCard: React.FC<SurvivalCardProps> = ({
   kanji,
   direction,
   onAnswer,
-  disabled = false
+  disabled = false,
+  clearCanvas = 0
 }) => {
   const [showAnswer, setShowAnswer] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -69,7 +72,7 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
   };
 
   return (
-    <div className="relative max-w-md mx-auto">
+    <div className="relative max-w-md mx-auto px-2 sm:px-0">
       
       {/* Carte principale */}
       <div
@@ -77,7 +80,7 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
         className={`
           bg-gradient-to-br from-orange-50/95 to-red-50/95 
           backdrop-blur-md rounded-3xl border-2 shadow-2xl 
-          min-h-[400px] flex flex-col justify-center items-center p-8 
+          min-h-[350px] sm:min-h-[400px] flex flex-col justify-center items-center p-4 sm:p-8 
           transition-all duration-300 cursor-pointer
           ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
           ${selectedAnswer === 'correct' ? 'border-green-500 bg-gradient-to-br from-green-50 to-green-100' : ''}
@@ -124,19 +127,61 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
               {content.answer}
             </div>
             
-            {/* Informations supplémentaires pour direction JP → FR */}
+            {/* Canvas pour dessiner quand FR → JP */}
+            {direction === 'fr-to-jp' && (
+              <div className="mt-4 w-full">
+                <p className="text-xs text-orange-600 mb-2">
+                  ✏️ Entraînez-vous à écrire le kanji
+                </p>
+                <div className="flex justify-center">
+                  <div className="w-48 h-48 sm:w-60 sm:h-60">
+                    <KanjiCanvas 
+                      width={240}
+                      height={240}
+                      clearTrigger={clearCanvas}
+                      className="mx-auto max-w-full max-h-full"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Informations supplémentaires selon la direction */}
             {direction === 'jp-to-fr' && (
               <div className="mt-4 space-y-2">
                 {kanji.onyomi && kanji.onyomi.length > 0 && (
                   <div className="text-sm">
-                    <span className="text-blue-600 font-medium">On: </span>
+                    <span className="text-blue-600 font-medium">On'yomi: </span>
                     <span className="text-blue-700">{kanji.onyomi.join(', ')}</span>
                   </div>
                 )}
                 {kanji.kunyomi && kanji.kunyomi.length > 0 && (
                   <div className="text-sm">
-                    <span className="text-purple-600 font-medium">Kun: </span>
+                    <span className="text-purple-600 font-medium">Kun'yomi: </span>
                     <span className="text-purple-700">{kanji.kunyomi.join(', ')}</span>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {direction === 'fr-to-jp' && (
+              <div className="mt-4 space-y-2">
+                {kanji.onyomi && kanji.onyomi.length > 0 && (
+                  <div className="text-sm">
+                    <span className="text-blue-600 font-medium">On'yomi: </span>
+                    <span className="text-blue-700">{kanji.onyomi.join(', ')}</span>
+                  </div>
+                )}
+                {kanji.kunyomi && kanji.kunyomi.length > 0 && (
+                  <div className="text-sm">
+                    <span className="text-purple-600 font-medium">Kun'yomi: </span>
+                    <span className="text-purple-700">{kanji.kunyomi.join(', ')}</span>
+                  </div>
+                )}
+                {kanji.meanings && kanji.meanings.length > 1 && (
+                  <div className="text-sm">
+                    <span className="text-green-600 font-medium">Autres sens: </span>
+                    <span className="text-green-700">{kanji.meanings.slice(1).join(', ')}</span>
                   </div>
                 )}
               </div>
@@ -165,14 +210,14 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
 
       {/* Boutons de réponse (visibles après révélation) */}
       {showAnswer && !selectedAnswer && (
-        <div className="flex gap-4 mt-6">
+        <div className="flex gap-3 sm:gap-4 mt-4 sm:mt-6 px-2 sm:px-0">
           <button
             onClick={() => handleAnswer(false)}
             disabled={disabled}
-            className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-2xl transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             <div className="flex items-center justify-center gap-2">
-              <span className="text-2xl">👈</span>
+              <span className="text-xl sm:text-2xl">👈</span>
               <div className="text-left">
                 <p className="text-sm">知らない</p>
                 <p className="text-xs opacity-90">Pas sûr</p>
@@ -183,14 +228,14 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
           <button
             onClick={() => handleAnswer(true)}
             disabled={disabled}
-            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-2xl transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
             <div className="flex items-center justify-center gap-2">
               <div className="text-right">
                 <p className="text-sm">知ってる</p>
                 <p className="text-xs opacity-90">Je sais</p>
               </div>
-              <span className="text-2xl">👉</span>
+              <span className="text-xl sm:text-2xl">👉</span>
             </div>
           </button>
         </div>

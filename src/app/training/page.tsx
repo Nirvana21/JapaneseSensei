@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useKanjis } from "../../hooks/useKanjis";
 import SwipeCard from "../../components/SwipeCard";
 import KanjiCanvas from "../../components/KanjiCanvas";
@@ -23,6 +24,7 @@ import {
 
 export default function TrainingPage() {
   const { kanjis } = useKanjis();
+  const searchParams = useSearchParams();
   const [selectedKanjis, setSelectedKanjis] = useState<SimpleLearningKanji[]>(
     []
   );
@@ -91,6 +93,22 @@ export default function TrainingPage() {
       generateNewSession(learningKanjis, []);
     }
   }, [kanjis]);
+
+  // Détecter le mode Survival dans l'URL
+  useEffect(() => {
+    const mode = searchParams.get('mode');
+    if (mode === 'survival' && allLearningKanjis.length > 0) {
+      // Lancer le mode Survival directement
+      setGameMode('survival');
+      const newSurvivalState = survivalService.initializeGame();
+      setSurvivalState(newSurvivalState);
+      setSurvivalStats(survivalService.getSurvivalStats());
+      
+      // Sélectionner le premier kanji
+      const firstKanji = survivalService.selectKanjiForSurvival(allLearningKanjis, 1);
+      setCurrentSurvivalKanji(firstKanji);
+    }
+  }, [searchParams, allLearningKanjis]);
 
   // Générer une nouvelle session selon les tags sélectionnés
   const generateNewSession = (
@@ -281,6 +299,9 @@ export default function TrainingPage() {
     const newSurvivalState = survivalService.processAnswer(survivalState, isCorrect);
     setSurvivalState(newSurvivalState);
 
+    // Déclencher le nettoyage du canvas
+    setClearCanvas(prev => prev + 1);
+
     if (newSurvivalState.isGameOver) {
       // Fin du jeu - sauvegarder les stats
       survivalService.saveSurvivalSession(newSurvivalState);
@@ -365,21 +386,12 @@ export default function TrainingPage() {
               )}
             </h1>
 
-            <div className="flex gap-2">
-              <button
-                onClick={startNewSession}
-                className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all text-sm"
-              >
-                🔄 新セッション
-              </button>
-              
-              <button
-                onClick={startSurvivalMode}
-                className="px-3 py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white font-medium rounded-lg hover:from-orange-600 hover:to-red-700 transition-all text-sm"
-              >
-                🔥 持久モード
-              </button>
-            </div>
+            <button
+              onClick={startNewSession}
+              className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all text-sm"
+            >
+              🔄 新セッション
+            </button>
           </div>
 
           {/* Deuxième ligne : Contrôles et statistiques zen */}
@@ -508,17 +520,25 @@ export default function TrainingPage() {
                 direction={survivalState.currentDirection}
                 onAnswer={handleSurvivalAnswer}
                 disabled={survivalState.isGameOver}
+                clearCanvas={clearCanvas}
               />
             </div>
             
-            {/* Bouton retour */}
-            <div className="text-center">
+            {/* Boutons d'action */}
+            <div className="text-center space-y-3">
               <button
                 onClick={exitSurvivalMode}
                 className="px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white font-medium rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all"
               >
-                ← Retour au mode normal
+                ← Mode normal
               </button>
+              <br />
+              <Link
+                href="/"
+                className="inline-block px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all"
+              >
+                🏠 Menu principal
+              </Link>
             </div>
           </>
         )}

@@ -7,6 +7,7 @@ import {
   simpleAdaptiveLearningService,
   SimpleLearningKanji,
 } from "../../services/adaptiveLearningService";
+import { survivalService, SurvivalStats } from "../../services/survivalService";
 
 interface DetailedStats {
   totalKanjis: number;
@@ -37,6 +38,7 @@ interface DetailedStats {
 export default function StatsPage() {
   const { kanjis } = useKanjis();
   const [stats, setStats] = useState<DetailedStats | null>(null);
+  const [survivalStats, setSurvivalStats] = useState<SurvivalStats | null>(null);
   const [allLearningKanjis, setAllLearningKanjis] = useState<
     SimpleLearningKanji[]
   >([]);
@@ -129,6 +131,11 @@ export default function StatsPage() {
     };
 
     setStats(detailedStats);
+    
+    // Charger les statistiques Survival
+    const survivalData = survivalService.getSurvivalStats();
+    setSurvivalStats(survivalData);
+    
     setLoading(false);
   };
 
@@ -281,6 +288,74 @@ export default function StatsPage() {
             </div>
           </div>
         </div>
+
+        {/* Statistiques Mode Survival */}
+        {survivalStats && survivalStats.totalSessions > 0 && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-light text-red-800 mb-6 flex items-center gap-3">
+              <span>🔥</span>
+              <span>持久モード Survival</span>
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-gradient-to-br from-red-100/90 to-pink-100/90 rounded-2xl p-6 border border-red-200/50 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-red-700 text-sm font-medium">
+                      最高記録 Record
+                    </p>
+                    <p className="text-3xl font-light text-red-800">
+                      {survivalStats.bestStreak}
+                    </p>
+                  </div>
+                  <div className="text-4xl opacity-60">👑</div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 rounded-2xl p-6 border border-orange-200/50 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-orange-700 text-sm font-medium">
+                      試合数 Parties
+                    </p>
+                    <p className="text-3xl font-light text-orange-800">
+                      {survivalStats.totalSessions}
+                    </p>
+                  </div>
+                  <div className="text-4xl opacity-60">🎮</div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-amber-100/90 to-orange-100/90 rounded-2xl p-6 border border-amber-200/50 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-amber-700 text-sm font-medium">
+                      平均 Moyenne
+                    </p>
+                    <p className="text-3xl font-light text-amber-800">
+                      {Math.round(survivalStats.averageStreak)}
+                    </p>
+                  </div>
+                  <div className="text-4xl opacity-60">📊</div>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-yellow-100/90 to-amber-100/90 rounded-2xl p-6 border border-yellow-200/50 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-yellow-700 text-sm font-medium">
+                      総質問数 Total
+                    </p>
+                    <p className="text-3xl font-light text-yellow-800">
+                      {survivalStats.totalQuestions}
+                    </p>
+                  </div>
+                  <div className="text-4xl opacity-60">❓</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Distribution de maîtrise zen */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">

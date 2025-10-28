@@ -54,7 +54,7 @@ export default function Home() {
 
         {/* Menu Principal zen */}
         <main className="max-w-6xl mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8">
             {/* Bouton Quiz - Style zen */}
             <Link href="/training" className="group">
               <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-orange-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-red-300/50">
@@ -77,6 +77,34 @@ export default function Home() {
                   {kanjis.length > 0 && (
                     <div className="mt-4 px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm inline-block border border-red-200">
                       {kanjis.length} kanji{kanjis.length > 1 ? "s" : ""}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Link>
+
+            {/* Bouton Survival - Style feu */}
+            <Link href="/training?mode=survival" className="group">
+              <div className="bg-gradient-to-br from-red-100/90 to-pink-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-red-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-pink-300/50">
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-red-600 to-pink-700 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
+                    <span className="text-2xl">🔥</span>
+                  </div>
+                  <h2 className="text-2xl font-bold text-red-800 mb-3">
+                    持久 Survival
+                  </h2>
+                  <p className="text-red-700 leading-relaxed mb-4">
+                    Défi d'endurance infini
+                  </p>
+                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-red-600">
+                    <span>挑戦</span>
+                    <span className="group-hover:translate-x-1 transition-transform">
+                      →
+                    </span>
+                  </div>
+                  {kanjis.length > 0 && (
+                    <div className="mt-4 px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm inline-block border border-red-200">
+                      3 vies • ∞ questions
                     </div>
                   )}
                 </div>

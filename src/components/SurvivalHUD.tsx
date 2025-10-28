@@ -18,7 +18,7 @@ const SurvivalHUD: React.FC<SurvivalHUDProps> = ({
       hearts.push(
         <span
           key={i}
-          className={`text-2xl transition-all duration-300 ${
+          className={`text-lg transition-all duration-300 ${
             isAlive 
               ? 'text-red-500 transform scale-100' 
               : 'text-gray-300 transform scale-75 opacity-50'
@@ -67,35 +67,35 @@ const SurvivalHUD: React.FC<SurvivalHUDProps> = ({
       </div>
 
       {/* Deuxième ligne : Stats principales */}
-      <div className="grid grid-cols-4 gap-3 mb-3">
+      <div className="grid grid-cols-4 gap-2 sm:gap-3 mb-3">
         
         {/* Vies */}
-        <div className="text-center bg-white/70 rounded-lg p-2 border border-orange-200/50">
-          <div className="flex justify-center gap-1 mb-1">
+        <div className="text-center bg-white/70 rounded-lg p-1 sm:p-2 border border-orange-200/50">
+          <div className="flex justify-center gap-0.5 mb-1">
             {renderHearts()}
           </div>
           <p className="text-xs font-bold text-orange-700">Vies</p>
         </div>
         
         {/* Série */}
-        <div className="text-center bg-white/70 rounded-lg p-2 border border-orange-200/50">
-          <p className="text-xl font-bold text-orange-700">
+        <div className="text-center bg-white/70 rounded-lg p-1 sm:p-2 border border-orange-200/50">
+          <p className="text-lg sm:text-xl font-bold text-orange-700">
             {survivalState.streak}
           </p>
           <p className="text-xs font-bold text-orange-600">Série</p>
         </div>
         
         {/* Niveau */}
-        <div className="text-center bg-white/70 rounded-lg p-2 border border-orange-200/50">
-          <p className="text-xl font-bold text-orange-700">
+        <div className="text-center bg-white/70 rounded-lg p-1 sm:p-2 border border-orange-200/50">
+          <p className="text-lg sm:text-xl font-bold text-orange-700">
             {survivalState.level}
           </p>
           <p className="text-xs font-bold text-orange-600">Niveau</p>
         </div>
         
         {/* Score */}
-        <div className="text-center bg-white/70 rounded-lg p-2 border border-orange-200/50">
-          <p className="text-lg font-bold text-orange-700">
+        <div className="text-center bg-white/70 rounded-lg p-1 sm:p-2 border border-orange-200/50">
+          <p className="text-sm sm:text-lg font-bold text-orange-700">
             {survivalState.score.toLocaleString()}
           </p>
           <p className="text-xs font-bold text-orange-600">Score</p>
