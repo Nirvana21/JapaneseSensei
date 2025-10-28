@@ -8,10 +8,10 @@ import { simpleAdaptiveLearningService, SimpleLearningKanji } from '../../servic
 interface DetailedStats {
   totalKanjis: number;
   masteryDistribution: {
-    new: number;
-    difficult: number;
-    medium: number;
-    mastered: number;
+    new: number;      // Score 0
+    difficult: number; // Score 1
+    medium: number;   // Score 2
+    mastered: number; // Score 3
   };
   studyStreak: number;
   totalStudySessions: number;
@@ -46,6 +46,7 @@ export default function StatsPage() {
   const calculateDetailedStats = () => {
     setLoading(true);
     
+    // Convertir les kanjis en SimpleLearningKanji
     const learningKanjis = kanjis.map(kanji => {
       const existingData = localStorage.getItem(`simple_learning_${kanji.id}`);
       if (existingData) {
@@ -64,6 +65,7 @@ export default function StatsPage() {
 
     setAllLearningKanjis(learningKanjis);
 
+    // Calculer les statistiques détaillées
     const masteryDistribution = {
       new: learningKanjis.filter(k => k.learningData.score === 0).length,
       difficult: learningKanjis.filter(k => k.learningData.score === 1).length,
@@ -71,10 +73,12 @@ export default function StatsPage() {
       mastered: learningKanjis.filter(k => k.learningData.score === 3).length,
     };
 
+    // Trouver les kanjis les plus faibles et les plus forts
     const sortedByScore = [...learningKanjis].sort((a, b) => a.learningData.score - b.learningData.score);
     const weakestKanjis = sortedByScore.slice(0, 5);
     const strongestKanjis = sortedByScore.slice(-5).reverse();
 
+    // Statistiques par tags
     const tagMap = new Map<string, { total: number; scoreSum: number }>();
     learningKanjis.forEach(kanji => {
       kanji.tags?.forEach(tag => {
@@ -95,6 +99,7 @@ export default function StatsPage() {
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
 
+    // Calculer streak et sessions (simulé pour l'instant)
     const studyStreak = calculateStudyStreak(learningKanjis);
     const totalStudySessions = learningKanjis.reduce((sum, k) => sum + (k.learningData.totalAttempts || 0), 0);
     const totalCorrect = learningKanjis.reduce((sum, k) => sum + (k.learningData.correctAttempts || 0), 0);
@@ -106,10 +111,10 @@ export default function StatsPage() {
       studyStreak,
       totalStudySessions,
       averageSessionScore,
-      bestStreak: studyStreak,
+      bestStreak: studyStreak, // Pour l'instant identique
       weakestKanjis,
       strongestKanjis,
-      recentProgress: [],
+      recentProgress: [], // À implémenter plus tard
       tagsStats
     };
 
@@ -118,6 +123,7 @@ export default function StatsPage() {
   };
 
   const calculateStudyStreak = (kanjis: SimpleLearningKanji[]): number => {
+    // Calculer le streak basé sur la dernière fois qu'on a étudié
     const today = new Date();
     const studiedKanjis = kanjis.filter(k => k.learningData.lastSeen);
     
@@ -126,17 +132,21 @@ export default function StatsPage() {
     const lastStudyDate = new Date(Math.max(...studiedKanjis.map(k => k.learningData.lastSeen.getTime())));
     const daysSinceLastStudy = Math.floor((today.getTime() - lastStudyDate.getTime()) / (1000 * 60 * 60 * 24));
     
-    return daysSinceLastStudy <= 1 ? Math.min(studiedKanjis.length, 7) : 0;
+    return daysSinceLastStudy <= 1 ? Math.min(studiedKanjis.length, 7) : 0; // Simpler streak logic
   };
 
   const resetGlobalStats = () => {
-    if (window.confirm('Réinitialiser toutes les statistiques ?')) {
+    if (window.confirm('⚠️ Êtes-vous sûr de vouloir réinitialiser toutes les statistiques globales ? Cette action est irréversible !')) {
+      // Réinitialiser toutes les données d'apprentissage dans localStorage
       kanjis.forEach(kanji => {
         const key = `simple_learning_${kanji.id}`;
         localStorage.removeItem(key);
       });
+      
+      // Recalculer les stats
       calculateDetailedStats();
-      alert('Statistiques réinitialisées !');
+      
+      alert('✅ Statistiques réinitialisées avec succès !');
     }
   };
 
@@ -162,10 +172,10 @@ export default function StatsPage() {
 
   if (loading || !stats) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Calcul des statistiques...</p>
+          <div className="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-slate-300">Calcul des statistiques...</p>
         </div>
       </div>
     );
@@ -173,13 +183,14 @@ export default function StatsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
-      {/* Header épuré */}
+      {/* Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-6">
+          {/* Navigation et titre */}
           <div className="flex items-center justify-between">
             <Link 
               href="/" 
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-300 border border-gray-200"
+              className="group flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-300 border border-gray-200"
             >
               <span className="text-lg">🏠</span>
               <span className="text-gray-700 font-medium text-sm">Menu</span>
@@ -195,7 +206,7 @@ export default function StatsPage() {
             
             <button
               onClick={resetGlobalStats}
-              className="flex items-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 rounded-xl transition-all duration-300 border border-red-200"
+              className="group flex items-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 rounded-xl transition-all duration-300 border border-red-200"
             >
               <span className="text-lg">🗑️</span>
               <span className="text-red-600 font-medium text-sm hidden sm:inline">Reset</span>
@@ -204,10 +215,9 @@ export default function StatsPage() {
         </div>
       </header>
 
-      {/* Contenu principal épuré */}
+      {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-8">
-        
-        {/* Métriques principales */}
+        {/* Vue d'ensemble */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
             <div className="flex items-center justify-between">
@@ -250,7 +260,7 @@ export default function StatsPage() {
           </div>
         </div>
 
-        {/* Distribution de maîtrise simplifiée */}
+        {/* Distribution de maîtrise */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
             <h2 className="text-xl font-light text-gray-800 mb-6 flex items-center gap-3">
@@ -289,11 +299,11 @@ export default function StatsPage() {
             </div>
           </div>
 
-          {/* Tags simplifiés */}
+          {/* Tags les plus utilisés */}
           <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
             <h2 className="text-xl font-light text-gray-800 mb-6 flex items-center gap-3">
               <span>🏷️</span>
-              <span>Tags</span>
+              <span>Tags populaires</span>
             </h2>
             
             <div className="space-y-3">
@@ -315,11 +325,12 @@ export default function StatsPage() {
           </div>
         </div>
 
-        {/* Kanjis épurés */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        {/* Kanjis les plus faibles et les plus forts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Kanjis les plus faibles */}
           <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
             <h2 className="text-xl font-light text-gray-800 mb-6 flex items-center gap-3">
-              <span>💡</span>
+              <span>�</span>
               <span>À travailler</span>
             </h2>
             
@@ -328,7 +339,9 @@ export default function StatsPage() {
                 <div key={kanji.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{kanji.kanji}</span>
-                    <span className="text-gray-800 font-medium">{kanji.primaryMeaning || kanji.meanings[0]}</span>
+                    <div>
+                      <p className="text-gray-800 font-medium">{kanji.primaryMeaning || kanji.meanings[0]}</p>
+                    </div>
                   </div>
                   <span className={`text-lg ${getMasteryColor(kanji.learningData.score)}`}>
                     {getMasteryIcon(kanji.learningData.score)}
@@ -338,37 +351,55 @@ export default function StatsPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-            <h2 className="text-xl font-light text-gray-800 mb-6 flex items-center gap-3">
+          {/* Kanjis les mieux maîtrisés */}
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl p-6 border border-slate-700/50">
+            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
               <span>🏆</span>
-              <span>Maîtrisés</span>
+              <span>Kanjis maîtrisés</span>
             </h2>
             
             <div className="space-y-3">
-              {stats.strongestKanjis.slice(0, 5).map((kanji, index) => (
-                <div key={kanji.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+              {stats.strongestKanjis.map((kanji, index) => (
+                <div key={kanji.id} className="flex justify-between items-center p-3 bg-slate-700/30 rounded-lg">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{kanji.kanji}</span>
-                    <span className="text-gray-800 font-medium">{kanji.primaryMeaning || kanji.meanings[0]}</span>
+                    <div>
+                      <p className="text-slate-300 font-medium">{kanji.primaryMeaning || kanji.meanings[0]}</p>
+                      <p className="text-slate-500 text-sm">{kanji.primaryReading || kanji.onyomi[0] || kanji.kunyomi[0]}</p>
+                    </div>
                   </div>
-                  <span className={`text-lg ${getMasteryColor(kanji.learningData.score)}`}>
-                    {getMasteryIcon(kanji.learningData.score)}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-lg ${getMasteryColor(kanji.learningData.score)}`}>
+                      {getMasteryIcon(kanji.learningData.score)}
+                    </span>
+                    <span className="text-slate-400 text-sm">
+                      {kanji.learningData.totalAttempts || 0} fois
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Bouton d'action simple */}
-        <div className="flex items-center justify-center">
+        {/* Actions */}
+        <div className="mt-12 flex items-center justify-center gap-6">
           <button
             onClick={calculateDetailedStats}
-            className="flex items-center gap-3 px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-all duration-300"
+            className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
-            <span className="text-xl">🔄</span>
-            <span>Actualiser</span>
+            <span className="text-xl group-hover:scale-110 transition-transform">🔄</span>
+            <span>Recalculer les statistiques</span>
           </button>
+          
+          <div className="text-center">
+            <p className="text-slate-400 text-sm mb-2">
+              � <strong>Reset stats</strong> : Remet à zéro toutes les données d'apprentissage
+            </p>
+            <p className="text-slate-500 text-xs">
+              (Les kanjis restent dans votre collection, seules les statistiques sont effacées)
+            </p>
+          </div>
         </div>
       </main>
     </div>
