@@ -18,6 +18,8 @@ export default function KanjiCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
+  const [lastPoint, setLastPoint] = useState<{ x: number; y: number } | null>(null);
+  const [velocity, setVelocity] = useState(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -26,26 +28,79 @@ export default function KanjiCanvas({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Configuration du contexte de dessin
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 3;
+    // Configuration du contexte de dessin pour style pinceau
+    ctx.strokeStyle = '#1a1a1a';
+    ctx.fillStyle = '#1a1a1a';
+    ctx.lineWidth = 8;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
+    ctx.globalCompositeOperation = 'source-over';
     
-    // Fond blanc
-    ctx.fillStyle = 'white';
+    // Fond blanc avec texture légère
+    ctx.fillStyle = '#fefefe';
     ctx.fillRect(0, 0, width, height);
+    
+    // Ajouter une texture papier subtile
+    ctx.fillStyle = '#f8f8f8';
+    for (let i = 0; i < width; i += 3) {
+      for (let j = 0; j < height; j += 3) {
+        if (Math.random() > 0.97) {
+          ctx.fillRect(i, j, 1, 1);
+        }
+      }
+    }
     
     setContext(ctx);
   }, [width, height]);
 
+  // Fonction pour dessiner avec effet pinceau calligraphique
+  const drawBrushStroke = (x: number, y: number, pressure: number = 1) => {
+    if (!context || !lastPoint) return;
+
+    const distance = Math.sqrt(
+      Math.pow(x - lastPoint.x, 2) + Math.pow(y - lastPoint.y, 2)
+    );
+    
+    // Calculer la vitesse pour ajuster l'épaisseur
+    const newVelocity = distance * 0.3 + velocity * 0.7;
+    setVelocity(newVelocity);
+    
+    // Épaisseur variable selon la vitesse (plus lent = plus épais, comme un vrai pinceau)
+    const baseWidth = 12;
+    const maxWidth = 20;
+    const minWidth = 3;
+    const speedFactor = Math.min(newVelocity / 10, 1);
+    const brushWidth = baseWidth - (speedFactor * (baseWidth - minWidth)) + (pressure * 5);
+    const finalWidth = Math.max(minWidth, Math.min(maxWidth, brushWidth));
+
+    // Dessiner le trait avec dégradé pour simuler l'encre
+    const steps = Math.ceil(distance);
+    for (let i = 0; i <= steps; i++) {
+      const ratio = i / steps;
+      const currentX = lastPoint.x + (x - lastPoint.x) * ratio;
+      const currentY = lastPoint.y + (y - lastPoint.y) * ratio;
+      
+      // Varier légèrement l'épaisseur pour un effet plus naturel
+      const variation = (Math.sin(i * 0.5) * 0.2 + 1) * finalWidth;
+      
+      context.beginPath();
+      context.arc(currentX, currentY, variation / 2, 0, Math.PI * 2);
+      
+      // Dégradé d'opacité pour effet d'encre
+      const alpha = 0.7 + (pressure * 0.3);
+      context.fillStyle = `rgba(26, 26, 26, ${alpha})`;
+      context.fill();
+    }
+    
+    setLastPoint({ x, y });
+  };
+
   const startDrawing = useCallback((e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     if (!context) return;
     
-    // Empêcher le comportement par défaut pour éviter le scroll sur mobile
     e.preventDefault();
-    
     setIsDrawing(true);
+    setVelocity(0);
     
     const rect = canvasRef.current!.getBoundingClientRect();
     let x, y;
@@ -58,53 +113,71 @@ export default function KanjiCanvas({
       y = e.clientY - rect.top;
     }
     
+    setLastPoint({ x, y });
+    
+    // Point de départ avec effet d'encre
     context.beginPath();
-    context.moveTo(x, y);
+    context.arc(x, y, 6, 0, Math.PI * 2);
+    context.fillStyle = 'rgba(26, 26, 26, 0.8)';
+    context.fill();
   }, [context]);
 
   const draw = useCallback((e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
-    if (!isDrawing || !context) return;
+    if (!isDrawing || !context || !lastPoint) return;
     
-    // Empêcher le comportement par défaut pour éviter le scroll sur mobile
     e.preventDefault();
     
     const rect = canvasRef.current!.getBoundingClientRect();
-    let x, y;
+    let x, y, pressure = 1;
     
     if ('touches' in e) {
       x = e.touches[0].clientX - rect.left;
       y = e.touches[0].clientY - rect.top;
+      // Simuler la pression sur tactile
+      pressure = 0.8 + Math.random() * 0.4;
     } else {
       x = e.clientX - rect.left;
       y = e.clientY - rect.top;
+      pressure = 0.9;
     }
     
-    context.lineTo(x, y);
-    context.stroke();
-  }, [isDrawing, context]);
+    drawBrushStroke(x, y, pressure);
+  }, [isDrawing, context, lastPoint, velocity]);
 
   const stopDrawingMouse = useCallback(() => {
     if (!isDrawing || !context) return;
     
     setIsDrawing(false);
-    context.beginPath();
+    setLastPoint(null);
+    setVelocity(0);
   }, [isDrawing, context]);
 
   const stopDrawingTouch = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
-    // Empêcher le comportement par défaut
     e.preventDefault();
     
     if (!isDrawing || !context) return;
     
     setIsDrawing(false);
-    context.beginPath();
+    setLastPoint(null);
+    setVelocity(0);
   }, [isDrawing, context]);
 
   const clearCanvas = () => {
     if (!context) return;
     
-    context.fillStyle = 'white';
+    // Fond blanc avec texture légère
+    context.fillStyle = '#fefefe';
     context.fillRect(0, 0, width, height);
+    
+    // Ajouter une texture papier subtile
+    context.fillStyle = '#f8f8f8';
+    for (let i = 0; i < width; i += 3) {
+      for (let j = 0; j < height; j += 3) {
+        if (Math.random() > 0.97) {
+          context.fillRect(i, j, 1, 1);
+        }
+      }
+    }
   };
 
   const getDrawingData = () => {

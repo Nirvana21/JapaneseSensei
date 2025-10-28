@@ -135,6 +135,21 @@ export default function StatsPage() {
     return daysSinceLastStudy <= 1 ? Math.min(studiedKanjis.length, 7) : 0; // Simpler streak logic
   };
 
+  const resetGlobalStats = () => {
+    if (window.confirm('⚠️ Êtes-vous sûr de vouloir réinitialiser toutes les statistiques globales ? Cette action est irréversible !')) {
+      // Réinitialiser toutes les données d'apprentissage dans localStorage
+      kanjis.forEach(kanji => {
+        const key = `simple_learning_${kanji.id}`;
+        localStorage.removeItem(key);
+      });
+      
+      // Recalculer les stats
+      calculateDetailedStats();
+      
+      alert('✅ Statistiques réinitialisées avec succès !');
+    }
+  };
+
   const getMasteryColor = (score: number) => {
     const colors = {
       0: 'text-gray-400',
@@ -170,22 +185,32 @@ export default function StatsPage() {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900">
       {/* Header */}
       <header className="bg-slate-800/90 backdrop-blur-md border-b border-slate-700/50 shadow-xl">
-        <div className="max-w-6xl mx-auto px-4 py-4">
+        <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <Link 
               href="/" 
-              className="flex items-center gap-3 px-4 py-2 bg-slate-700/50 hover:bg-slate-600/50 rounded-lg transition-colors"
+              className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
-              <span>🏠</span>
-              <span className="text-slate-200 font-medium">Retour au menu</span>
+              <span className="text-xl group-hover:scale-110 transition-transform">🏠</span>
+              <span className="text-slate-100 font-semibold">Retour au menu</span>
+              <span className="text-slate-400 group-hover:translate-x-1 transition-transform">←</span>
             </Link>
             
-            <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-              <span>📊</span>
-              <span>Statistiques d'apprentissage</span>
-            </h1>
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-white flex items-center gap-3 justify-center">
+                <span className="text-4xl">📊</span>
+                <span>Statistiques d'apprentissage</span>
+              </h1>
+              <p className="text-slate-400 mt-1">Analysez votre progression et vos performances</p>
+            </div>
             
-            <div className="w-32"></div> {/* Spacer for centering */}
+            <button
+              onClick={resetGlobalStats}
+              className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-red-700 to-red-600 hover:from-red-600 hover:to-red-500 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              <span className="text-xl group-hover:scale-110 transition-transform">🗑️</span>
+              <span className="text-red-100 font-semibold">Reset stats</span>
+            </button>
           </div>
         </div>
       </header>
@@ -364,14 +389,24 @@ export default function StatsPage() {
           </div>
         </div>
 
-        {/* Bouton pour recommencer */}
-        <div className="mt-8 text-center">
+        {/* Actions */}
+        <div className="mt-12 flex items-center justify-center gap-6">
           <button
             onClick={calculateDetailedStats}
-            className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-700 text-white font-medium rounded-xl hover:from-indigo-700 hover:to-purple-800 transition-all shadow-lg"
+            className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
-            🔄 Recalculer les statistiques
+            <span className="text-xl group-hover:scale-110 transition-transform">🔄</span>
+            <span>Recalculer les statistiques</span>
           </button>
+          
+          <div className="text-center">
+            <p className="text-slate-400 text-sm mb-2">
+              � <strong>Reset stats</strong> : Remet à zéro toutes les données d'apprentissage
+            </p>
+            <p className="text-slate-500 text-xs">
+              (Les kanjis restent dans votre collection, seules les statistiques sont effacées)
+            </p>
+          </div>
         </div>
       </main>
     </div>
