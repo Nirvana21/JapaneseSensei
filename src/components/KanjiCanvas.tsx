@@ -61,36 +61,35 @@ export default function KanjiCanvas({
       Math.pow(x - lastPoint.x, 2) + Math.pow(y - lastPoint.y, 2)
     );
     
-    // Calculer la vitesse pour ajuster l'épaisseur
-    const newVelocity = distance * 0.3 + velocity * 0.7;
-    setVelocity(newVelocity);
+    // Ne dessiner que si on a bougé suffisamment
+    if (distance < 1) return;
     
-    // Épaisseur variable selon la vitesse (plus lent = plus épais, comme un vrai pinceau)
-    const baseWidth = 12;
-    const maxWidth = 20;
-    const minWidth = 3;
-    const speedFactor = Math.min(newVelocity / 10, 1);
-    const brushWidth = baseWidth - (speedFactor * (baseWidth - minWidth)) + (pressure * 5);
-    const finalWidth = Math.max(minWidth, Math.min(maxWidth, brushWidth));
+    // Calculer la vitesse de manière plus stable
+    const currentVelocity = distance;
+    const smoothVelocity = currentVelocity * 0.3 + velocity * 0.7;
+    setVelocity(smoothVelocity);
+    
+    // Épaisseur variable selon la vitesse (lissée)
+    const baseWidth = 8;
+    const maxWidth = 14;
+    const minWidth = 2;
+    const speedFactor = Math.min(smoothVelocity / 8, 1);
+    const brushWidth = baseWidth - (speedFactor * (baseWidth - minWidth));
+    const finalWidth = Math.max(minWidth, Math.min(maxWidth, brushWidth * pressure));
 
-    // Dessiner le trait avec dégradé pour simuler l'encre
-    const steps = Math.ceil(distance);
-    for (let i = 0; i <= steps; i++) {
-      const ratio = i / steps;
-      const currentX = lastPoint.x + (x - lastPoint.x) * ratio;
-      const currentY = lastPoint.y + (y - lastPoint.y) * ratio;
-      
-      // Varier légèrement l'épaisseur pour un effet plus naturel
-      const variation = (Math.sin(i * 0.5) * 0.2 + 1) * finalWidth;
-      
-      context.beginPath();
-      context.arc(currentX, currentY, variation / 2, 0, Math.PI * 2);
-      
-      // Dégradé d'opacité pour effet d'encre
-      const alpha = 0.7 + (pressure * 0.3);
-      context.fillStyle = `rgba(26, 26, 26, ${alpha})`;
-      context.fill();
-    }
+    // Dessiner une ligne lisse entre les deux points
+    context.beginPath();
+    context.lineWidth = finalWidth;
+    context.strokeStyle = `rgba(26, 26, 26, ${0.8 + pressure * 0.2})`;
+    context.moveTo(lastPoint.x, lastPoint.y);
+    context.lineTo(x, y);
+    context.stroke();
+    
+    // Ajouter des points aux extrémités pour un rendu plus lisse
+    context.beginPath();
+    context.arc(x, y, finalWidth / 2, 0, Math.PI * 2);
+    context.fillStyle = `rgba(26, 26, 26, ${0.7 + pressure * 0.3})`;
+    context.fill();
     
     setLastPoint({ x, y });
   };
@@ -115,10 +114,10 @@ export default function KanjiCanvas({
     
     setLastPoint({ x, y });
     
-    // Point de départ avec effet d'encre
+    // Point de départ plus propre
     context.beginPath();
-    context.arc(x, y, 6, 0, Math.PI * 2);
-    context.fillStyle = 'rgba(26, 26, 26, 0.8)';
+    context.arc(x, y, 4, 0, Math.PI * 2);
+    context.fillStyle = 'rgba(26, 26, 26, 0.9)';
     context.fill();
   }, [context]);
 
@@ -133,12 +132,12 @@ export default function KanjiCanvas({
     if ('touches' in e) {
       x = e.touches[0].clientX - rect.left;
       y = e.touches[0].clientY - rect.top;
-      // Simuler la pression sur tactile
-      pressure = 0.8 + Math.random() * 0.4;
+      // Pression plus stable sur tactile
+      pressure = 0.9;
     } else {
       x = e.clientX - rect.left;
       y = e.clientY - rect.top;
-      pressure = 0.9;
+      pressure = 1.0;
     }
     
     drawBrushStroke(x, y, pressure);

@@ -189,11 +189,10 @@ export default function StatsPage() {
           <div className="flex items-center justify-between">
             <Link 
               href="/" 
-              className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="group flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
-              <span className="text-xl group-hover:scale-110 transition-transform">🏠</span>
-              <span className="text-slate-100 font-semibold">Retour au menu</span>
-              <span className="text-slate-400 group-hover:translate-x-1 transition-transform">←</span>
+              <span className="text-lg group-hover:scale-110 transition-transform">🏠</span>
+              <span className="text-slate-100 font-medium text-sm">Menu</span>
             </Link>
             
             <div className="text-center">
