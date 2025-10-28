@@ -172,33 +172,33 @@ export default function StatsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
-      {/* Header épuré */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+      {/* Header zen japonais */}
+      <header className="bg-gradient-to-r from-amber-100/90 to-orange-100/90 backdrop-blur-md border-b border-amber-200/50 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <Link 
               href="/" 
-              className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-300 border border-gray-200"
+              className="flex items-center gap-2 px-4 py-2 bg-amber-200/50 hover:bg-orange-200/50 rounded-xl transition-all duration-300 border border-amber-300/50"
             >
               <span className="text-lg">🏠</span>
-              <span className="text-gray-700 font-medium text-sm">Menu</span>
+              <span className="text-amber-800 font-medium text-sm">戻る</span>
             </Link>
             
             <div className="text-center flex-1 mx-4">
-              <h1 className="text-2xl md:text-3xl font-light text-gray-800">
+              <h1 className="text-2xl md:text-3xl font-light text-red-800">
                 <span className="text-3xl md:text-4xl mr-3">📊</span>
-                <span className="hidden sm:inline">Statistiques</span>
-                <span className="sm:hidden">Stats</span>
+                <span className="hidden sm:inline">統計 Statistiques</span>
+                <span className="sm:hidden">統計</span>
               </h1>
             </div>
             
             <button
               onClick={resetGlobalStats}
-              className="flex items-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 rounded-xl transition-all duration-300 border border-red-200"
+              className="flex items-center gap-2 px-4 py-2 bg-red-100/50 hover:bg-red-200/50 rounded-xl transition-all duration-300 border border-red-300/50"
             >
               <span className="text-lg">🗑️</span>
-              <span className="text-red-600 font-medium text-sm hidden sm:inline">Reset</span>
+              <span className="text-red-700 font-medium text-sm hidden sm:inline">リセット</span>
             </button>
           </div>
         </div>
@@ -207,77 +207,77 @@ export default function StatsPage() {
       {/* Contenu principal épuré */}
       <main className="max-w-6xl mx-auto px-4 py-8">
         
-        {/* Métriques principales */}
+        {/* Métriques principales zen */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+          <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 rounded-2xl p-6 border border-orange-200/50 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm font-medium">Kanjis</p>
-                <p className="text-3xl font-light text-gray-800">{stats.totalKanjis}</p>
+                <p className="text-red-700 text-sm font-medium">漢字 Kanjis</p>
+                <p className="text-3xl font-light text-red-800">{stats.totalKanjis}</p>
               </div>
               <div className="text-4xl opacity-60">📚</div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+          <div className="bg-gradient-to-br from-yellow-100/90 to-orange-100/90 rounded-2xl p-6 border border-yellow-200/50 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm font-medium">Streak</p>
-                <p className="text-3xl font-light text-orange-500">{stats.studyStreak}</p>
+                <p className="text-orange-700 text-sm font-medium">連続 Streak</p>
+                <p className="text-3xl font-light text-orange-800">{stats.studyStreak}</p>
               </div>
               <div className="text-4xl opacity-60">🔥</div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+          <div className="bg-gradient-to-br from-green-100/90 to-emerald-100/90 rounded-2xl p-6 border border-green-200/50 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm font-medium">Sessions</p>
-                <p className="text-3xl font-light text-blue-500">{stats.totalStudySessions}</p>
+                <p className="text-green-700 text-sm font-medium">練習 Sessions</p>
+                <p className="text-3xl font-light text-green-800">{stats.totalStudySessions}</p>
               </div>
               <div className="text-4xl opacity-60">🎯</div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
+          <div className="bg-gradient-to-br from-amber-100/90 to-yellow-100/90 rounded-2xl p-6 border border-amber-200/50 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm font-medium">Score</p>
-                <p className="text-3xl font-light text-green-500">{stats.averageSessionScore.toFixed(0)}%</p>
+                <p className="text-amber-700 text-sm font-medium">成績 Score</p>
+                <p className="text-3xl font-light text-amber-800">{stats.averageSessionScore.toFixed(0)}%</p>
               </div>
               <div className="text-4xl opacity-60">📈</div>
             </div>
           </div>
         </div>
 
-        {/* Distribution de maîtrise simplifiée */}
+        {/* Distribution de maîtrise zen */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-            <h2 className="text-xl font-light text-gray-800 mb-6 flex items-center gap-3">
+          <div className="bg-gradient-to-br from-red-100/90 to-pink-100/90 rounded-2xl p-6 border border-red-200/50 shadow-sm">
+            <h2 className="text-xl font-light text-red-800 mb-6 flex items-center gap-3">
               <span>🎯</span>
-              <span>Maîtrise</span>
+              <span>習熟度 Maîtrise</span>
             </h2>
             
             <div className="space-y-4">
               {[
-                { label: 'Nouveaux', count: stats.masteryDistribution.new, color: 'bg-gray-400', score: 0 },
-                { label: 'Difficiles', count: stats.masteryDistribution.difficult, color: 'bg-red-400', score: 1 },
-                { label: 'Moyens', count: stats.masteryDistribution.medium, color: 'bg-orange-400', score: 2 },
-                { label: 'Maîtrisés', count: stats.masteryDistribution.mastered, color: 'bg-green-400', score: 3 },
+                { label: '新しい Nouveaux', count: stats.masteryDistribution.new, color: 'bg-gray-400', score: 0 },
+                { label: '難しい Difficiles', count: stats.masteryDistribution.difficult, color: 'bg-red-400', score: 1 },
+                { label: '普通 Moyens', count: stats.masteryDistribution.medium, color: 'bg-orange-400', score: 2 },
+                { label: '習得 Maîtrisés', count: stats.masteryDistribution.mastered, color: 'bg-green-400', score: 3 },
               ].map((item) => {
                 const percentage = stats.totalKanjis > 0 ? (item.count / stats.totalKanjis) * 100 : 0;
                 return (
                   <div key={item.label}>
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-gray-700 flex items-center gap-2 font-medium">
+                      <span className="text-red-800 flex items-center gap-2 font-medium">
                         <span>{getMasteryIcon(item.score)}</span>
                         <span>{item.label}</span>
                       </span>
-                      <span className="text-gray-500 text-sm">
+                      <span className="text-red-600 text-sm">
                         {item.count} ({percentage.toFixed(0)}%)
                       </span>
                     </div>
-                    <div className="w-full bg-gray-100 rounded-full h-2">
+                    <div className="w-full bg-red-100 rounded-full h-2">
                       <div 
                         className={`${item.color} h-2 rounded-full transition-all duration-500`}
                         style={{ width: `${percentage}%` }}
@@ -289,22 +289,22 @@ export default function StatsPage() {
             </div>
           </div>
 
-          {/* Tags simplifiés */}
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-            <h2 className="text-xl font-light text-gray-800 mb-6 flex items-center gap-3">
+          {/* Tags zen */}
+          <div className="bg-gradient-to-br from-green-100/90 to-emerald-100/90 rounded-2xl p-6 border border-green-200/50 shadow-sm">
+            <h2 className="text-xl font-light text-green-800 mb-6 flex items-center gap-3">
               <span>🏷️</span>
-              <span>Tags</span>
+              <span>タグ Tags</span>
             </h2>
             
             <div className="space-y-3">
               {stats.tagsStats.slice(0, 6).map((tagStat, index) => (
                 <div key={tagStat.tag} className="flex justify-between items-center py-2">
                   <div className="flex items-center gap-3">
-                    <span className="text-blue-500 font-medium text-sm">#{index + 1}</span>
-                    <span className="text-gray-700">{tagStat.tag}</span>
+                    <span className="text-green-600 font-medium text-sm">#{index + 1}</span>
+                    <span className="text-green-800">{tagStat.tag}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-gray-500 text-sm">{tagStat.count} kanjis</span>
+                    <span className="text-green-600 text-sm">{tagStat.count} kanjis</span>
                     <span className={`text-sm ${getMasteryColor(Math.round(tagStat.averageScore))}`}>
                       {getMasteryIcon(Math.round(tagStat.averageScore))} {tagStat.averageScore.toFixed(1)}
                     </span>
@@ -315,29 +315,29 @@ export default function StatsPage() {
           </div>
         </div>
 
-        {/* Kanjis épurés */}
+        {/* Kanjis zen */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-            <h2 className="text-xl font-light text-gray-800 mb-6 flex items-center gap-3">
+          <div className="bg-gradient-to-br from-amber-100/90 to-orange-100/90 rounded-2xl p-6 border border-amber-200/50 shadow-sm">
+            <h2 className="text-xl font-light text-amber-800 mb-6 flex items-center gap-3">
               <span>💡</span>
-              <span>À travailler</span>
+              <span>練習必要 À travailler</span>
             </h2>
             
             <div className="space-y-3">
               {stats.weakestKanjis.slice(0, 5).map((kanji, index) => (
-                <div key={kanji.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+                <div key={kanji.id} className="flex justify-between items-center p-3 bg-amber-50 rounded-xl">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{kanji.kanji}</span>
                     <div>
-                      <p className="text-gray-800 font-medium">{kanji.primaryMeaning || kanji.meanings[0]}</p>
-                      <p className="text-gray-500 text-sm">{kanji.primaryReading || kanji.onyomi[0] || kanji.kunyomi[0]}</p>
+                      <p className="text-amber-900 font-medium">{kanji.primaryMeaning || kanji.meanings[0]}</p>
+                      <p className="text-amber-700 text-sm">{kanji.primaryReading || kanji.onyomi[0] || kanji.kunyomi[0]}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={`text-lg ${getMasteryColor(kanji.learningData.score)}`}>
                       {getMasteryIcon(kanji.learningData.score)}
                     </span>
-                    <span className="text-gray-400 text-sm">
+                    <span className="text-amber-600 text-sm">
                       {kanji.learningData.totalAttempts || 0}x
                     </span>
                   </div>
@@ -346,27 +346,27 @@ export default function StatsPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-            <h2 className="text-xl font-light text-gray-800 mb-6 flex items-center gap-3">
+          <div className="bg-gradient-to-br from-yellow-100/90 to-amber-100/90 rounded-2xl p-6 border border-yellow-200/50 shadow-sm">
+            <h2 className="text-xl font-light text-yellow-800 mb-6 flex items-center gap-3">
               <span>🏆</span>
-              <span>Maîtrisés</span>
+              <span>習得済み Maîtrisés</span>
             </h2>
             
             <div className="space-y-3">
               {stats.strongestKanjis.slice(0, 5).map((kanji, index) => (
-                <div key={kanji.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl">
+                <div key={kanji.id} className="flex justify-between items-center p-3 bg-yellow-50 rounded-xl">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{kanji.kanji}</span>
                     <div>
-                      <p className="text-gray-800 font-medium">{kanji.primaryMeaning || kanji.meanings[0]}</p>
-                      <p className="text-gray-500 text-sm">{kanji.primaryReading || kanji.onyomi[0] || kanji.kunyomi[0]}</p>
+                      <p className="text-yellow-900 font-medium">{kanji.primaryMeaning || kanji.meanings[0]}</p>
+                      <p className="text-yellow-700 text-sm">{kanji.primaryReading || kanji.onyomi[0] || kanji.kunyomi[0]}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={`text-lg ${getMasteryColor(kanji.learningData.score)}`}>
                       {getMasteryIcon(kanji.learningData.score)}
                     </span>
-                    <span className="text-gray-400 text-sm">
+                    <span className="text-yellow-600 text-sm">
                       {kanji.learningData.totalAttempts || 0}x
                     </span>
                   </div>
@@ -376,14 +376,14 @@ export default function StatsPage() {
           </div>
         </div>
 
-        {/* Bouton d'action simple */}
+        {/* Bouton d'action zen */}
         <div className="flex items-center justify-center">
           <button
             onClick={calculateDetailedStats}
-            className="flex items-center gap-3 px-8 py-4 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-all duration-300"
+            className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-red-500 to-orange-600 hover:from-red-600 hover:to-orange-700 text-white font-medium rounded-xl transition-all duration-300 shadow-lg"
           >
             <span className="text-xl">🔄</span>
-            <span>Actualiser</span>
+            <span>更新 Actualiser</span>
           </button>
         </div>
       </main>

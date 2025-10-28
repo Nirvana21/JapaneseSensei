@@ -35,91 +35,91 @@ export default function Home() {
   // Vue Menu Principal
   if (currentView === 'menu') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900">
-        {/* Header épuré */}
-        <header className="bg-slate-800/80 backdrop-blur-md border-b border-slate-700/50">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+        {/* Header zen japonais */}
+        <header className="bg-gradient-to-r from-amber-100/90 to-orange-100/90 backdrop-blur-md border-b border-amber-200/50">
           <div className="max-w-4xl mx-auto px-4 py-8 text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-2xl mb-4">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-600 to-orange-700 rounded-2xl shadow-lg mb-4">
               <span className="text-3xl">🇯🇵</span>
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-100 to-indigo-300 bg-clip-text text-transparent mb-2">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-red-800 to-orange-800 bg-clip-text text-transparent mb-2">
               Japanese Sensei
             </h1>
-            <p className="text-slate-400 font-medium">Maîtrisez l'art des kanjis</p>
+            <p className="text-amber-700 font-medium">道を極める - Maîtrisez l'art des kanjis</p>
           </div>
         </header>
 
-        {/* Menu Principal */}
+        {/* Menu Principal zen */}
         <main className="max-w-6xl mx-auto px-4 py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
             
-            {/* Bouton Quiz */}
+            {/* Bouton Quiz - Style zen */}
             <Link href="/training" className="group">
-              <div className="bg-slate-800/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl hover:shadow-purple-900/20 border border-slate-700/50 transition-all duration-300 hover:scale-105 h-full hover:border-purple-600/30">
+              <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-orange-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-red-300/50">
                 <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-700 rounded-2xl shadow-lg mb-6 group-hover:scale-110 transition-transform">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
                     <span className="text-2xl">🎯</span>
                   </div>
-                  <h2 className="text-2xl font-bold text-slate-100 mb-3">Quiz</h2>
-                  <p className="text-slate-400 leading-relaxed mb-4">
-                    Testez vos connaissances avec des flashcards interactives
+                  <h2 className="text-2xl font-bold text-red-800 mb-3">練習 Quiz</h2>
+                  <p className="text-amber-700 leading-relaxed mb-4">
+                    Entraînez-vous avec sérénité
                   </p>
-                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-purple-400">
-                    <span>Commencer</span>
+                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-red-600">
+                    <span>始める</span>
                     <span className="group-hover:translate-x-1 transition-transform">→</span>
                   </div>
                   {kanjis.length > 0 && (
-                    <div className="mt-4 px-3 py-1 bg-purple-900/50 text-purple-300 rounded-full text-sm inline-block border border-purple-700/30">
-                      {kanjis.length} kanji{kanjis.length > 1 ? 's' : ''} disponible{kanjis.length > 1 ? 's' : ''}
+                    <div className="mt-4 px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm inline-block border border-red-200">
+                      {kanjis.length} kanji{kanjis.length > 1 ? 's' : ''}
                     </div>
                   )}
                 </div>
               </div>
             </Link>
 
-            {/* Bouton Collection */}
+            {/* Bouton Collection - Style bambou */}
             <button 
               onClick={() => setCurrentView('collection')}
               className="group w-full text-left"
             >
-              <div className="bg-slate-800/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl hover:shadow-emerald-900/20 border border-slate-700/50 transition-all duration-300 hover:scale-105 h-full hover:border-emerald-600/30">
+              <div className="bg-gradient-to-br from-green-100/90 to-emerald-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-green-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-emerald-300/50">
                 <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl shadow-lg mb-6 group-hover:scale-110 transition-transform">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
                     <span className="text-2xl">📚</span>
                   </div>
-                  <h2 className="text-2xl font-bold text-slate-100 mb-3">Collection</h2>
-                  <p className="text-slate-400 leading-relaxed mb-4">
-                    Gérez votre bibliothèque de kanjis personnelle
+                  <h2 className="text-2xl font-bold text-green-800 mb-3">蔵書 Collection</h2>
+                  <p className="text-green-700 leading-relaxed mb-4">
+                    Votre bibliothèque personnelle
                   </p>
-                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-emerald-400">
-                    <span>Explorer</span>
+                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-green-600">
+                    <span>探索</span>
                     <span className="group-hover:translate-x-1 transition-transform">→</span>
                   </div>
-                  <div className="mt-4 px-3 py-1 bg-emerald-900/50 text-emerald-300 rounded-full text-sm inline-block border border-emerald-700/30">
-                    {kanjis.length} kanji{kanjis.length > 1 ? 's' : ''} dans votre collection
+                  <div className="mt-4 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm inline-block border border-green-200">
+                    {kanjis.length} kanji{kanjis.length > 1 ? 's' : ''}
                   </div>
                 </div>
               </div>
             </button>
 
-            {/* Bouton Statistiques */}
+            {/* Bouton Statistiques - Style terre */}
             <Link href="/stats" className="group">
-              <div className="bg-slate-800/80 backdrop-blur-sm rounded-3xl p-8 shadow-2xl hover:shadow-blue-900/20 border border-slate-700/50 transition-all duration-300 hover:scale-105 h-full hover:border-blue-600/30">
+              <div className="bg-gradient-to-br from-amber-100/90 to-yellow-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-amber-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-yellow-300/50">
                 <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl shadow-lg mb-6 group-hover:scale-110 transition-transform">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-600 to-yellow-700 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
                     <span className="text-2xl">📊</span>
                   </div>
-                  <h2 className="text-2xl font-bold text-slate-100 mb-3">Statistiques</h2>
-                  <p className="text-slate-400 leading-relaxed mb-4">
-                    Suivez votre progression et analysez vos performances
+                  <h2 className="text-2xl font-bold text-amber-800 mb-3">統計 Stats</h2>
+                  <p className="text-amber-700 leading-relaxed mb-4">
+                    Suivez votre progression
                   </p>
-                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-blue-400">
-                    <span>Analyser</span>
+                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-amber-600">
+                    <span>分析</span>
                     <span className="group-hover:translate-x-1 transition-transform">→</span>
                   </div>
                   {kanjis.length > 0 && (
-                    <div className="mt-4 px-3 py-1 bg-blue-900/50 text-blue-300 rounded-full text-sm inline-block border border-blue-700/30">
-                      Données prêtes à analyser
+                    <div className="mt-4 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm inline-block border border-amber-200">
+                      Prêt à analyser
                     </div>
                   )}
                 </div>
@@ -127,16 +127,16 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* Message d'encouragement si collection vide */}
+          {/* Message d'encouragement zen */}
           {kanjis.length === 0 && (
             <div className="mt-12 text-center">
-              <div className="bg-gradient-to-r from-amber-900/30 to-orange-900/30 rounded-2xl p-8 border border-amber-700/30 shadow-2xl max-w-md mx-auto backdrop-blur-sm">
+              <div className="bg-gradient-to-r from-pink-100/90 to-rose-100/90 rounded-2xl p-8 border border-pink-200/50 shadow-lg max-w-md mx-auto backdrop-blur-sm">
                 <span className="text-4xl mb-4 block">🌸</span>
-                <h3 className="text-lg font-bold text-amber-300 mb-2">
-                  Commencez votre voyage
+                <h3 className="text-lg font-bold text-pink-800 mb-2">
+                  始まり - Nouveau Départ
                 </h3>
-                <p className="text-amber-400/80 text-sm">
-                  Ajoutez vos premiers kanjis dans la collection pour débloquer le quiz !
+                <p className="text-pink-700 text-sm">
+                  Commencez votre voyage d'apprentissage en ajoutant votre premier kanji
                 </p>
               </div>
             </div>
@@ -148,22 +148,22 @@ export default function Home() {
 
   // Vue Collection
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-900">
-      {/* Header avec retour */}
-      <header className="bg-slate-800/80 backdrop-blur-md border-b border-slate-700/50">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+      {/* Header avec retour zen */}
+      <header className="bg-gradient-to-r from-amber-100/90 to-orange-100/90 backdrop-blur-md border-b border-amber-200/50">
         <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <button 
               onClick={() => setCurrentView('menu')}
-              className="flex items-center gap-2 px-4 py-2 text-slate-400 hover:text-slate-200 transition-colors rounded-lg hover:bg-slate-700/50"
+              className="flex items-center gap-2 px-4 py-2 text-amber-700 hover:text-red-700 transition-colors rounded-lg hover:bg-amber-200/50"
             >
               <span>←</span>
-              <span className="hidden sm:inline">Retour au menu</span>
+              <span className="hidden sm:inline">戻る Menu</span>
             </button>
             
             <div className="text-center">
-              <h1 className="text-2xl font-bold text-slate-100">Ma Collection</h1>
-              <p className="text-slate-400 text-sm">{kanjis.length} kanji{kanjis.length > 1 ? 's' : ''}</p>
+              <h1 className="text-2xl font-bold text-red-800">蔵書 Ma Collection</h1>
+              <p className="text-amber-700 text-sm">{kanjis.length} kanji{kanjis.length > 1 ? 's' : ''}</p>
             </div>
 
             <div className="w-20"></div> {/* Spacer pour centrer le titre */}
@@ -172,22 +172,22 @@ export default function Home() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-        {/* Formulaire d'ajout épuré */}
-        <div className="bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-700/50 p-6">
+        {/* Formulaire d'ajout zen */}
+        <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 backdrop-blur-sm rounded-2xl shadow-lg border border-orange-200/50 p-6">
           <AddKanjiForm onKanjiAdded={handleKanjiAdded} />
         </div>
 
         {error && (
-          <div className="p-4 bg-red-900/30 backdrop-blur-sm border border-red-700/50 rounded-xl shadow-lg">
+          <div className="p-4 bg-red-100/90 backdrop-blur-sm border border-red-300/50 rounded-xl shadow-lg">
             <div className="flex items-center gap-2">
-              <span className="text-red-400">⚠️</span>
-              <p className="text-red-300 font-medium">{error}</p>
+              <span className="text-red-600">⚠️</span>
+              <p className="text-red-700 font-medium">{error}</p>
             </div>
           </div>
         )}
 
-        {/* Liste des kanjis */}
-        <div className="bg-slate-800/80 backdrop-blur-sm rounded-2xl shadow-2xl border border-slate-700/50 p-6">
+        {/* Liste des kanjis zen */}
+        <div className="bg-gradient-to-br from-amber-100/90 to-yellow-100/90 backdrop-blur-sm rounded-2xl shadow-lg border border-amber-200/50 p-6">
           <KanjiList
             kanjis={kanjis}
             loading={loading}
