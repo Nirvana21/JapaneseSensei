@@ -55,6 +55,8 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
   };
 
   const handleCardClick = () => {
+    // En FR→JP, on évite le "tap pour révéler" pour ne pas gêner le dessin
+    if (direction === 'fr-to-jp') return;
     if (!disabled && !showAnswer) {
       setShowAnswer(true);
     }
@@ -136,6 +138,15 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
                   className="mx-auto max-w-full max-h-full"
                 />
               </div>
+            </div>
+            {/* Bouton explicite pour révéler afin d'éviter la superposition avec le canvas */}
+            <div className="flex justify-center mt-3">
+              <button
+                onClick={(e) => { e.stopPropagation(); setShowAnswer(true); }}
+                className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg hover:from-green-600 hover:to-green-700 transition-colors shadow-md"
+              >
+                👁️ Révéler la réponse
+              </button>
             </div>
           </div>
         )}
@@ -220,14 +231,17 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
             )}
           </div>
         ) : (
-          <div className="text-center text-orange-500 animate-bounce">
-            <p className="text-sm font-medium">
-              👆 Touchez pour révéler
-            </p>
-            <div className="mt-2 flex justify-center">
-              <div className="w-8 h-1 bg-orange-300 rounded-full animate-pulse" />
+          // N'afficher le "Touchez pour révéler" que pour JP→FR
+          (direction === 'jp-to-fr') ? (
+            <div className="text-center text-orange-500 animate-bounce">
+              <p className="text-sm font-medium">
+                👆 Touchez pour révéler
+              </p>
+              <div className="mt-2 flex justify-center">
+                <div className="w-8 h-1 bg-orange-300 rounded-full animate-pulse" />
+              </div>
             </div>
-          </div>
+          ) : null
         )}
 
         {/* Animation de feedback améliorée */}
