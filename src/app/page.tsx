@@ -111,6 +111,27 @@ export default function Home() {
               </div>
             </Link>
 
+            {/* Bouton Verbes – formes */}
+            <Link href="/training/verbs" className="group">
+              <div className="bg-gradient-to-br from-rose-100/90 to-pink-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-rose-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-pink-300/50">
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-600 to-rose-700 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
+                    <span className="text-2xl">✍️</span>
+                  </div>
+                  <h2 className="text-2xl font-bold text-rose-800 mb-3">
+                    動詞 Verbes
+                  </h2>
+                  <p className="text-rose-700 leading-relaxed mb-4">
+                    Conjugaisons essentielles
+                  </p>
+                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-rose-700">
+                    <span>練習</span>
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </div>
+                </div>
+              </div>
+            </Link>
+
             {/* Bouton Collection - Style bambou */}
             <button
               onClick={() => setCurrentView("collection")}
