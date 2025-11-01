@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { KANJI_LEGENDS } from "@/data/game/kanjiLegends";
+import { RADICAL_INFO } from "@/data/game/radicals";
 import { GameKanji, KanjiPower } from "@/types/kanjiLegends";
 import { buildRound, isSelectionCorrect, pickTarget } from "@/services/kanjiLegendsService";
 
@@ -14,6 +15,7 @@ export default function KanjiLegendsPage() {
   const [combo, setCombo] = useState(0);
   const [floor, setFloor] = useState(1);
   const [relics, setRelics] = useState<KanjiPower[]>([]);
+  const [learningMode, setLearningMode] = useState(true);
 
   const [target, setTarget] = useState<GameKanji | null>(null);
   const [options, setOptions] = useState<string[]>([]);
@@ -129,6 +131,12 @@ export default function KanjiLegendsPage() {
   };
 
   const progress = useMemo(() => ({ hearts, maxHearts, timeLeft, score, combo, floor }), [hearts, maxHearts, timeLeft, score, combo, floor]);
+  const getRadicalMeaning = (c: string) => RADICAL_INFO[c]?.meaningFr || 'inconnu';
+  const targetBreakdown = useMemo(() => {
+    if (!target) return '';
+    const parts = target.components.map(c => `${c} (${getRadicalMeaning(c)})`).join(' + ');
+    return `${parts} → ${target.nameFr}`;
+  }, [target]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-cyan-50">
@@ -167,20 +175,34 @@ export default function KanjiLegendsPage() {
               {dropMsg && <div className="mt-2 text-xs text-amber-700">{dropMsg}</div>}
             </div>
 
+            {learningMode && (
+              <div className="mb-4 p-3 rounded-xl bg-white/70 border border-indigo-200 text-indigo-800 text-sm">
+                <div className="font-medium mb-1">Décomposition</div>
+                <div>{targetBreakdown}</div>
+              </div>
+            )}
+
             {/* Options */}
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
               {options.map((c) => {
                 const active = picked.includes(c);
                 const disabled = disabledOpts.includes(c);
                 return (
-                  <button key={c} onClick={() => !disabled && togglePick(c)} disabled={disabled} className={`aspect-square rounded-2xl border text-3xl sm:text-4xl flex items-center justify-center select-none transition ${disabled ? 'opacity-40 cursor-not-allowed bg-gray-50 border-gray-200' : active ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white text-indigo-900 border-indigo-200 hover:border-indigo-400'}`}>
-                    {c}
+                  <button key={c} onClick={() => !disabled && togglePick(c)} disabled={disabled} title={`${c} — ${getRadicalMeaning(c)}`} className={`aspect-square rounded-2xl border flex flex-col items-center justify-center select-none transition ${disabled ? 'opacity-40 cursor-not-allowed bg-gray-50 border-gray-200' : active ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white text-indigo-900 border-indigo-200 hover:border-indigo-400'}`}>
+                    <div className="text-3xl sm:text-4xl leading-none">{c}</div>
+                    {learningMode && (
+                      <div className={`mt-1 text-[10px] sm:text-xs ${active ? 'text-indigo-100' : 'text-indigo-700'}`}>{getRadicalMeaning(c)}</div>
+                    )}
                   </button>
                 );
               })}
             </div>
 
-            <div className="mt-4 flex gap-3 flex-wrap">
+            <div className="mt-4 flex gap-3 flex-wrap items-center">
+              <label className="flex items-center gap-2 text-xs text-indigo-800 bg-white/60 border border-indigo-200 rounded-lg px-2 py-1">
+                <input type="checkbox" checked={learningMode} onChange={(e) => setLearningMode(e.target.checked)} />
+                <span>Mode apprentissage (montrer le sens des radicaux)</span>
+              </label>
               {/* Indice si disponible */}
               {sumPower('hint') > 0 && (
                 <button onClick={() => {
