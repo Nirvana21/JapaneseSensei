@@ -18,6 +18,9 @@ export default function KanjiLegendsPage() {
   const [learningMode, setLearningMode] = useState(true);
   const [challengeMode, setChallengeMode] = useState(false);
   const [usedHintThisRound, setUsedHintThisRound] = useState(false);
+  const [blindMode, setBlindMode] = useState(false);
+  const [peekVisible, setPeekVisible] = useState(false);
+  const [usedPeekThisRound, setUsedPeekThisRound] = useState(false);
 
   const [target, setTarget] = useState<GameKanji | null>(null);
   const [options, setOptions] = useState<string[]>([]);
@@ -56,6 +59,8 @@ export default function KanjiLegendsPage() {
     setFeedback(null);
     setDisabledOpts([]);
     setUsedHintThisRound(false);
+    setUsedPeekThisRound(false);
+    setPeekVisible(false);
     // base 30s + extraTime from relics
     const extra = sumPower('extraTime');
     const base = 30 + extra;
@@ -99,10 +104,11 @@ export default function KanjiLegendsPage() {
     if (ok) {
       const comboBoost = sumPower('comboBoost');
       const challengeBonus = challengeMode && !usedHintThisRound ? 50 : 0;
-      const add = 100 + (combo + comboBoost) * 25 + challengeBonus;
+      const blindBonus = blindMode && !usedPeekThisRound ? 50 : 0;
+      const add = 100 + (combo + comboBoost) * 25 + challengeBonus + blindBonus;
       setScore(s => s + add);
       setCombo(k => k + 1);
-      setFeedback({ ok: true, message: `+${add} points${challengeBonus ? ' (défi +50)' : ''}` });
+      setFeedback({ ok: true, message: `+${add} points${challengeBonus ? ' (défi +50)' : ''}${blindBonus ? ' (caché +50)' : ''}` });
       // Drop de pouvoir lié au kanji (si défini)
       if (target.power) {
         upsertRelic(target.power);
@@ -175,12 +181,12 @@ export default function KanjiLegendsPage() {
           <div className={`rounded-3xl border p-6 shadow ${target.rarity === 'epic' ? 'bg-gradient-to-br from-yellow-50/90 to-amber-100/80 border-amber-200' : target.rarity === 'rare' ? 'bg-gradient-to-br from-indigo-50/90 to-blue-50/80 border-indigo-200' : 'bg-gradient-to-br from-white/80 to-indigo-50/80 border-indigo-200'}`}>
             <div className="text-center mb-4">
               <div className="text-sm text-indigo-700">Assembler les composants</div>
-              <div className="text-6xl sm:text-7xl font-extrabold text-indigo-900 tracking-tight">{target.char}</div>
+              <div className="text-6xl sm:text-7xl font-extrabold text-indigo-900 tracking-tight">{blindMode && !peekVisible ? '???' : target.char}</div>
               <div className="text-sm text-indigo-600 mt-1">{target.nameFr} • {required} élément(s)</div>
               {dropMsg && <div className="mt-2 text-xs text-amber-700">{dropMsg}</div>}
             </div>
 
-            {learningMode && !challengeMode && (
+            {learningMode && !challengeMode && !blindMode && (
               <div className="mb-4 p-3 rounded-xl bg-white/70 border border-indigo-200 text-indigo-800 text-sm">
                 <div className="font-medium mb-1">Décomposition</div>
                 <div>{targetBreakdown}</div>
@@ -195,7 +201,7 @@ export default function KanjiLegendsPage() {
                 return (
                   <button key={c} onClick={() => !disabled && togglePick(c)} disabled={disabled} title={`${c} — ${getRadicalMeaning(c)}`} className={`aspect-square rounded-2xl border flex flex-col items-center justify-center select-none transition ${disabled ? 'opacity-40 cursor-not-allowed bg-gray-50 border-gray-200' : active ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white text-indigo-900 border-indigo-200 hover:border-indigo-400'}`}>
                     <div className="text-3xl sm:text-4xl leading-none">{c}</div>
-                    {learningMode && !challengeMode && (
+                    {learningMode && !challengeMode && !blindMode && (
                       <div className={`mt-1 text-[10px] sm:text-xs ${active ? 'text-indigo-100' : 'text-indigo-700'}`}>{getRadicalMeaning(c)}</div>
                     )}
                   </button>
@@ -205,7 +211,7 @@ export default function KanjiLegendsPage() {
 
             <div className="mt-4 flex gap-3 flex-wrap items-center">
               <label className="flex items-center gap-2 text-xs text-indigo-800 bg-white/60 border border-indigo-200 rounded-lg px-2 py-1">
-                <input type="checkbox" checked={learningMode} onChange={(e) => setLearningMode(e.target.checked)} disabled={challengeMode} />
+                <input type="checkbox" checked={learningMode} onChange={(e) => setLearningMode(e.target.checked)} disabled={challengeMode || blindMode} />
                 <span>Mode apprentissage (sens des radicaux)</span>
               </label>
               {/* Indice si disponible */}
@@ -229,9 +235,25 @@ export default function KanjiLegendsPage() {
                   🔍 Indice ({sumPower('hint')})
                 </button>
               )}
+              {blindMode && (
+                <button onClick={() => {
+                  if (!peekVisible) {
+                    setPeekVisible(true);
+                    setUsedPeekThisRound(true);
+                    setTimeLeft(t => Math.max(0, t - 5));
+                    setTimeout(() => setPeekVisible(false), 1000);
+                  }
+                }} className="px-3 py-2 rounded-xl bg-purple-200 text-purple-900 border border-purple-300 hover:bg-purple-300 text-sm">
+                  👀 Regarder (−5s)
+                </button>
+              )}
               <label className="ml-auto flex items-center gap-2 text-xs text-indigo-800 bg-white/60 border border-indigo-200 rounded-lg px-2 py-1">
                 <input type="checkbox" checked={challengeMode} onChange={(e) => setChallengeMode(e.target.checked)} />
                 <span>Mode défi (−5s, +50 si sans indice)</span>
+              </label>
+              <label className="flex items-center gap-2 text-xs text-indigo-800 bg-white/60 border border-indigo-200 rounded-lg px-2 py-1">
+                <input type="checkbox" checked={blindMode} onChange={(e) => setBlindMode(e.target.checked)} />
+                <span>Mode caché (kanji masqué, +50 si sans regard)</span>
               </label>
               <button onClick={handleVerify} className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold hover:from-green-600 hover:to-green-700">Valider</button>
               <button onClick={nextRound} className="px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold hover:from-blue-600 hover:to-blue-700">Passer</button>
