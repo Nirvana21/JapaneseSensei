@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { KANJI_LEGENDS } from "@/data/game/kanjiLegends";
 import { RADICAL_INFO } from "@/data/game/radicals";
 import { GameKanji, KanjiPower } from "@/types/kanjiLegends";
@@ -30,6 +30,38 @@ export default function KanjiLegendsPage() {
   const [dropMsg, setDropMsg] = useState<string | null>(null);
   const [gameOver, setGameOver] = useState<{score:number; floor:number; bestCombo:number} | null>(null);
 
+  // --- Lightweight SFX (Web Audio) ---
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const ensureAudio = () => {
+    if (typeof window === 'undefined') return null;
+    if (!audioCtxRef.current) {
+      const AC = (window as any).AudioContext || (window as any).webkitAudioContext;
+      if (AC) audioCtxRef.current = new AC();
+    }
+    return audioCtxRef.current;
+  };
+  const beep = (freq: number, dur = 0.12, type: OscillatorType = 'sine', gain = 0.03) => {
+    const ctx = ensureAudio();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') {
+      try { ctx.resume(); } catch {}
+    }
+    const t0 = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(gain, t0);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
+    osc.connect(g).connect(ctx.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur);
+  };
+  const sfxSuccess = () => { beep(660, 0.08, 'triangle'); setTimeout(()=>beep(880, 0.1, 'triangle'), 70); };
+  const sfxError = () => { beep(220, 0.15, 'sawtooth', 0.035); };
+  const sfxShield = () => { beep(440, 0.06, 'square'); setTimeout(()=>beep(330, 0.08, 'square'), 60); };
+  const sfxDrop = () => { beep(1200, 0.08, 'sine'); };
+
   // Start
   useEffect(() => {
     nextRound();
@@ -52,14 +84,21 @@ export default function KanjiLegendsPage() {
     const tgt = pickTarget(KANJI_LEGENDS);
     if (!tgt) return;
     setTarget(tgt);
-    // 1/4 des rooms: lecture (si dispo), sinon composants
-    const canReading = (tgt.onyomi && tgt.onyomi.length > 0) || (tgt.kunyomi && tgt.kunyomi.length > 0);
-    const chooseReading = canReading && Math.random() < 0.25;
+    // ~1/3 des rooms: lecture (si dispo). On favorise les KUN si présents.
+    const canOn = !!(tgt.onyomi && tgt.onyomi.length > 0);
+    const canKun = !!(tgt.kunyomi && tgt.kunyomi.length > 0);
+    const canReading = canOn || canKun;
+    const chooseReading = canReading && Math.random() < 0.33;
     if (chooseReading) {
-      const kinds: Array<'onyomi'|'kunyomi'> = [];
-      if (tgt.onyomi && tgt.onyomi.length > 0) kinds.push('onyomi');
-      if (tgt.kunyomi && tgt.kunyomi.length > 0) kinds.push('kunyomi');
-      const kind = kinds[Math.floor(Math.random() * kinds.length)];
+      // Pondération: si KUN dispo, 80% KUN / 20% ON. Sinon ce qui existe.
+      let kind: 'onyomi'|'kunyomi';
+      if (canKun && canOn) {
+        kind = Math.random() < 0.8 ? 'kunyomi' : 'onyomi';
+      } else if (canKun) {
+        kind = 'kunyomi';
+      } else {
+        kind = 'onyomi';
+      }
       setRoundType('reading');
       setReadingKind(kind);
       const correct = (kind === 'onyomi' ? (tgt.onyomi || []) : (tgt.kunyomi || [])).filter(Boolean);
@@ -143,16 +182,18 @@ export default function KanjiLegendsPage() {
     }
     if (ok) {
       const comboBoost = sumPower('comboBoost');
-  const noHintBonus = !usedHintThisRound ? 50 : 0;
-  const noPeekBonus = (roundType === 'components' && !usedPeekThisRound) ? 50 : 0;
+      const noHintBonus = !usedHintThisRound ? 50 : 0;
+      const noPeekBonus = (roundType === 'components' && !usedPeekThisRound) ? 50 : 0;
       const add = 100 + (combo + comboBoost) * 25 + noHintBonus + noPeekBonus;
       setScore(s => s + add);
       setCombo(k => k + 1);
       setFeedback({ ok: true, message: `+${add} points${noHintBonus ? ' (sans indice +50)' : ''}${noPeekBonus ? ' (sans regard +50)' : ''}` });
+      sfxSuccess();
       // Drop de pouvoir lié au kanji (si défini)
       if (target.power) {
         upsertRelic(target.power);
         setDropMsg(`🔮 +${target.power.value} ${target.power.name}`);
+        sfxDrop();
       } else {
         setDropMsg(null);
       }
@@ -164,14 +205,16 @@ export default function KanjiLegendsPage() {
       // Consommer un bouclier si dispo
       const saved = consumeShieldIfAny();
       if (!saved) setHearts(h => Math.max(0, h - 1));
+      const comboBefore = combo;
       setCombo(0);
       setFeedback({ ok: false, message: saved ? '🛡️ Bouclier ! Erreur ignorée' : '❌ Mauvaise combinaison' });
+      if (saved) sfxShield(); else sfxError();
       // Révéler brièvement le kanji même en cas d'erreur
       setPeekVisible(true);
       if (!saved && hearts - 1 <= 0) {
         // game over summary
         setTimeout(() => {
-          setGameOver({ score, floor, bestCombo: combo });
+          setGameOver({ score, floor, bestCombo: comboBefore });
         }, 800);
       } else {
         setTimeout(() => nextRound(), 1100);
@@ -219,7 +262,7 @@ export default function KanjiLegendsPage() {
           <div className={`rounded-3xl border p-6 shadow ${target.rarity === 'epic' ? 'bg-gradient-to-br from-yellow-50/90 to-amber-100/80 border-amber-200' : target.rarity === 'rare' ? 'bg-gradient-to-br from-indigo-50/90 to-blue-50/80 border-indigo-200' : 'bg-gradient-to-br from-white/80 to-indigo-50/80 border-indigo-200'}`}>
             <div className="text-center mb-4">
               <div className="text-sm text-indigo-700">{roundType === 'reading' ? (readingKind === 'onyomi' ? 'Sélectionne les lectures ON (カタカナ)' : 'Sélectionne les lectures KUN (ひらがな)') : 'Assembler les composants'}</div>
-              <div className="text-6xl sm:text-7xl font-extrabold text-indigo-900 tracking-tight">{roundType === 'reading' ? target.char : (!peekVisible ? '???' : target.char)}</div>
+              <div className={`text-6xl sm:text-7xl font-extrabold text-indigo-900 tracking-tight ${peekVisible ? 'animate-legend-glow' : ''}`}>{roundType === 'reading' ? target.char : (!peekVisible ? '???' : target.char)}</div>
               <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
                 <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">🎯 {target.nameFr}</span>
                 <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200">🧩 {required} éléments</span>
