@@ -15,19 +15,15 @@ export default function KanjiLegendsPage() {
   const [combo, setCombo] = useState(0);
   const [floor, setFloor] = useState(1);
   const [relics, setRelics] = useState<KanjiPower[]>([]);
-  const [learningMode, setLearningMode] = useState(true);
-  const [challengeMode, setChallengeMode] = useState(false);
   const [usedHintThisRound, setUsedHintThisRound] = useState(false);
-  const [blindMode, setBlindMode] = useState(true);
-  const [senseMode, setSenseMode] = useState(false);
   const [peekVisible, setPeekVisible] = useState(false);
   const [usedPeekThisRound, setUsedPeekThisRound] = useState(false);
 
   const [target, setTarget] = useState<GameKanji | null>(null);
   const [options, setOptions] = useState<string[]>([]);
   const [required, setRequired] = useState(0);
-  const [picked, setPicked] = useState<string[]>([]);
-  const [disabledOpts, setDisabledOpts] = useState<string[]>([]);
+  const [picked, setPicked] = useState<number[]>([]); // indices sélectionnés
+  const [disabledOpts, setDisabledOpts] = useState<number[]>([]); // indices désactivés
   const [feedback, setFeedback] = useState<null | { ok: boolean; message: string }>(null);
   const [dropMsg, setDropMsg] = useState<string | null>(null);
 
@@ -65,14 +61,14 @@ export default function KanjiLegendsPage() {
     // base 30s + extraTime from relics
     const extra = sumPower('extraTime');
     const base = 30 + extra;
-    setTimeLeft(challengeMode ? Math.max(10, base - 5) : base);
+    setTimeLeft(base);
   };
 
-  const togglePick = (c: string) => {
+  const togglePick = (i: number) => {
     setPicked(prev => {
-      if (prev.includes(c)) return prev.filter(x => x !== c);
+      if (prev.includes(i)) return prev.filter(x => x !== i);
       if (prev.length >= required) return prev; // limit
-      return [...prev, c];
+      return [...prev, i];
     });
   };
 
@@ -101,15 +97,16 @@ export default function KanjiLegendsPage() {
 
   const handleVerify = () => {
     if (!target) return;
-    const ok = isSelectionCorrect(target, picked);
+    const pickedChars = picked.map(i => options[i]);
+    const ok = isSelectionCorrect(target, pickedChars);
     if (ok) {
       const comboBoost = sumPower('comboBoost');
-  const challengeBonus = challengeMode && !usedHintThisRound ? 50 : 0;
-  const blindBonus = (blindMode && !usedPeekThisRound && !senseMode) ? 50 : 0;
-      const add = 100 + (combo + comboBoost) * 25 + challengeBonus + blindBonus;
+      const noHintBonus = !usedHintThisRound ? 50 : 0;
+      const noPeekBonus = !usedPeekThisRound ? 50 : 0;
+      const add = 100 + (combo + comboBoost) * 25 + noHintBonus + noPeekBonus;
       setScore(s => s + add);
       setCombo(k => k + 1);
-      setFeedback({ ok: true, message: `+${add} points${challengeBonus ? ' (défi +50)' : ''}${blindBonus ? ' (caché +50)' : ''}` });
+      setFeedback({ ok: true, message: `+${add} points${noHintBonus ? ' (sans indice +50)' : ''}${noPeekBonus ? ' (sans regard +50)' : ''}` });
       // Drop de pouvoir lié au kanji (si défini)
       if (target.power) {
         upsertRelic(target.power);
@@ -158,7 +155,7 @@ export default function KanjiLegendsPage() {
             <span>←</span>
             <span className="hidden sm:inline">Menu</span>
           </Link>
-          <h1 className="text-xl font-bold text-indigo-900">🔶 Kanji Legends (prototype)</h1>
+          <h1 className="text-xl font-bold text-indigo-900">🔶 Kanji Legends (mode radicaux)</h1>
           <div className="w-16" />
         </div>
       </header>
@@ -182,54 +179,42 @@ export default function KanjiLegendsPage() {
           <div className={`rounded-3xl border p-6 shadow ${target.rarity === 'epic' ? 'bg-gradient-to-br from-yellow-50/90 to-amber-100/80 border-amber-200' : target.rarity === 'rare' ? 'bg-gradient-to-br from-indigo-50/90 to-blue-50/80 border-indigo-200' : 'bg-gradient-to-br from-white/80 to-indigo-50/80 border-indigo-200'}`}>
             <div className="text-center mb-4">
               <div className="text-sm text-indigo-700">Assembler les composants</div>
-              <div className="text-6xl sm:text-7xl font-extrabold text-indigo-900 tracking-tight">{blindMode && !peekVisible ? '???' : target.char}</div>
+              <div className="text-6xl sm:text-7xl font-extrabold text-indigo-900 tracking-tight">{!peekVisible ? '???' : target.char}</div>
               <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
                 <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">🎯 {target.nameFr}</span>
                 <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200">🧩 {required} éléments</span>
-                {blindMode && <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-200">🙈 caché</span>}
-                {challengeMode && <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-800 border border-amber-200">⚡ défi</span>}
-                {senseMode && <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">🧠 sens</span>}
+                <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-200">🙈 caché</span>
               </div>
               {dropMsg && <div className="mt-2 text-xs text-amber-700">{dropMsg}</div>}
             </div>
 
-            {learningMode && !challengeMode && !blindMode && (
-              <div className="mb-4 p-3 rounded-xl bg-white/70 border border-indigo-200 text-indigo-800 text-sm">
-                <div className="font-medium mb-1">Décomposition</div>
-                <div>{targetBreakdown}</div>
-              </div>
-            )}
-
             {/* Options */}
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-              {options.map((c) => {
-                const active = picked.includes(c);
-                const disabled = disabledOpts.includes(c);
+              {options.map((c, i) => {
+                const active = picked.includes(i);
+                const disabled = disabledOpts.includes(i);
                 return (
-                  <button key={c} onClick={() => !disabled && togglePick(c)} disabled={disabled} title={`${c} — ${getRadicalMeaning(c)}`} className={`aspect-square rounded-2xl border flex flex-col items-center justify-center select-none transition shadow-sm ${disabled ? 'opacity-40 cursor-not-allowed bg-gray-50 border-gray-200' : active ? 'bg-gradient-to-br from-indigo-600 to-violet-600 text-white border-indigo-700 shadow-md' : 'bg-white text-indigo-900 border-indigo-200 hover:border-indigo-400 hover:shadow-md hover:-translate-y-0.5'}`}>
+                  <button key={`${c}-${i}`} onClick={() => !disabled && togglePick(i)} disabled={disabled} title={`${c} — ${getRadicalMeaning(c)}`} className={`aspect-square rounded-2xl border flex flex-col items-center justify-center select-none transition shadow-sm ${disabled ? 'opacity-40 cursor-not-allowed bg-gray-50 border-gray-200' : active ? 'bg-gradient-to-br from-indigo-600 to-violet-600 text-white border-indigo-700 shadow-md' : 'bg-white text-indigo-900 border-indigo-200 hover:border-indigo-400 hover:shadow-md hover:-translate-y-0.5'}`}>
                     <div className="text-3xl sm:text-4xl leading-none">{c}</div>
-                    {(blindMode || (learningMode && !challengeMode)) && (
-                      <div className={`mt-1 text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full border ${active ? 'text-indigo-50 bg-indigo-500/40 border-indigo-400' : 'text-indigo-700 bg-indigo-50 border-indigo-200'}`}>{getRadicalMeaning(c)}</div>
-                    )}
+                    <div className={`mt-1 text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full border ${active ? 'text-indigo-50 bg-indigo-500/40 border-indigo-400' : 'text-indigo-700 bg-indigo-50 border-indigo-200'}`}>{getRadicalMeaning(c)}</div>
                   </button>
                 );
               })}
             </div>
 
             <div className="mt-4 flex gap-3 flex-wrap items-center">
-              <label className="flex items-center gap-2 text-xs text-indigo-800 bg-white/60 border border-indigo-200 rounded-lg px-2 py-1">
-                <input type="checkbox" checked={learningMode} onChange={(e) => setLearningMode(e.target.checked)} disabled={challengeMode} />
-                <span>Montrer les sens (en plus du mode caché)</span>
-              </label>
               {/* Indice si disponible */}
               {sumPower('hint') > 0 && (
                 <button onClick={() => {
                   // trouver un leurre non désactivé
                   if (!target) return;
-                  const wrongs = options.filter(o => !target.components.includes(o) && !disabledOpts.includes(o));
-                  if (wrongs.length === 0) return;
-                  const pick = wrongs[Math.floor(Math.random() * wrongs.length)];
-                  setDisabledOpts(prev => [...prev, pick]);
+                  const wrongIdx = options
+                    .map((o, idx) => ({ o, idx }))
+                    .filter(x => !target.components.includes(x.o) && !disabledOpts.includes(x.idx))
+                    .map(x => x.idx);
+                  if (wrongIdx.length === 0) return;
+                  const pickIdx = wrongIdx[Math.floor(Math.random() * wrongIdx.length)];
+                  setDisabledOpts(prev => [...prev, pickIdx]);
                   setUsedHintThisRound(true);
                   // consommer 1 charge hint
                   const idx = relics.findIndex(r => r.effect === 'hint' && r.value > 0);
@@ -242,30 +227,17 @@ export default function KanjiLegendsPage() {
                   🔍 Indice ({sumPower('hint')})
                 </button>
               )}
-              {blindMode && !senseMode && (
-                <button onClick={() => {
-                  if (!peekVisible) {
-                    setPeekVisible(true);
-                    setUsedPeekThisRound(true);
-                    setTimeLeft(t => Math.max(0, t - 5));
-                    setTimeout(() => setPeekVisible(false), 1000);
-                  }
-                }} className="px-3 py-2 rounded-xl bg-purple-200 text-purple-900 border border-purple-300 hover:bg-purple-300 text-sm">
-                  👀 Regarder (−5s)
-                </button>
-              )}
-              <label className="ml-auto flex items-center gap-2 text-xs text-indigo-800 bg-white/60 border border-indigo-200 rounded-lg px-2 py-1">
-                <input type="checkbox" checked={challengeMode} onChange={(e) => setChallengeMode(e.target.checked)} />
-                <span>Mode défi (−5s, +50 si sans indice)</span>
-              </label>
-              <label className="flex items-center gap-2 text-xs text-indigo-800 bg-white/60 border border-indigo-200 rounded-lg px-2 py-1">
-                <input type="checkbox" checked={blindMode} onChange={(e) => setBlindMode(e.target.checked)} disabled={senseMode} />
-                <span>Mode caché (kanji masqué, +50 si sans regard)</span>
-              </label>
-              <label className="flex items-center gap-2 text-xs text-indigo-800 bg-white/60 border border-indigo-200 rounded-lg px-2 py-1">
-                <input type="checkbox" checked={senseMode} onChange={(e) => { setSenseMode(e.target.checked); if (e.target.checked) setBlindMode(true); }} />
-                <span>Mode sens → composants (aucun kanji)</span>
-              </label>
+              <button onClick={() => {
+                if (!peekVisible) {
+                  setPeekVisible(true);
+                  setUsedPeekThisRound(true);
+                  setTimeLeft(t => Math.max(0, t - 5));
+                  setTimeout(() => setPeekVisible(false), 1000);
+                }
+              }} className="px-3 py-2 rounded-xl bg-purple-200 text-purple-900 border border-purple-300 hover:bg-purple-300 text-sm">
+                👀 Regarder (−5s)
+              </button>
+              <div className="ml-auto text-xs text-indigo-700">Résous sans indice ni regard pour des bonus.</div>
               <button onClick={handleVerify} className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold hover:from-green-600 hover:to-green-700">Valider</button>
               <button onClick={nextRound} className="px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold hover:from-blue-600 hover:to-blue-700">Passer</button>
             </div>
