@@ -83,6 +83,27 @@ export default function Home() {
               </div>
             </Link>
 
+            {/* Bouton Kanji Legends (jeu séparé) */}
+            <Link href="/game/kanji-legends" className="group">
+              <div className="bg-gradient-to-br from-indigo-100/90 to-blue-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-indigo-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-blue-300/50">
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
+                    <span className="text-2xl">🀄</span>
+                  </div>
+                  <h2 className="text-2xl font-bold text-indigo-800 mb-3">
+                    伝説 Kanji Legends
+                  </h2>
+                  <p className="text-indigo-700 leading-relaxed mb-4">
+                    Assemble des composants, débloque des pouvoirs
+                  </p>
+                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-indigo-700">
+                    <span>プレイ</span>
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </div>
+                </div>
+              </div>
+            </Link>
+
             {/* Bouton Survival - Style feu */}
             <Link href="/training?mode=survival" className="group">
               <div className="bg-gradient-to-br from-red-100/90 to-pink-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-red-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-pink-300/50">
