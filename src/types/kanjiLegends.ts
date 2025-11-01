@@ -22,6 +22,8 @@ export interface GameKanji {
   strokes?: number;     // info décorative
   rarity: Rarity;
   power?: KanjiPower;   // pouvoir débloqué si obtenu
+  onyomi?: string[];    // lectures ON en カタカナ
+  kunyomi?: string[];   // lectures KUN en ひらがな (avec traits facultatifs)
 }
 
 export interface RoundSpec {

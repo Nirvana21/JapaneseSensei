@@ -24,8 +24,11 @@ export default function KanjiLegendsPage() {
   const [required, setRequired] = useState(0);
   const [picked, setPicked] = useState<number[]>([]); // indices sélectionnés
   const [disabledOpts, setDisabledOpts] = useState<number[]>([]); // indices désactivés
+  const [roundType, setRoundType] = useState<'components'|'reading'>('components');
+  const [readingKind, setReadingKind] = useState<'onyomi'|'kunyomi'|null>(null);
   const [feedback, setFeedback] = useState<null | { ok: boolean; message: string }>(null);
   const [dropMsg, setDropMsg] = useState<string | null>(null);
+  const [gameOver, setGameOver] = useState<{score:number; floor:number; bestCombo:number} | null>(null);
 
   // Start
   useEffect(() => {
@@ -48,10 +51,42 @@ export default function KanjiLegendsPage() {
   const nextRound = () => {
     const tgt = pickTarget(KANJI_LEGENDS);
     if (!tgt) return;
-    const round = buildRound(tgt, KANJI_LEGENDS);
     setTarget(tgt);
-    setOptions(round.componentOptions);
-    setRequired(round.required);
+    // 1/4 des rooms: lecture (si dispo), sinon composants
+    const canReading = (tgt.onyomi && tgt.onyomi.length > 0) || (tgt.kunyomi && tgt.kunyomi.length > 0);
+    const chooseReading = canReading && Math.random() < 0.25;
+    if (chooseReading) {
+      const kinds: Array<'onyomi'|'kunyomi'> = [];
+      if (tgt.onyomi && tgt.onyomi.length > 0) kinds.push('onyomi');
+      if (tgt.kunyomi && tgt.kunyomi.length > 0) kinds.push('kunyomi');
+      const kind = kinds[Math.floor(Math.random() * kinds.length)];
+      setRoundType('reading');
+      setReadingKind(kind);
+      const correct = (kind === 'onyomi' ? (tgt.onyomi || []) : (tgt.kunyomi || [])).filter(Boolean);
+      // décoys: piocher dans les autres kanji
+      const others = KANJI_LEGENDS.filter(k => k.id !== tgt.id);
+      const pool = others.flatMap(k => kind === 'onyomi' ? (k.onyomi || []) : (k.kunyomi || []));
+      // éviter de reprendre les mêmes que correct
+      const candidates = pool.filter(p => !correct.includes(p));
+      // au moins 4 options totales si possible
+      const needDecoys = Math.max(1, 4 - correct.length);
+      const decoys: string[] = [];
+      const used = new Set<string>();
+      while (decoys.length < needDecoys && candidates.length > 0) {
+        const idx = Math.floor(Math.random() * candidates.length);
+        const val = candidates.splice(idx,1)[0];
+        if (!used.has(val)) { used.add(val); decoys.push(val); }
+      }
+      const opts = [...correct, ...decoys].sort(() => Math.random() - 0.5);
+      setOptions(opts);
+      setRequired(correct.length || 1);
+    } else {
+      setRoundType('components');
+      setReadingKind(null);
+      const round = buildRound(tgt, KANJI_LEGENDS);
+      setOptions(round.componentOptions);
+      setRequired(round.required);
+    }
     setPicked([]);
     setFeedback(null);
     setDisabledOpts([]);
@@ -98,11 +133,18 @@ export default function KanjiLegendsPage() {
   const handleVerify = () => {
     if (!target) return;
     const pickedChars = picked.map(i => options[i]);
-    const ok = isSelectionCorrect(target, pickedChars);
+    let ok = false;
+    if (roundType === 'components') {
+      ok = isSelectionCorrect(target, pickedChars);
+    } else if (roundType === 'reading' && readingKind && target) {
+      const correct = (readingKind === 'onyomi' ? (target.onyomi || []) : (target.kunyomi || [])).filter(Boolean).slice().sort().join('|');
+      const have = pickedChars.slice().sort().join('|');
+      ok = correct === have && pickedChars.length === (readingKind === 'onyomi' ? (target.onyomi?.length || 0) : (target.kunyomi?.length || 0));
+    }
     if (ok) {
       const comboBoost = sumPower('comboBoost');
-      const noHintBonus = !usedHintThisRound ? 50 : 0;
-      const noPeekBonus = !usedPeekThisRound ? 50 : 0;
+  const noHintBonus = !usedHintThisRound ? 50 : 0;
+  const noPeekBonus = (roundType === 'components' && !usedPeekThisRound) ? 50 : 0;
       const add = 100 + (combo + comboBoost) * 25 + noHintBonus + noPeekBonus;
       setScore(s => s + add);
       setCombo(k => k + 1);
@@ -115,26 +157,24 @@ export default function KanjiLegendsPage() {
         setDropMsg(null);
       }
       setFloor(f => f + 1);
-      setTimeout(() => nextRound(), 700);
+      // Révéler brièvement le kanji avant de passer
+      setPeekVisible(true);
+      setTimeout(() => nextRound(), 1100);
     } else {
       // Consommer un bouclier si dispo
       const saved = consumeShieldIfAny();
       if (!saved) setHearts(h => Math.max(0, h - 1));
       setCombo(0);
       setFeedback({ ok: false, message: saved ? '🛡️ Bouclier ! Erreur ignorée' : '❌ Mauvaise combinaison' });
+      // Révéler brièvement le kanji même en cas d'erreur
+      setPeekVisible(true);
       if (!saved && hearts - 1 <= 0) {
-        // game over
-        // simple reset for prototype
+        // game over summary
         setTimeout(() => {
-          setHearts(maxHearts);
-          setScore(0);
-          setCombo(0);
-          setFloor(1);
-          setRelics([]);
-          nextRound();
-        }, 1000);
+          setGameOver({ score, floor, bestCombo: combo });
+        }, 800);
       } else {
-        setTimeout(() => nextRound(), 700);
+        setTimeout(() => nextRound(), 1100);
       }
     }
   };
@@ -178,12 +218,12 @@ export default function KanjiLegendsPage() {
         {target && (
           <div className={`rounded-3xl border p-6 shadow ${target.rarity === 'epic' ? 'bg-gradient-to-br from-yellow-50/90 to-amber-100/80 border-amber-200' : target.rarity === 'rare' ? 'bg-gradient-to-br from-indigo-50/90 to-blue-50/80 border-indigo-200' : 'bg-gradient-to-br from-white/80 to-indigo-50/80 border-indigo-200'}`}>
             <div className="text-center mb-4">
-              <div className="text-sm text-indigo-700">Assembler les composants</div>
-              <div className="text-6xl sm:text-7xl font-extrabold text-indigo-900 tracking-tight">{!peekVisible ? '???' : target.char}</div>
+              <div className="text-sm text-indigo-700">{roundType === 'reading' ? (readingKind === 'onyomi' ? 'Sélectionne les lectures ON (カタカナ)' : 'Sélectionne les lectures KUN (ひらがな)') : 'Assembler les composants'}</div>
+              <div className="text-6xl sm:text-7xl font-extrabold text-indigo-900 tracking-tight">{roundType === 'reading' ? target.char : (!peekVisible ? '???' : target.char)}</div>
               <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
                 <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">🎯 {target.nameFr}</span>
                 <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200">🧩 {required} éléments</span>
-                <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-200">🙈 caché</span>
+                {roundType === 'components' && <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-200">🙈 caché</span>}
               </div>
               {dropMsg && <div className="mt-2 text-xs text-amber-700">{dropMsg}</div>}
             </div>
@@ -196,7 +236,11 @@ export default function KanjiLegendsPage() {
                 return (
                   <button key={`${c}-${i}`} onClick={() => !disabled && togglePick(i)} disabled={disabled} title={`${c} — ${getRadicalMeaning(c)}`} className={`aspect-square rounded-2xl border flex flex-col items-center justify-center select-none transition shadow-sm ${disabled ? 'opacity-40 cursor-not-allowed bg-gray-50 border-gray-200' : active ? 'bg-gradient-to-br from-indigo-600 to-violet-600 text-white border-indigo-700 shadow-md' : 'bg-white text-indigo-900 border-indigo-200 hover:border-indigo-400 hover:shadow-md hover:-translate-y-0.5'}`}>
                     <div className="text-3xl sm:text-4xl leading-none">{c}</div>
-                    <div className={`mt-1 text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full border ${active ? 'text-indigo-50 bg-indigo-500/40 border-indigo-400' : 'text-indigo-700 bg-indigo-50 border-indigo-200'}`}>{getRadicalMeaning(c)}</div>
+                    {roundType === 'components' ? (
+                      <div className={`mt-1 text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full border ${active ? 'text-indigo-50 bg-indigo-500/40 border-indigo-400' : 'text-indigo-700 bg-indigo-50 border-indigo-200'}`}>{getRadicalMeaning(c)}</div>
+                    ) : (
+                      <div className={`mt-1 text-[10px] sm:text-[11px] px-2 py-0.5 rounded-full border ${active ? 'text-indigo-50 bg-emerald-500/40 border-emerald-400' : 'text-emerald-700 bg-emerald-50 border-emerald-200'}`}>{readingKind === 'onyomi' ? 'ON' : 'KUN'}</div>
+                    )}
                   </button>
                 );
               })}
@@ -208,10 +252,19 @@ export default function KanjiLegendsPage() {
                 <button onClick={() => {
                   // trouver un leurre non désactivé
                   if (!target) return;
-                  const wrongIdx = options
-                    .map((o, idx) => ({ o, idx }))
-                    .filter(x => !target.components.includes(x.o) && !disabledOpts.includes(x.idx))
-                    .map(x => x.idx);
+                  let wrongIdx: number[] = [];
+                  if (roundType === 'components') {
+                    wrongIdx = options
+                      .map((o, idx) => ({ o, idx }))
+                      .filter(x => !target.components.includes(x.o) && !disabledOpts.includes(x.idx))
+                      .map(x => x.idx);
+                  } else if (roundType === 'reading' && readingKind) {
+                    const correct = readingKind === 'onyomi' ? (target.onyomi || []) : (target.kunyomi || []);
+                    wrongIdx = options
+                      .map((o, idx) => ({ o, idx }))
+                      .filter(x => !correct.includes(x.o) && !disabledOpts.includes(x.idx))
+                      .map(x => x.idx);
+                  }
                   if (wrongIdx.length === 0) return;
                   const pickIdx = wrongIdx[Math.floor(Math.random() * wrongIdx.length)];
                   setDisabledOpts(prev => [...prev, pickIdx]);
@@ -227,7 +280,7 @@ export default function KanjiLegendsPage() {
                   🔍 Indice ({sumPower('hint')})
                 </button>
               )}
-              <button onClick={() => {
+              {roundType === 'components' && (<button onClick={() => {
                 if (!peekVisible) {
                   setPeekVisible(true);
                   setUsedPeekThisRound(true);
@@ -236,8 +289,8 @@ export default function KanjiLegendsPage() {
                 }
               }} className="px-3 py-2 rounded-xl bg-purple-200 text-purple-900 border border-purple-300 hover:bg-purple-300 text-sm">
                 👀 Regarder (−5s)
-              </button>
-              <div className="ml-auto text-xs text-indigo-700">Résous sans indice ni regard pour des bonus.</div>
+              </button>)}
+              <div className="ml-auto text-xs text-indigo-700">Résous sans indice{roundType==='components' ? ' ni regard' : ''} pour des bonus.</div>
               <button onClick={handleVerify} className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold hover:from-green-600 hover:to-green-700">Valider</button>
               <button onClick={nextRound} className="px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold hover:from-blue-600 hover:to-blue-700">Passer</button>
             </div>
@@ -268,6 +321,23 @@ export default function KanjiLegendsPage() {
           </div>
         )}
       </main>
+      {gameOver && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white shadow-xl border border-indigo-200 p-6 text-center">
+            <div className="text-3xl font-extrabold text-indigo-900">Fin de run</div>
+            <div className="mt-2 text-indigo-700">Bien joué !</div>
+            <div className="mt-4 grid grid-cols-3 gap-3 text-indigo-900">
+              <div className="rounded-xl bg-indigo-50 border border-indigo-200 p-3"><div className="text-xs">Score</div><div className="text-lg font-bold">{gameOver.score}</div></div>
+              <div className="rounded-xl bg-indigo-50 border border-indigo-200 p-3"><div className="text-xs">Etage</div><div className="text-lg font-bold">{gameOver.floor}</div></div>
+              <div className="rounded-xl bg-indigo-50 border border-indigo-200 p-3"><div className="text-xs">Meilleur combo</div><div className="text-lg font-bold">x{gameOver.bestCombo}</div></div>
+            </div>
+            <div className="mt-6 flex gap-3 justify-center">
+              <button onClick={() => setGameOver(null)} className="px-4 py-2 rounded-xl border border-indigo-200 text-indigo-800 bg-white hover:bg-indigo-50">Fermer</button>
+              <button onClick={() => { setGameOver(null); setHearts(maxHearts); setScore(0); setCombo(0); setFloor(1); setRelics([]); nextRound(); }} className="px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700">Recommencer</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
