@@ -132,6 +132,27 @@ export default function Home() {
               </div>
             </Link>
 
+            {/* Bouton Adjectifs – formes */}
+            <Link href="/training/adjectives" className="group">
+              <div className="bg-gradient-to-br from-amber-100/90 to-yellow-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-amber-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-yellow-300/50">
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-yellow-600 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
+                    <span className="text-2xl">🎨</span>
+                  </div>
+                  <h2 className="text-2xl font-bold text-amber-800 mb-3">
+                    形容詞 Adjectifs
+                  </h2>
+                  <p className="text-amber-700 leading-relaxed mb-4">
+                    i/na formes utiles
+                  </p>
+                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-amber-700">
+                    <span>練習</span>
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </div>
+                </div>
+              </div>
+            </Link>
+
             {/* Bouton Collection - Style bambou */}
             <button
               onClick={() => setCurrentView("collection")}
