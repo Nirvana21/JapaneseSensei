@@ -16,6 +16,8 @@ export default function KanjiLegendsPage() {
   const [floor, setFloor] = useState(1);
   const [relics, setRelics] = useState<KanjiPower[]>([]);
   const [learningMode, setLearningMode] = useState(true);
+  const [challengeMode, setChallengeMode] = useState(false);
+  const [usedHintThisRound, setUsedHintThisRound] = useState(false);
 
   const [target, setTarget] = useState<GameKanji | null>(null);
   const [options, setOptions] = useState<string[]>([]);
@@ -53,9 +55,11 @@ export default function KanjiLegendsPage() {
     setPicked([]);
     setFeedback(null);
     setDisabledOpts([]);
+    setUsedHintThisRound(false);
     // base 30s + extraTime from relics
     const extra = sumPower('extraTime');
-    setTimeLeft(30 + extra);
+    const base = 30 + extra;
+    setTimeLeft(challengeMode ? Math.max(10, base - 5) : base);
   };
 
   const togglePick = (c: string) => {
@@ -94,10 +98,11 @@ export default function KanjiLegendsPage() {
     const ok = isSelectionCorrect(target, picked);
     if (ok) {
       const comboBoost = sumPower('comboBoost');
-      const add = 100 + (combo + comboBoost) * 25;
+      const challengeBonus = challengeMode && !usedHintThisRound ? 50 : 0;
+      const add = 100 + (combo + comboBoost) * 25 + challengeBonus;
       setScore(s => s + add);
       setCombo(k => k + 1);
-      setFeedback({ ok: true, message: `+${add} points` });
+      setFeedback({ ok: true, message: `+${add} points${challengeBonus ? ' (défi +50)' : ''}` });
       // Drop de pouvoir lié au kanji (si défini)
       if (target.power) {
         upsertRelic(target.power);
@@ -131,7 +136,7 @@ export default function KanjiLegendsPage() {
   };
 
   const progress = useMemo(() => ({ hearts, maxHearts, timeLeft, score, combo, floor }), [hearts, maxHearts, timeLeft, score, combo, floor]);
-  const getRadicalMeaning = (c: string) => RADICAL_INFO[c]?.meaningFr || 'inconnu';
+  const getRadicalMeaning = (c: string) => RADICAL_INFO[c]?.meaningFr || 'à compléter';
   const targetBreakdown = useMemo(() => {
     if (!target) return '';
     const parts = target.components.map(c => `${c} (${getRadicalMeaning(c)})`).join(' + ');
@@ -175,7 +180,7 @@ export default function KanjiLegendsPage() {
               {dropMsg && <div className="mt-2 text-xs text-amber-700">{dropMsg}</div>}
             </div>
 
-            {learningMode && (
+            {learningMode && !challengeMode && (
               <div className="mb-4 p-3 rounded-xl bg-white/70 border border-indigo-200 text-indigo-800 text-sm">
                 <div className="font-medium mb-1">Décomposition</div>
                 <div>{targetBreakdown}</div>
@@ -190,7 +195,7 @@ export default function KanjiLegendsPage() {
                 return (
                   <button key={c} onClick={() => !disabled && togglePick(c)} disabled={disabled} title={`${c} — ${getRadicalMeaning(c)}`} className={`aspect-square rounded-2xl border flex flex-col items-center justify-center select-none transition ${disabled ? 'opacity-40 cursor-not-allowed bg-gray-50 border-gray-200' : active ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white text-indigo-900 border-indigo-200 hover:border-indigo-400'}`}>
                     <div className="text-3xl sm:text-4xl leading-none">{c}</div>
-                    {learningMode && (
+                    {learningMode && !challengeMode && (
                       <div className={`mt-1 text-[10px] sm:text-xs ${active ? 'text-indigo-100' : 'text-indigo-700'}`}>{getRadicalMeaning(c)}</div>
                     )}
                   </button>
@@ -200,8 +205,8 @@ export default function KanjiLegendsPage() {
 
             <div className="mt-4 flex gap-3 flex-wrap items-center">
               <label className="flex items-center gap-2 text-xs text-indigo-800 bg-white/60 border border-indigo-200 rounded-lg px-2 py-1">
-                <input type="checkbox" checked={learningMode} onChange={(e) => setLearningMode(e.target.checked)} />
-                <span>Mode apprentissage (montrer le sens des radicaux)</span>
+                <input type="checkbox" checked={learningMode} onChange={(e) => setLearningMode(e.target.checked)} disabled={challengeMode} />
+                <span>Mode apprentissage (sens des radicaux)</span>
               </label>
               {/* Indice si disponible */}
               {sumPower('hint') > 0 && (
@@ -212,6 +217,7 @@ export default function KanjiLegendsPage() {
                   if (wrongs.length === 0) return;
                   const pick = wrongs[Math.floor(Math.random() * wrongs.length)];
                   setDisabledOpts(prev => [...prev, pick]);
+                  setUsedHintThisRound(true);
                   // consommer 1 charge hint
                   const idx = relics.findIndex(r => r.effect === 'hint' && r.value > 0);
                   if (idx >= 0) {
@@ -223,6 +229,10 @@ export default function KanjiLegendsPage() {
                   🔍 Indice ({sumPower('hint')})
                 </button>
               )}
+              <label className="ml-auto flex items-center gap-2 text-xs text-indigo-800 bg-white/60 border border-indigo-200 rounded-lg px-2 py-1">
+                <input type="checkbox" checked={challengeMode} onChange={(e) => setChallengeMode(e.target.checked)} />
+                <span>Mode défi (−5s, +50 si sans indice)</span>
+              </label>
               <button onClick={handleVerify} className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold hover:from-green-600 hover:to-green-700">Valider</button>
               <button onClick={nextRound} className="px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold hover:from-blue-600 hover:to-blue-700">Passer</button>
             </div>
