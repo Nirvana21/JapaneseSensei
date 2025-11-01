@@ -93,7 +93,7 @@ export default function VerbsTrainingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-orange-700 mb-1">Forme</label>
-              <select value={formKind} onChange={e => setFormKind(e.target.value as VerbFormKind)} className="w-full px-3 py-2 rounded-lg border border-orange-300 bg-white">
+              <select value={formKind} onChange={e => setFormKind(e.target.value as VerbFormKind)} className="w-full px-3 py-2 rounded-lg border border-orange-300 bg-white text-slate-900">
                 {FORM_OPTIONS.map(o => (
                   <option key={o.value} value={o.value}>{o.label}</option>
                 ))}
@@ -102,7 +102,7 @@ export default function VerbsTrainingPage() {
             {needsPoliteness && (
               <div>
                 <label className="block text-sm text-orange-700 mb-1">Politesse</label>
-                <select value={politeness} onChange={e => setPoliteness(e.target.value as Politeness)} className="w-full px-3 py-2 rounded-lg border border-orange-300 bg-white">
+                <select value={politeness} onChange={e => setPoliteness(e.target.value as Politeness)} className="w-full px-3 py-2 rounded-lg border border-orange-300 bg-white text-slate-900">
                   <option value="plain">courante</option>
                   <option value="polite">polie</option>
                 </select>
@@ -111,7 +111,7 @@ export default function VerbsTrainingPage() {
             {needsTense && (
               <div>
                 <label className="block text-sm text-orange-700 mb-1">Temps</label>
-                <select value={tense} onChange={e => setTense(e.target.value as Tense)} className="w-full px-3 py-2 rounded-lg border border-orange-300 bg-white">
+                <select value={tense} onChange={e => setTense(e.target.value as Tense)} className="w-full px-3 py-2 rounded-lg border border-orange-300 bg-white text-slate-900">
                   <option value="present">présent</option>
                   <option value="past">passé</option>
                 </select>
@@ -120,7 +120,7 @@ export default function VerbsTrainingPage() {
             {needsPolarity && (
               <div>
                 <label className="block text-sm text-orange-700 mb-1">Polarité</label>
-                <select value={polarity} onChange={e => setPolarity(e.target.value as Polarity)} className="w-full px-3 py-2 rounded-lg border border-orange-300 bg-white">
+                <select value={polarity} onChange={e => setPolarity(e.target.value as Polarity)} className="w-full px-3 py-2 rounded-lg border border-orange-300 bg-white text-slate-900">
                   <option value="affirmative">affirmative</option>
                   <option value="negative">négative</option>
                 </select>
