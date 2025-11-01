@@ -1,0 +1,35 @@
+import { ParticleQuestion } from "../types/grammar";
+
+// Fill-in-the-blank particles. One blank per sentence, marked by ___.
+// Allow small sets of acceptable answers where natural variation exists.
+export const PARTICLE_QUESTIONS: ParticleQuestion[] = [
+  { id: 'wa-topic', sentence: '私は___学生です。', answers: ['は'], translationFr: 'Moi, je suis étudiant.' , noteKey: 'wa'},
+  { id: 'ga-subj', sentence: '誰___来ますか？', answers: ['が'], translationFr: 'Qui vient ?', noteKey: 'ga' },
+  { id: 'o-object', sentence: '本___読みます。', answers: ['を'], translationFr: 'Je lis un livre.', noteKey: 'o' },
+  { id: 'ni-time', sentence: '七時___起きます。', answers: ['に'], translationFr: 'Je me lève à sept heures.', noteKey: 'ni-time' },
+  { id: 'ni-dest', sentence: '学校___行きます。', answers: ['に','へ'], translationFr: 'Je vais à l’école.', noteKey: 'direction' },
+  { id: 'e-dest', sentence: '日本___旅行します。', answers: ['へ','に'], translationFr: 'Je voyage vers le Japon.', noteKey: 'direction' },
+  { id: 'de-place', sentence: '図書館___勉強します。', answers: ['で'], translationFr: 'J’étudie à la bibliothèque.', noteKey: 'de' },
+  { id: 'to-with', sentence: '友達___映画を見ます。', answers: ['と'], translationFr: 'Je regarde un film avec un ami.', noteKey: 'to' },
+  { id: 'kara-from', sentence: '九時___仕事です。', answers: ['から'], translationFr: 'Je travaille à partir de 9h.', noteKey: 'kara' },
+  { id: 'made-until', sentence: '五時___働きます。', answers: ['まで'], translationFr: 'Je travaille jusqu’à 17h.', noteKey: 'made' },
+  { id: 'mo-also', sentence: '私___行きます。', answers: ['も'], translationFr: 'Moi aussi, j’y vais.', noteKey: 'mo' },
+  { id: 'no-poss', sentence: '彼___本です。', answers: ['の'], translationFr: 'C’est son livre (à lui).', noteKey: 'no' },
+  { id: 'ya-list', sentence: 'りんご___バナナがあります。', answers: ['や'], translationFr: 'Il y a des pommes et des bananes (entre autres).', noteKey: 'ya' },
+  { id: 'to-quote', sentence: '彼は「行く」___言いました。', answers: ['と'], translationFr: 'Il a dit "j’y vais".', noteKey: 'to-quotation' },
+  { id: 'yori-than', sentence: '猫___犬の方が好きです。', answers: ['より'], translationFr: 'Je préfère les chiens aux chats.', noteKey: 'yori' },
+  { id: 'ka-q', sentence: '明日来ます___？', answers: ['か'], translationFr: 'Viendras-tu demain ?', noteKey: 'ka' },
+  { id: 'yo-assert', sentence: 'これは大事です___。', answers: ['よ'], translationFr: 'C’est important (je t’informe).', noteKey: 'yo' },
+  { id: 'ne-seek', sentence: '明日行く___？', answers: ['ね'], translationFr: 'On y va demain, hein ?', noteKey: 'ne' },
+  { id: 'shika-only', sentence: '百円___ありません。', answers: ['しか'], translationFr: 'Je n’ai que 100 yens (pas plus).', noteKey: 'shika' },
+  { id: 'dake-only', sentence: '一つ___買いました。', answers: ['だけ'], translationFr: 'J’en ai acheté seulement un.', noteKey: 'dake' },
+  { id: 'demo-but', sentence: '高い___、買います。', answers: ['けど','でも'], translationFr: 'C’est cher, mais je l’achète.', noteKey: 'kedo' },
+  { id: 'node-because', sentence: '忙しい___、行けません。', answers: ['ので','から'], translationFr: 'Comme je suis occupé, je ne peux pas y aller.', noteKey: 'reason' },
+  { id: 'ni-purpose', sentence: '日本語を勉強し___来ました。', answers: ['に'], translationFr: 'Je suis venu pour étudier le japonais.', noteKey: 'ni-purpose' },
+  { id: 'made-ni-extent', sentence: '夜中三時___起きていた。', answers: ['まで'], translationFr: 'Je suis resté éveillé jusqu’à 3h du matin.', noteKey: 'made' },
+  { id: 'kara-reason', sentence: '雨だ___、行かない。', answers: ['から'], translationFr: 'Comme il pleut, je n’y vais pas.', noteKey: 'reason' },
+  { id: 'wa-contrast', sentence: 'この店___安いが、質は…', answers: ['は'], translationFr: 'Ce magasin, c’est bon marché, mais la qualité…', noteKey: 'wa' },
+  { id: 'ga-ability', sentence: '日本語___話せます。', answers: ['が'], translationFr: 'Je peux parler japonais.', noteKey: 'ga' },
+  { id: 'ni-indirect', sentence: '先生___質問します。', answers: ['に'], translationFr: 'Je pose une question au professeur.', noteKey: 'ni-indirect' },
+  { id: 'de-instrument', sentence: '箸___食べます。', answers: ['で'], translationFr: 'Je mange avec des baguettes (au moyen de).', noteKey: 'de-instrument' },
+];

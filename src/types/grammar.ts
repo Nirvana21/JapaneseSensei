@@ -61,3 +61,20 @@ export interface AdjectiveConjugationResult {
   surface: string;
   reading?: string;
 }
+
+// ————— Particles —————
+export interface ParticleQuestion {
+  id: string;
+  sentence: string; // Japanese sentence with a single blank represented by ___
+  answers: string[]; // acceptable particle(s), e.g., ["は"], or multiple like ["に", "へ"]
+  translationFr: string; // French gloss/translation
+  noteKey?: string; // optional key to show a note for this particle/use
+}
+
+export interface ParticleNote {
+  key: string; // e.g., "wa", "ga", "o", "ni", "e-direction"
+  title: string;
+  usage: string;
+  tips?: string[];
+  examples?: string[];
+}
