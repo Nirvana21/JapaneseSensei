@@ -5,6 +5,7 @@ import Link from "next/link";
 import { VERBS } from "@/data/verbs";
 import { conjugate } from "@/services/verbConjugation";
 import { Polarity, Politeness, Tense, VerbEntry, VerbFormKind, VerbFormSpec } from "@/types/grammar";
+import { getVerbFormNote } from "@/data/verbFormNotes";
 
 const FORM_OPTIONS: { label: string; value: VerbFormKind }[] = [
   { label: "ます (polie)", value: "masu" },
@@ -25,10 +26,19 @@ export default function VerbsTrainingPage() {
   const [polarity, setPolarity] = useState<Polarity>("affirmative");
   const [answer, setAnswer] = useState("");
   const [feedback, setFeedback] = useState<null | { ok: boolean; correct: string }>(null);
+  const [showNote, setShowNote] = useState(false);
 
-  // pick a random verb initially and when forms change
+  const shuffleVerb = () => {
+    if (VERBS.length === 0) return;
+    const idx = Math.floor(Math.random() * VERBS.length);
+    setCurrent(VERBS[idx]);
+    setAnswer("");
+    setFeedback(null);
+  };
+
+  // pick a random verb initially
   useEffect(() => {
-    setCurrent(VERBS[Math.floor(Math.random() * VERBS.length)]);
+    shuffleVerb();
   }, []);
 
   const spec: VerbFormSpec = useMemo(() => ({
@@ -59,9 +69,7 @@ export default function VerbsTrainingPage() {
     if (ok) {
       // pick next
       setTimeout(() => {
-        setCurrent(VERBS[Math.floor(Math.random() * VERBS.length)]);
-        setAnswer("");
-        setFeedback(null);
+        shuffleVerb();
       }, 700);
     }
   };
@@ -135,10 +143,11 @@ export default function VerbsTrainingPage() {
                 value={answer}
                 onChange={e => setAnswer(e.target.value)}
                 placeholder="Votre réponse (JP)"
-                className="flex-1 px-4 py-3 rounded-xl border border-orange-300 focus:outline-none focus:ring-2 focus:ring-red-400 bg-white"
+                className="flex-1 px-4 py-3 rounded-xl border border-orange-300 focus:outline-none focus:ring-2 focus:ring-red-400 bg-white text-slate-900 placeholder-slate-500"
                 onKeyDown={e => { if (e.key === 'Enter') check(); }}
               />
               <button onClick={check} className="px-4 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold hover:from-green-600 hover:to-green-700">Vérifier</button>
+              <button onClick={shuffleVerb} className="px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold hover:from-blue-600 hover:to-blue-700">Nouveau verbe</button>
             </div>
 
             {feedback && (
@@ -148,6 +157,40 @@ export default function VerbsTrainingPage() {
                 )}
               </div>
             )}
+
+            {/* Mini fiche de cours */}
+            <div className="mt-4">
+              <button
+                onClick={() => setShowNote(v => !v)}
+                className="px-3 py-2 text-sm rounded-lg bg-amber-200/80 hover:bg-amber-200 text-amber-900 border border-amber-300/70"
+              >
+                {showNote ? 'Masquer la règle' : 'Afficher la règle'}
+              </button>
+              {showNote && (
+                (() => {
+                  const note = getVerbFormNote(spec);
+                  return (
+                    <div className="mt-3 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900">
+                      <h3 className="font-bold mb-1">{note.title}</h3>
+                      <p className="text-sm mb-2">{note.usage}</p>
+                      {note.tips && note.tips.length > 0 && (
+                        <ul className="list-disc pl-5 text-sm space-y-1 mb-2">
+                          {note.tips.map((t, i) => (<li key={i}>{t}</li>))}
+                        </ul>
+                      )}
+                      {note.examples && note.examples.length > 0 && (
+                        <div className="text-sm">
+                          <span className="font-medium">Exemples: </span>
+                          <ul className="list-disc pl-5 mt-1">
+                            {note.examples.map((ex, i) => (<li key={i}>{ex}</li>))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()
+              )}
+            </div>
           </div>
         )}
       </main>
