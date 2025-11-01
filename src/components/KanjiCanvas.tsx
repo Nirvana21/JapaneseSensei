@@ -40,11 +40,14 @@ export default function KanjiCanvas({
   // Met à jour la taille d'affichage depuis le parent si demandé
   useEffect(() => {
     if (!fitToParent) return;
-    const el = containerRef.current;
-    if (!el) return;
+    const rootEl = containerRef.current;
+    if (!rootEl) return;
+
+    // Mesurer le parent direct pour éviter d'inclure les contrôles internes
+    const targetEl: HTMLElement = (rootEl.parentElement as HTMLElement) || rootEl;
 
     const updateSize = () => {
-      const rect = el.getBoundingClientRect();
+      const rect = targetEl.getBoundingClientRect();
       const w = Math.max(50, Math.floor(rect.width));
       const h = Math.max(50, Math.floor(rect.height));
       setDisplaySize({ w, h });
@@ -52,7 +55,7 @@ export default function KanjiCanvas({
 
     // Observer les changements de taille
     const ro = new (window as any).ResizeObserver(updateSize);
-    ro.observe(el);
+    ro.observe(targetEl);
     updateSize();
 
     return () => {
@@ -303,7 +306,7 @@ export default function KanjiCanvas({
   }, [clearTrigger]);
 
   return (
-    <div ref={containerRef} className={`kanjicanvas-container ${className}`}>
+    <div ref={containerRef} className={`kanjicanvas-container ${className} ${fitToParent ? 'w-full h-full' : ''}`}>
       {/* Canvas principal */}
       <div
         className="relative border-2 border-gray-300 rounded-lg overflow-hidden bg-white touch-none w-full h-full"

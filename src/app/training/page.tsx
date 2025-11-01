@@ -59,6 +59,7 @@ function TrainingPageContent() {
   const [allLearningKanjis, setAllLearningKanjis] = useState<
     SimpleLearningKanji[]
   >([]);
+  const [trainingStrokeScale, setTrainingStrokeScale] = useState<number>(1);
   const [survivalStrokeScale, setSurvivalStrokeScale] = useState<number>(1);
 
   // Initialiser avec les kanjis et le nouveau système simple
@@ -852,9 +853,41 @@ function TrainingPageContent() {
                       <KanjiCanvas 
                         fitToParent 
                         clearTrigger={clearCanvas}
-                        showSizeControls
+                        showControls={false}
+                        strokeScale={trainingStrokeScale}
                       />
                     </div>
+                  </div>
+                  <div className="flex flex-col items-center gap-2 mt-3">
+                    <div className="inline-flex items-center gap-1 bg-slate-700 rounded-lg p-1 border border-slate-600/50">
+                      <button
+                        onClick={() => setTrainingStrokeScale(0.8)}
+                        className={`px-3 py-1 text-sm rounded-md ${ trainingStrokeScale < 0.9 ? 'bg-slate-600 text-slate-100 shadow-sm' : 'text-slate-200 hover:bg-slate-600/70'}`}
+                        aria-label="Trait fin"
+                      >
+                        Fin
+                      </button>
+                      <button
+                        onClick={() => setTrainingStrokeScale(1)}
+                        className={`px-3 py-1 text-sm rounded-md ${ trainingStrokeScale >= 0.9 && trainingStrokeScale < 1.15 ? 'bg-slate-600 text-slate-100 shadow-sm' : 'text-slate-200 hover:bg-slate-600/70'}`}
+                        aria-label="Trait moyen"
+                      >
+                        Moyen
+                      </button>
+                      <button
+                        onClick={() => setTrainingStrokeScale(1.3)}
+                        className={`px-3 py-1 text-sm rounded-md ${ trainingStrokeScale >= 1.15 ? 'bg-slate-600 text-slate-100 shadow-sm' : 'text-slate-200 hover:bg-slate-600/70'}`}
+                        aria-label="Trait épais"
+                      >
+                        Épais
+                      </button>
+                    </div>
+                    <button
+                      onClick={() => setClearCanvas(prev => prev + 1)}
+                      className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-100 text-sm rounded-lg transition-colors shadow-md hover:shadow-lg"
+                    >
+                      🗑️ Effacer le dessin
+                    </button>
                   </div>
                 </div>
               </div>
