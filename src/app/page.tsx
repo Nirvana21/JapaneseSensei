@@ -1,14 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AddKanjiForm from "@/components/AddKanjiForm";
 import KanjiList from "@/components/KanjiList";
 import EditKanjiModal from "@/components/EditKanjiModal";
 import { useKanjis } from "@/hooks/useKanjis";
 import { KanjiEntry } from "@/types/kanji";
+import { KanjiStorageService } from "@/services/kanjiStorage";
 
 export default function Home() {
+  const router = useRouter();
   const [currentView, setCurrentView] = useState<"menu" | "collection">("menu");
   const [editingKanji, setEditingKanji] = useState<KanjiEntry | null>(null);
   const { kanjis, loading, error, updateKanji, deleteKanji, refreshKanjis } =
@@ -33,22 +36,59 @@ export default function Home() {
     refreshKanjis();
   };
 
+  const handleExport = async () => {
+    try {
+      const json = await KanjiStorageService.exportKanjis();
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      a.download = `japanese-sensei-kanjis-${timestamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Erreur export kanjis", err);
+      alert("Impossible d'exporter la collection.");
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.replace("/login");
+    } catch {
+      router.replace("/login");
+    }
+  };
+
   // Vue Menu Principal
   if (currentView === "menu") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
         {/* Header zen japonais */}
         <header className="bg-gradient-to-r from-amber-100/90 to-orange-100/90 backdrop-blur-md border-b border-amber-200/50">
-          <div className="max-w-4xl mx-auto px-4 py-8 text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-600 to-orange-700 rounded-2xl shadow-lg mb-4">
-              <span className="text-3xl">🇯🇵</span>
+          <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="text-center flex-1">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-red-600 to-orange-700 rounded-2xl shadow-lg mb-2">
+                <span className="text-3xl">🇯🇵</span>
+              </div>
+              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-red-800 to-orange-800 bg-clip-text text-transparent mb-1">
+                Japanese Sensei
+              </h1>
+              <p className="text-amber-700 font-medium text-sm md:text-base">
+                道を極める - Maîtrisez l'art des kanjis
+              </p>
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-red-800 to-orange-800 bg-clip-text text-transparent mb-2">
-              Japanese Sensei
-            </h1>
-            <p className="text-amber-700 font-medium">
-              道を極める - Maîtrisez l'art des kanjis
-            </p>
+            <button
+              onClick={handleLogout}
+              className="ml-4 px-3 py-2 rounded-xl bg-amber-200/80 hover:bg-amber-300 text-amber-900 text-sm font-medium shadow-sm border border-amber-300 transition-colors"
+            >
+              Déconnexion
+            </button>
           </div>
         </header>
 
@@ -295,7 +335,14 @@ export default function Home() {
                 {kanjis.length} kanji{kanjis.length > 1 ? "s" : ""}
               </p>
             </div>
-            <div className="w-20"></div> {/* Spacer pour centrer le titre */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleExport}
+                className="px-3 py-2 rounded-lg bg-emerald-200/80 hover:bg-emerald-300 text-emerald-900 text-xs sm:text-sm font-medium shadow-sm border border-emerald-300 transition-colors"
+              >
+                📤 Exporter
+              </button>
+            </div>
           </div>
         </div>
       </header>
