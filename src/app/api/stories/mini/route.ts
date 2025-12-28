@@ -54,8 +54,8 @@ export async function POST(req: NextRequest) {
 
     const jlptHint =
       safeJlpt.length > 0
-        ? `Les niveaux JLPT ciblés sont : ${safeJlpt.join(", ")}. Adapte approximativement la difficulté à ces niveaux, sans être trop strict.`
-        : "Tu peux viser un niveau intermédiaire (autour de N4/N3).";
+        ? `Les niveaux JLPT ciblés sont : ${safeJlpt.join(", ")}. Adapte approximativement la difficulté grammaticale et lexicale à ces niveaux, sans être trop strict (inspire-toi du style des manuels de JLPT).`
+        : "Tu peux viser un niveau intermédiaire (autour de N4/N3), avec des structures simples et fréquentes.";
 
     const themeHint = theme && theme.trim().length > 0
       ? `Le thème souhaité est : "${theme.trim()}".`
@@ -71,18 +71,21 @@ export async function POST(req: NextRequest) {
       .join("\n");
 
     const userInstruction = `
-Génère une mini histoire en japonais à partir des kanjis suivants :
-${kanjiListText}
+  Génère une mini histoire en japonais à partir des kanjis suivants :
+  ${kanjiListText}
 
-Contraintes importantes :
-- Longueur : ${lengthHint}.
-- ${jlptHint}
-- ${themeHint}
-- Tu dois utiliser en priorité les kanjis de la liste. Essaie d'utiliser chacun d'eux au moins une fois si possible.
-- Tu peux introduire d'autres kanjis si c'est nécessaire pour que l'histoire soit naturelle, mais chaque kanji qui ne vient pas de la liste doit être expliqué dans le champ "extra_kanji".
-- Utilise un style narratif simple, au passé ou présent, adapté à un apprenant.
+  Contraintes importantes :
+  - Longueur : ${lengthHint}.
+  - ${jlptHint}
+  - ${themeHint}
+  - Tu dois utiliser en priorité les kanjis de la liste, mais uniquement ceux qui servent vraiment l'histoire. Il n'est pas nécessaire d'utiliser tous les kanjis de la liste.
+  - Tu peux réutiliser plusieurs fois quelques kanjis importants plutôt que d'essayer d'en caser un maximum.
+  - Tu peux introduire d'autres kanjis si c'est nécessaire pour que l'histoire soit naturelle, mais chaque kanji qui ne vient pas de la liste doit être expliqué dans le champ "extra_kanji".
+  - Utilise un style narratif simple, clair et naturel, en japonais moderne.
+  - Évite les phrases qui ressemblent à une traduction littérale du français : écris comme le ferait un locuteur natif japonais pour un apprenant (phrases plutôt courtes, expressions fréquentes, registre neutre/poli en です・ます en dehors des dialogues).
+  - Assure-toi que l'histoire a une petite structure narrative (mise en place → petit problème ou objectif → résolution/fin).
 
-Tu dois répondre STRICTEMENT au format JSON suivant (sans texte avant ou après, sans commentaires) :
+  Tu dois répondre STRICTEMENT au format JSON suivant (sans texte avant ou après, sans commentaires) :
 {
   "story_ja": "<l'histoire complète en japonais, sans traduction, sans furigana, sans romaji>",
   "translation_fr": "<une traduction naturelle et fluide en français de l'histoire, adaptée à un apprenant>",

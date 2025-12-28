@@ -64,9 +64,11 @@ export default function MiniStoriesPage() {
     setFocusedKanji(null);
 
     try {
-      // Limiter la taille du contexte envoyé au backend
+      // Limiter la taille du contexte envoyé au backend en fonction de la longueur
       const shuffled = [...candidateKanjis].sort(() => Math.random() - 0.5);
-      const limited = shuffled.slice(0, 40);
+      const maxKanjis =
+        lengthPreset === "long" ? 25 : lengthPreset === "medium" ? 18 : 12;
+      const limited = shuffled.slice(0, maxKanjis);
 
       const payload = {
         jlptLevels: selectedLevels,
