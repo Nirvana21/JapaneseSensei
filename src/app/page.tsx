@@ -12,7 +12,8 @@ import { KanjiStorageService } from "@/services/kanjiStorage";
 
 export default function Home() {
   const router = useRouter();
-  const [currentView, setCurrentView] = useState<"menu" | "collection">("menu");
+  const [currentView, setCurrentView] =
+    useState<"menu" | "collection">("menu");
   const [editingKanji, setEditingKanji] = useState<KanjiEntry | null>(null);
   const { kanjis, loading, error, updateKanji, deleteKanji, refreshKanjis } =
     useKanjis();
@@ -65,7 +66,6 @@ export default function Home() {
     }
   };
 
-  // Vue Menu Principal
   if (currentView === "menu") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
@@ -92,226 +92,227 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Menu Principal zen */}
         <main className="max-w-6xl mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 lg:gap-8">
-            {/* Bouton Quiz - Style zen */}
-            <Link href="/training" className="group">
-              <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-orange-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-red-300/50">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
-                    <span className="text-2xl">🎯</span>
-                  </div>
-                  <h2 className="text-2xl font-bold text-red-800 mb-3">
-                    練習 Quiz
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+            {/* Groupe Kanjis & progression */}
+            <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 backdrop-blur-sm rounded-3xl p-7 shadow-lg border border-orange-200/60">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl shadow-md">
+                  <span className="text-2xl">🎯</span>
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-red-800 mb-1">
+                    練習 Kanjis & progression
                   </h2>
-                  <p className="text-amber-700 leading-relaxed mb-4">
-                    Entraînez-vous avec sérénité
+                  <p className="text-amber-800 text-sm">
+                    Révision ciblée, survie, collection et statistiques.
                   </p>
-                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-red-600">
-                    <span>始める</span>
-                    <span className="group-hover:translate-x-1 transition-transform">
+                </div>
+              </div>
+
+              {kanjis.length > 0 && (
+                <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50/90 border border-red-200 text-xs text-red-700">
+                  <span>📚</span>
+                  <span>
+                    {kanjis.length} kanji{kanjis.length > 1 ? "s" : ""} dans ta
+                    collection
+                  </span>
+                </div>
+              )}
+
+              <div className="mt-2 grid gap-3 sm:grid-cols-2">
+                <Link
+                  href="/training"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-red-200/70 bg-white/80 px-3 py-2 hover:border-red-400 hover:bg-red-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-red-800">
+                      Quiz kanjis
+                    </span>
+                    <span className="text-xs text-red-500 group-hover:translate-x-0.5 transition-transform">
                       →
                     </span>
                   </div>
-                  {kanjis.length > 0 && (
-                    <div className="mt-4 px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm inline-block border border-red-200">
-                      {kanjis.length} kanji{kanjis.length > 1 ? "s" : ""}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </Link>
-
-            {/* Bouton Chat Sensei */}
-            <Link href="/chat" className="group">
-              <div className="bg-gradient-to-br from-sky-100/90 to-cyan-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-sky-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-cyan-300/50">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-sky-500 to-cyan-600 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
-                    <span className="text-2xl">🤖</span>
-                  </div>
-                  <h2 className="text-2xl font-bold text-sky-900 mb-3">
-                    先生 Chat Sensei
-                  </h2>
-                  <p className="text-sky-800 leading-relaxed mb-4">
-                    Pose tes questions au professeur virtuel
+                  <p className="text-xs text-red-700">
+                    Révisions adaptatives sur tes kanjis.
                   </p>
-                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-sky-700">
-                    <span>質問する</span>
-                    <span className="group-hover:translate-x-1 transition-transform">→</span>
-                  </div>
-                </div>
-              </div>
-            </Link>
+                </Link>
 
-            {/* Bouton Kanji Legends (jeu séparé) */}
-            <Link href="/game/kanji-legends" className="group">
-              <div className="bg-gradient-to-br from-indigo-100/90 to-blue-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-indigo-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-blue-300/50">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
-                    <span className="text-2xl">🀄</span>
-                  </div>
-                  <h2 className="text-2xl font-bold text-indigo-800 mb-3">
-                    伝説 Kanji Legends
-                  </h2>
-                  <p className="text-indigo-700 leading-relaxed mb-4">
-                    Assemble des composants, débloque des pouvoirs
-                  </p>
-                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-indigo-700">
-                    <span>プレイ</span>
-                    <span className="group-hover:translate-x-1 transition-transform">→</span>
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-            {/* Bouton Survival - Style feu */}
-            <Link href="/training?mode=survival" className="group">
-              <div className="bg-gradient-to-br from-red-100/90 to-pink-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-red-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-pink-300/50">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-red-600 to-pink-700 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
-                    <span className="text-2xl">🔥</span>
-                  </div>
-                  <h2 className="text-2xl font-bold text-red-800 mb-3">
-                    持久 Survival
-                  </h2>
-                  <p className="text-red-700 leading-relaxed mb-4">
-                    Défi d'endurance infini
-                  </p>
-                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-red-600">
-                    <span>挑戦</span>
-                    <span className="group-hover:translate-x-1 transition-transform">
+                <Link
+                  href="/training?mode=survival"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-red-200/70 bg-white/80 px-3 py-2 hover:border-red-400 hover:bg-red-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-red-800">
+                      Survival
+                    </span>
+                    <span className="text-xs text-red-500 group-hover:translate-x-0.5 transition-transform">
                       →
                     </span>
                   </div>
-                  {kanjis.length > 0 && (
-                    <div className="mt-4 px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm inline-block border border-red-200">
-                      3 vies • ∞ questions
-                    </div>
-                  )}
-                </div>
-              </div>
-            </Link>
-
-            {/* Bouton Verbes – formes */}
-            <Link href="/training/verbs" className="group">
-              <div className="bg-gradient-to-br from-rose-100/90 to-pink-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-rose-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-pink-300/50">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-pink-600 to-rose-700 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
-                    <span className="text-2xl">✍️</span>
-                  </div>
-                  <h2 className="text-2xl font-bold text-rose-800 mb-3">
-                    動詞 Verbes
-                  </h2>
-                  <p className="text-rose-700 leading-relaxed mb-4">
-                    Conjugaisons essentielles
+                  <p className="text-xs text-red-700">
+                    3 vies, flux infini de questions.
                   </p>
-                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-rose-700">
-                    <span>練習</span>
-                    <span className="group-hover:translate-x-1 transition-transform">→</span>
-                  </div>
-                </div>
-              </div>
-            </Link>
+                </Link>
 
-            {/* Bouton Adjectifs – formes */}
-            <Link href="/training/adjectives" className="group">
-              <div className="bg-gradient-to-br from-amber-100/90 to-yellow-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-amber-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-yellow-300/50">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-500 to-yellow-600 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
-                    <span className="text-2xl">🎨</span>
-                  </div>
-                  <h2 className="text-2xl font-bold text-amber-800 mb-3">
-                    形容詞 Adjectifs
-                  </h2>
-                  <p className="text-amber-700 leading-relaxed mb-4">
-                    i/na formes utiles
-                  </p>
-                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-amber-700">
-                    <span>練習</span>
-                    <span className="group-hover:translate-x-1 transition-transform">→</span>
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-            {/* Bouton Particules – trous */}
-            <Link href="/training/particles" className="group">
-              <div className="bg-gradient-to-br from-indigo-100/90 to-blue-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-indigo-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-blue-300/50">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
-                    <span className="text-2xl">🧩</span>
-                  </div>
-                  <h2 className="text-2xl font-bold text-indigo-800 mb-3">
-                    助詞 Particules
-                  </h2>
-                  <p className="text-indigo-700 leading-relaxed mb-4">
-                    Compléter la particule manquante
-                  </p>
-                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-indigo-700">
-                    <span>練習</span>
-                    <span className="group-hover:translate-x-1 transition-transform">→</span>
-                  </div>
-                </div>
-              </div>
-            </Link>
-
-            {/* Bouton Collection - Style bambou */}
-            <button
-              onClick={() => setCurrentView("collection")}
-              className="group w-full text-left"
-            >
-              <div className="bg-gradient-to-br from-green-100/90 to-emerald-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-green-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-emerald-300/50">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-600 to-emerald-700 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
-                    <span className="text-2xl">📚</span>
-                  </div>
-                  <h2 className="text-2xl font-bold text-green-800 mb-3">
-                    蔵書 Collection
-                  </h2>
-                  <p className="text-green-700 leading-relaxed mb-4">
-                    Votre bibliothèque personnelle
-                  </p>
-                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-green-600">
-                    <span>探索</span>
-                    <span className="group-hover:translate-x-1 transition-transform">
+                <button
+                  onClick={() => setCurrentView("collection")}
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-emerald-200/70 bg-white/80 px-3 py-2 hover:border-emerald-400 hover:bg-emerald-50/90 transition-colors shadow-sm text-left"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-emerald-900">
+                      Collection
+                    </span>
+                    <span className="text-xs text-emerald-600 group-hover:translate-x-0.5 transition-transform">
                       →
                     </span>
                   </div>
-                  <div className="mt-4 px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm inline-block border border-green-200">
-                    {kanjis.length} kanji{kanjis.length > 1 ? "s" : ""}
-                  </div>
-                </div>
-              </div>
-            </button>
-
-            {/* Bouton Statistiques - Style terre */}
-            <Link href="/stats" className="group">
-              <div className="bg-gradient-to-br from-amber-100/90 to-yellow-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-amber-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-yellow-300/50">
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-amber-600 to-yellow-700 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
-                    <span className="text-2xl">📊</span>
-                  </div>
-                  <h2 className="text-2xl font-bold text-amber-800 mb-3">
-                    統計 Stats
-                  </h2>
-                  <p className="text-amber-700 leading-relaxed mb-4">
-                    Suivez votre progression
+                  <p className="text-xs text-emerald-700">
+                    Ajouter, éditer et parcourir tes kanjis.
                   </p>
-                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-amber-600">
-                    <span>分析</span>
-                    <span className="group-hover:translate-x-1 transition-transform">
+                </button>
+
+                <Link
+                  href="/stats"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-amber-200/70 bg-white/80 px-3 py-2 hover:border-amber-400 hover:bg-amber-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-amber-900">
+                      Statistiques
+                    </span>
+                    <span className="text-xs text-amber-600 group-hover:translate-x-0.5 transition-transform">
                       →
                     </span>
                   </div>
-                  {kanjis.length > 0 && (
-                    <div className="mt-4 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-sm inline-block border border-amber-200">
-                      Prêt à analyser
-                    </div>
-                  )}
+                  <p className="text-xs text-amber-700">
+                    Visualise ta progression dans le temps.
+                  </p>
+                </Link>
+              </div>
+            </div>
+
+            {/* Groupe Grammaire & vocabulaire */}
+            <div className="bg-gradient-to-br from-amber-100/90 to-yellow-100/90 backdrop-blur-sm rounded-3xl p-7 shadow-lg border border-amber-200/60">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-600 rounded-2xl shadow-md">
+                  <span className="text-2xl">🎨</span>
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-amber-900 mb-1">
+                    文法 Grammaire & formes
+                  </h2>
+                  <p className="text-amber-800 text-sm">
+                    Travailler les verbes, adjectifs et particules.
+                  </p>
                 </div>
               </div>
-            </Link>
+
+              <div className="mt-2 grid gap-3 sm:grid-cols-2">
+                <Link
+                  href="/training/verbs"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-rose-200/70 bg-white/80 px-3 py-2 hover:border-rose-400 hover:bg-rose-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-rose-900">
+                      Verbes
+                    </span>
+                    <span className="text-xs text-rose-600 group-hover:translate-x-0.5 transition-transform">
+                      →
+                    </span>
+                  </div>
+                  <p className="text-xs text-rose-700">
+                    Conjugaisons de base et formes utiles.
+                  </p>
+                </Link>
+
+                <Link
+                  href="/training/adjectives"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-amber-200/70 bg-white/80 px-3 py-2 hover:border-amber-400 hover:bg-amber-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-amber-900">
+                      Adjectifs
+                    </span>
+                    <span className="text-xs text-amber-600 group-hover:translate-x-0.5 transition-transform">
+                      →
+                    </span>
+                  </div>
+                  <p className="text-xs text-amber-700">
+                    i / na et leurs transformations.
+                  </p>
+                </Link>
+
+                <Link
+                  href="/training/particles"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/80 px-3 py-2 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm sm:col-span-2"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-indigo-900">
+                      Particules
+                    </span>
+                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
+                      →
+                    </span>
+                  </div>
+                  <p className="text-xs text-indigo-700">
+                    Compléter la particule manquante dans la phrase.
+                  </p>
+                </Link>
+              </div>
+            </div>
+
+            {/* Groupe Jeux & Sensei */}
+            <div className="bg-gradient-to-br from-indigo-100/90 to-blue-100/90 backdrop-blur-sm rounded-3xl p-7 shadow-lg border border-indigo-200/60">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl shadow-md">
+                  <span className="text-2xl">🀄</span>
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-indigo-900 mb-1">
+                    遊び Jeux & Sensei
+                  </h2>
+                  <p className="text-indigo-800 text-sm">
+                    Gamification et professeur virtuel.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-2 grid gap-3">
+                <Link
+                  href="/game/kanji-legends"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/80 px-3 py-2 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-indigo-900">
+                      Kanji Legends
+                    </span>
+                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
+                      →
+                    </span>
+                  </div>
+                  <p className="text-xs text-indigo-700">
+                    Assemble des composants, débloque des pouvoirs.
+                  </p>
+                </Link>
+
+                <Link
+                  href="/chat"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-sky-200/70 bg-white/80 px-3 py-2 hover:border-sky-400 hover:bg-sky-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-sky-900">
+                      Chat Sensei
+                    </span>
+                    <span className="text-xs text-sky-600 group-hover:translate-x-0.5 transition-transform">
+                      →
+                    </span>
+                  </div>
+                  <p className="text-xs text-sky-800">
+                    Pose des questions au professeur virtuel.
+                  </p>
+                </Link>
+              </div>
+            </div>
           </div>
 
           {/* Message d'encouragement zen */}
