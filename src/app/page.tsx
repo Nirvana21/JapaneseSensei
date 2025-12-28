@@ -357,6 +357,23 @@ export default function Home() {
                     Pose des questions au professeur virtuel.
                   </p>
                 </Link>
+
+                <Link
+                  href="/stories/mini"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-amber-200/70 bg-white/80 px-3 py-2 hover:border-amber-400 hover:bg-amber-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-amber-900">
+                      Mini histoires
+                    </span>
+                    <span className="text-xs text-amber-700 group-hover:translate-x-0.5 transition-transform">
+                      →
+                    </span>
+                  </div>
+                  <p className="text-xs text-amber-700">
+                    Génère de courtes histoires avec tes kanjis.
+                  </p>
+                </Link>
               </div>
             </div>
           </div>
