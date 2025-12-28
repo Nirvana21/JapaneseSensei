@@ -16,6 +16,10 @@ export default function MiniStoriesPage() {
   const [lengthPreset, setLengthPreset] = useState<LengthPreset>("short");
   const [theme, setTheme] = useState("");
   const [story, setStory] = useState("");
+  const [translation, setTranslation] = useState("");
+  const [extraKanji, setExtraKanji] = useState<
+    { char: string; lecture?: string; sens_fr?: string }[]
+  >([]);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [focusedKanji, setFocusedKanji] = useState<KanjiEntry | null>(null);
@@ -38,6 +42,8 @@ export default function MiniStoriesPage() {
 
   const toggleLevel = (level: string) => {
     setStory("");
+    setTranslation("");
+    setExtraKanji([]);
     setError(null);
     setSelectedLevels((prev) =>
       prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]
@@ -53,6 +59,8 @@ export default function MiniStoriesPage() {
     setGenerating(true);
     setError(null);
     setStory("");
+    setTranslation("");
+    setExtraKanji([]);
     setFocusedKanji(null);
 
     try {
@@ -84,7 +92,11 @@ export default function MiniStoriesPage() {
 
       const data = await res.json();
       const text = (data?.story as string) || "";
+      const trans = (data?.translation as string) || "";
+      const extra = (data?.extraKanji as { char: string; lecture?: string; sens_fr?: string }[]) || [];
       setStory(text.trim());
+      setTranslation(trans.trim());
+      setExtraKanji(extra);
     } catch (err: any) {
       console.error("Mini story error", err);
       setError(err.message || "Impossible de générer l'histoire.");
@@ -264,7 +276,9 @@ export default function MiniStoriesPage() {
 
           <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
             <p className="text-[11px] md:text-xs text-amber-700 max-w-md">
-              L'histoire sera générée en japonais uniquement. Tu peux cliquer sur un kanji dans le texte pour voir tous ses détails (lectures, sens, ordre des traits...).
+              L'histoire sera générée en japonais, avec une traduction française en dessous.
+              Tu peux cliquer sur un kanji de ta collection dans le texte pour voir tous ses détails,
+              et une liste expliquera aussi les nouveaux kanjis rencontrés.
             </p>
             <button
               type="button"
@@ -284,9 +298,9 @@ export default function MiniStoriesPage() {
         </section>
 
         {/* Zone d'histoire */}
-        <section className="flex-1 bg-white/85 backdrop-blur-sm rounded-3xl shadow-md border border-amber-100 p-4 md:p-6 min-h-[220px]">
+        <section className="flex-1 bg-white/85 backdrop-blur-sm rounded-3xl shadow-md border border-amber-100 p-4 md:p-6 min-h-[260px] space-y-4">
           {story ? (
-            <div className="space-y-3">
+            <>
               <div className="flex items-center justify-between gap-2 mb-1">
                 <h2 className="text-sm md:text-base font-semibold text-amber-900 flex items-center gap-2">
                   <span>📖</span>
@@ -296,7 +310,47 @@ export default function MiniStoriesPage() {
               <div className="border-t border-amber-100 pt-3">
                 {renderStory()}
               </div>
-            </div>
+              {translation && (
+                <div className="mt-4 pt-3 border-t border-dashed border-amber-100">
+                  <h3 className="text-xs md:text-sm font-semibold text-amber-900 mb-2 flex items-center gap-1">
+                    <span>🇫🇷</span>
+                    <span>Traduction (indicative)</span>
+                  </h3>
+                  <p className="text-xs md:text-sm leading-relaxed text-amber-800 whitespace-pre-line">
+                    {translation}
+                  </p>
+                </div>
+              )}
+              {!translation && (
+                <p className="mt-3 text-[11px] md:text-xs text-amber-600">
+                  La traduction n'a pas pu être générée correctement. Tu peux tout de même utiliser l'histoire japonaise
+                  et cliquer sur les kanjis connus pour voir leurs détails.
+                </p>
+              )}
+              {extraKanji.length > 0 && (
+                <div className="mt-4 pt-3 border-t border-dashed border-amber-100">
+                  <h3 className="text-xs md:text-sm font-semibold text-amber-900 mb-2 flex items-center gap-1">
+                    <span>🧩</span>
+                    <span>Autres kanjis rencontrés dans l'histoire</span>
+                  </h3>
+                  <ul className="space-y-1 text-xs md:text-sm text-amber-800">
+                    {extraKanji.map((k) => (
+                      <li key={k.char} className="flex items-baseline gap-2">
+                        <span className="text-lg">{k.char}</span>
+                        <span className="text-amber-700">
+                          {k.lecture && <span className="mr-2">[{k.lecture}]</span>}
+                          {k.sens_fr || "(sens non précisé)"}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-2 text-[11px] md:text-xs text-amber-600">
+                    Ces kanjis ne sont pas encore dans ta collection, mais ils apparaissent dans l'histoire.
+                    Tu peux les ajouter plus tard si tu veux les travailler.
+                  </p>
+                </div>
+              )}
+            </>
           ) : (
             <div className="h-full flex flex-col items-center justify-center text-center text-amber-700 text-xs md:text-sm gap-2">
               <span className="text-3xl mb-1">🖋️</span>

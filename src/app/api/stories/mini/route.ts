@@ -71,16 +71,31 @@ export async function POST(req: NextRequest) {
       .join("\n");
 
     const userInstruction = `
-Génère une mini histoire en japonais en utilisant autant que possible les kanjis suivants :
+Génère une mini histoire en japonais à partir des kanjis suivants :
 ${kanjiListText}
 
 Contraintes importantes :
 - Longueur : ${lengthHint}.
 - ${jlptHint}
 - ${themeHint}
-- Tu peux ajouter du vocabulaire et d'autres kanjis si besoin pour que l'histoire soit naturelle, mais essaie d'intégrer en priorité ceux de la liste.
+- Tu dois utiliser en priorité les kanjis de la liste. Essaie d'utiliser chacun d'eux au moins une fois si possible.
+- Tu peux introduire d'autres kanjis si c'est nécessaire pour que l'histoire soit naturelle, mais chaque kanji qui ne vient pas de la liste doit être expliqué dans le champ "extra_kanji".
 - Utilise un style narratif simple, au passé ou présent, adapté à un apprenant.
-- Ne renvoie que le texte de l'histoire en japonais, sans explications supplémentaires, sans traduction, sans listes et sans mise en forme Markdown.
+
+Tu dois répondre STRICTEMENT au format JSON suivant (sans texte avant ou après, sans commentaires) :
+{
+  "story_ja": "<l'histoire complète en japonais, sans traduction, sans furigana, sans romaji>",
+  "translation_fr": "<une traduction naturelle et fluide en français de l'histoire, adaptée à un apprenant>",
+  "extra_kanji": [
+    {
+      "char": "<un kanji utilisé dans l'histoire mais qui ne vient PAS de la liste de départ>",
+      "lecture": "<lecture principale en hiragana>",
+      "sens_fr": "<sens principal en français>"
+    }
+  ]
+}
+
+Assure-toi que chaque kanji listé dans "extra_kanji" apparaît vraiment dans l'histoire, et qu'aucun kanji déjà présent dans la liste de départ n'est répété dans "extra_kanji".
 `;
 
     const response = await fetch(OPENAI_API_URL, {
@@ -116,9 +131,37 @@ Contraintes importantes :
     }
 
     const data = await response.json();
-    const story = data?.choices?.[0]?.message?.content || "";
+    const rawContent = data?.choices?.[0]?.message?.content || "";
 
-    return NextResponse.json({ story });
+    let story = "";
+    let translation = "";
+    let extraKanji: { char: string; lecture?: string; sens_fr?: string }[] = [];
+
+    try {
+      const parsed = JSON.parse(rawContent);
+      if (typeof parsed.story_ja === "string") {
+        story = parsed.story_ja.trim();
+      }
+      if (typeof parsed.translation_fr === "string") {
+        translation = parsed.translation_fr.trim();
+      }
+      if (Array.isArray(parsed.extra_kanji)) {
+        extraKanji = parsed.extra_kanji
+          .filter((item: any) => item && typeof item.char === "string")
+          .map((item: any) => ({
+            char: item.char,
+            lecture: typeof item.lecture === "string" ? item.lecture : undefined,
+            sens_fr: typeof item.sens_fr === "string" ? item.sens_fr : undefined,
+          }));
+      }
+    } catch (e) {
+      console.warn("Impossible de parser la réponse JSON de l'histoire, utilisation du texte brut.");
+      story = typeof rawContent === "string" ? rawContent.trim() : "";
+      translation = "";
+      extraKanji = [];
+    }
+
+    return NextResponse.json({ story, translation, extraKanji });
   } catch (error) {
     console.error("/api/stories/mini error", error);
     return NextResponse.json(
