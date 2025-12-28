@@ -123,6 +123,27 @@ export default function Home() {
               </div>
             </Link>
 
+            {/* Bouton Chat Sensei */}
+            <Link href="/chat" className="group">
+              <div className="bg-gradient-to-br from-sky-100/90 to-cyan-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-sky-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-cyan-300/50">
+                <div className="text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-sky-500 to-cyan-600 rounded-2xl shadow-md mb-6 group-hover:scale-105 transition-transform">
+                    <span className="text-2xl">🤖</span>
+                  </div>
+                  <h2 className="text-2xl font-bold text-sky-900 mb-3">
+                    先生 Chat Sensei
+                  </h2>
+                  <p className="text-sky-800 leading-relaxed mb-4">
+                    Pose tes questions au professeur virtuel
+                  </p>
+                  <div className="flex items-center justify-center gap-2 text-sm font-medium text-sky-700">
+                    <span>質問する</span>
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </div>
+                </div>
+              </div>
+            </Link>
+
             {/* Bouton Kanji Legends (jeu séparé) */}
             <Link href="/game/kanji-legends" className="group">
               <div className="bg-gradient-to-br from-indigo-100/90 to-blue-100/90 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl border border-indigo-200/50 transition-all duration-300 hover:scale-102 h-full hover:border-blue-300/50">

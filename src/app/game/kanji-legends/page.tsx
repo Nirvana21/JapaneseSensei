@@ -6,6 +6,7 @@ import { KANJI_LEGENDS } from "@/data/game/kanjiLegends";
 import { RADICAL_INFO } from "@/data/game/radicals";
 import { GameKanji, KanjiPower } from "@/types/kanjiLegends";
 import { buildRound, isSelectionCorrect, pickTarget } from "@/services/kanjiLegendsService";
+import StrokeOrderViewer from "@/components/StrokeOrderViewer";
 
 export default function KanjiLegendsPage() {
   const [hearts, setHearts] = useState(3);
@@ -230,6 +231,8 @@ export default function KanjiLegendsPage() {
     return `${parts} → ${target.nameFr}`;
   }, [target]);
 
+  const showStudyDetails = !!feedback || peekVisible;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-cyan-50">
       <header className="sticky top-0 z-50 bg-gradient-to-r from-indigo-100/90 to-blue-100/90 backdrop-blur-md border-b border-indigo-200/50 shadow-sm">
@@ -243,13 +246,37 @@ export default function KanjiLegendsPage() {
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 py-8">
+      <main className="max-w-5xl mx-auto px-4 py-8">
         {/* HUD */}
         <div className="mb-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="p-3 rounded-xl bg-white/70 border border-indigo-200 text-indigo-900 text-center"><div className="text-xs">Etage</div><div className="text-lg font-bold">{progress.floor}</div></div>
-          <div className="p-3 rounded-xl bg-white/70 border border-indigo-200 text-indigo-900 text-center"><div className="text-xs">Score</div><div className="text-lg font-bold">{progress.score}</div></div>
-          <div className="p-3 rounded-xl bg-white/70 border border-indigo-200 text-indigo-900 text-center"><div className="text-xs">Combo</div><div className="text-lg font-bold">x{progress.combo}</div></div>
-          <div className="p-3 rounded-xl bg-white/70 border border-indigo-200 text-indigo-900 text-center"><div className="text-xs">Temps</div><div className="text-lg font-bold">{progress.timeLeft}s</div></div>
+          <div className="p-3 rounded-xl bg-white/80 border border-indigo-200 text-indigo-900 text-center shadow-sm">
+            <div className="text-[10px] uppercase tracking-wide text-indigo-500 flex items-center justify-center gap-1">
+              <span>🗻</span>
+              <span>Etage</span>
+            </div>
+            <div className="text-lg font-bold">{progress.floor}</div>
+          </div>
+          <div className="p-3 rounded-xl bg-white/80 border border-indigo-200 text-indigo-900 text-center shadow-sm">
+            <div className="text-[10px] uppercase tracking-wide text-indigo-500 flex items-center justify-center gap-1">
+              <span>✨</span>
+              <span>Score</span>
+            </div>
+            <div className="text-lg font-bold">{progress.score}</div>
+          </div>
+          <div className="p-3 rounded-xl bg-white/80 border border-indigo-200 text-indigo-900 text-center shadow-sm">
+            <div className="text-[10px] uppercase tracking-wide text-indigo-500 flex items-center justify-center gap-1">
+              <span>🔥</span>
+              <span>Combo</span>
+            </div>
+            <div className="text-lg font-bold">x{progress.combo}</div>
+          </div>
+          <div className="p-3 rounded-xl bg-white/80 border border-indigo-200 text-indigo-900 text-center shadow-sm">
+            <div className="text-[10px] uppercase tracking-wide text-indigo-500 flex items-center justify-center gap-1">
+              <span>⏱️</span>
+              <span>Temps</span>
+            </div>
+            <div className="text-lg font-bold">{progress.timeLeft}s</div>
+          </div>
         </div>
         <div className="mb-6 flex items-center gap-2">
           {Array.from({length: progress.maxHearts}).map((_, i) => (
@@ -257,22 +284,40 @@ export default function KanjiLegendsPage() {
           ))}
         </div>
 
-        {/* Target */}
+        {/* Zone principale jeu + fiche étude */}
         {target && (
-          <div className={`rounded-3xl border p-6 shadow ${target.rarity === 'epic' ? 'bg-gradient-to-br from-yellow-50/90 to-amber-100/80 border-amber-200' : target.rarity === 'rare' ? 'bg-gradient-to-br from-indigo-50/90 to-blue-50/80 border-indigo-200' : 'bg-gradient-to-br from-white/80 to-indigo-50/80 border-indigo-200'}`}>
-            <div className="text-center mb-4">
-              <div className="text-sm text-indigo-700">{roundType === 'reading' ? (readingKind === 'onyomi' ? 'Sélectionne les lectures ON (カタカナ)' : 'Sélectionne les lectures KUN (ひらがな)') : 'Assembler les composants'}</div>
-              <div className={`text-6xl sm:text-7xl font-extrabold text-indigo-900 tracking-tight ${peekVisible ? 'animate-legend-glow' : ''}`}>{roundType === 'reading' ? target.char : (!peekVisible ? '???' : target.char)}</div>
-              <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
-                <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">🎯 {target.nameFr}</span>
-                <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200">🧩 {required} éléments</span>
-                {roundType === 'components' && <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-200">🙈 caché</span>}
+          <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] items-start">
+            {/* Carte de jeu */}
+            <div className={`rounded-3xl border p-6 shadow ${target.rarity === 'epic' ? 'bg-gradient-to-br from-yellow-50/90 to-amber-100/80 border-amber-200' : target.rarity === 'rare' ? 'bg-gradient-to-br from-indigo-50/90 to-blue-50/80 border-indigo-200' : 'bg-gradient-to-br from-white/80 to-indigo-50/80 border-indigo-200'}`}>
+              <div className="text-center mb-4">
+                <div className="text-xs sm:text-sm text-indigo-700 mb-1">
+                  {roundType === 'reading'
+                    ? (readingKind === 'onyomi'
+                        ? "Sélectionne toutes les lectures ON (カタカナ) de ce kanji"
+                        : "Sélectionne toutes les lectures KUN (ひらがな) de ce kanji")
+                    : "Assemble les bons composants/radicaux pour reconstruire le kanji"}
+                </div>
+                <div className={`text-6xl sm:text-7xl font-extrabold text-indigo-900 tracking-tight ${peekVisible ? 'animate-legend-glow' : ''}`}>
+                  {roundType === 'reading' ? target.char : (!peekVisible ? '???' : target.char)}
+                </div>
+                <div className="mt-2 flex flex-wrap items-center justify-center gap-2">
+                  <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">
+                    🎯 {target.nameFr}
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-200">
+                    🧩 {required} éléments
+                  </span>
+                  {roundType === 'components' && !peekVisible && (
+                    <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-purple-100 text-purple-800 border border-purple-200">
+                      🙈 Kanji caché
+                    </span>
+                  )}
+                </div>
+                {dropMsg && <div className="mt-2 text-xs text-amber-700">{dropMsg}</div>}
               </div>
-              {dropMsg && <div className="mt-2 text-xs text-amber-700">{dropMsg}</div>}
-            </div>
 
-            {/* Options */}
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+              {/* Options */}
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
               {options.map((c, i) => {
                 const active = picked.includes(i);
                 const disabled = disabledOpts.includes(i);
@@ -287,9 +332,9 @@ export default function KanjiLegendsPage() {
                   </button>
                 );
               })}
-            </div>
+              </div>
 
-            <div className="mt-4 flex gap-3 flex-wrap items-center">
+              <div className="mt-4 flex gap-3 flex-wrap items-center">
               {/* Indice si disponible */}
               {sumPower('hint') > 0 && (
                 <button onClick={() => {
@@ -333,7 +378,9 @@ export default function KanjiLegendsPage() {
               }} className="px-3 py-2 rounded-xl bg-purple-200 text-purple-900 border border-purple-300 hover:bg-purple-300 text-sm">
                 👀 Regarder (−5s)
               </button>)}
-              <div className="ml-auto text-xs text-indigo-700">Résous sans indice{roundType==='components' ? ' ni regard' : ''} pour des bonus.</div>
+              <div className="ml-auto text-xs text-indigo-700">
+                Résous sans indice{roundType==='components' ? ' ni regard' : ''} pour des bonus.
+              </div>
               <button onClick={handleVerify} className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold hover:from-green-600 hover:to-green-700">Valider</button>
               <button onClick={nextRound} className="px-4 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold hover:from-blue-600 hover:to-blue-700">Passer</button>
             </div>
@@ -344,8 +391,8 @@ export default function KanjiLegendsPage() {
               </div>
             )}
 
-            {/* Stub inventaire/pouvoirs */}
-            <div className="mt-6 p-4 rounded-xl bg-white/70 border border-indigo-200">
+              {/* Inventaire/pouvoirs */}
+              <div className="mt-6 p-4 rounded-xl bg-white/80 border border-indigo-200">
               <div className="text-sm text-indigo-700 mb-2">Pouvoirs actifs</div>
               {relics.length === 0 ? (
                 <div className="text-xs text-indigo-600">Gagne des pouvoirs en réussissant des kanji qui en ont.</div>
@@ -360,7 +407,88 @@ export default function KanjiLegendsPage() {
                   ))}
                 </div>
               )}
+              </div>
             </div>
+
+            {/* Panneau d'étude pédagogique */}
+            <aside className="rounded-3xl bg-white/90 border border-indigo-100 shadow p-5 flex flex-col gap-4">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-indigo-500">Fiche kanji</p>
+                  <p className="text-lg font-bold text-indigo-900 flex items-center gap-2">
+                    <span className="inline-flex items-center justify-center w-9 h-9 rounded-2xl bg-indigo-100 text-2xl">
+                      {target.char}
+                    </span>
+                    <span>{target.nameFr}</span>
+                  </p>
+                </div>
+              </div>
+
+              {showStudyDetails ? (
+                <>
+                  {(target.onyomi?.length || target.kunyomi?.length) && (
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-indigo-600">Lectures</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {target.onyomi?.map((r, i) => (
+                          <span key={`on-${i}`} className="px-2 py-0.5 rounded-full text-[11px] bg-indigo-100 text-indigo-800 border border-indigo-200">
+                            ON・{r}
+                          </span>
+                        ))}
+                        {target.kunyomi?.map((r, i) => (
+                          <span key={`kun-${i}`} className="px-2 py-0.5 rounded-full text-[11px] bg-emerald-100 text-emerald-800 border border-emerald-200">
+                            KUN・{r}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium text-indigo-600">Décomposition</p>
+                    <p className="text-xs text-indigo-700 mb-1">{targetBreakdown}</p>
+                    <div className="space-y-1 max-h-40 overflow-auto pr-1">
+                      {target.components.map((c, idx) => {
+                        const info = RADICAL_INFO[c];
+                        return (
+                          <div
+                            key={`${c}-${idx}`}
+                            className="flex items-center justify-between gap-2 text-xs rounded-lg bg-indigo-50/80 border border-indigo-100 px-2 py-1"
+                          >
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-white text-sm font-semibold text-indigo-900 border border-indigo-100">
+                                {c}
+                              </span>
+                              <div>
+                                <p className="text-[11px] text-indigo-900 font-medium">{info?.meaningFr || 'Radical'}</p>
+                                {info?.nameJa && (
+                                  <p className="text-[10px] text-indigo-500">{info.nameJa}</p>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium text-indigo-600">Ordre des traits</p>
+                    <div className="border border-indigo-100 rounded-xl bg-indigo-50/60 p-2 flex items-center justify-center">
+                      <StrokeOrderViewer kanji={target.char} className="w-full max-w-[220px]" />
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-indigo-500 leading-snug">
+                    Astuce: observe la logique des radicaux (forme + sens) puis réécris le kanji en respectant l&apos;ordre des traits.
+                  </p>
+                </>
+              ) : (
+                <p className="text-xs text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2">
+                  Résous la room ou utilise 👀 pour révéler la fiche complète (lectures, radicaux détaillés et ordre des traits).
+                </p>
+              )}
+            </aside>
           </div>
         )}
       </main>
