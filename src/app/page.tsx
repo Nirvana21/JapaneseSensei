@@ -14,7 +14,8 @@ export default function Home() {
   const router = useRouter();
   const [currentView, setCurrentView] =
     useState<"menu" | "collection">("menu");
-  const [mobileModulesOpen, setMobileModulesOpen] = useState(false);
+  const [activeSection, setActiveSection] =
+    useState<"main" | "games" | "grammar">("main");
   const [editingKanji, setEditingKanji] = useState<KanjiEntry | null>(null);
   const { kanjis, loading, error, updateKanji, deleteKanji, refreshKanjis } =
     useKanjis();
@@ -88,18 +89,6 @@ export default function Home() {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Bouton pour ouvrir/fermer les modules sur mobile */}
-              <button
-                type="button"
-                className="inline-flex lg:hidden items-center justify-center w-9 h-9 rounded-xl border border-amber-300/80 bg-amber-100/80 text-amber-800 shadow-sm hover:bg-amber-200 transition-colors"
-                onClick={() => setMobileModulesOpen((prev) => !prev)}
-                aria-label={
-                  mobileModulesOpen ? "Fermer le menu des modules" : "Ouvrir le menu des modules"
-                }
-              >
-                <span className="text-lg">☰</span>
-              </button>
-
               <button
                 onClick={handleLogout}
                 className="px-3 py-1.5 rounded-xl bg-amber-200/80 hover:bg-amber-300 text-amber-900 text-xs md:text-sm font-medium shadow-sm border border-amber-300 transition-colors"
@@ -111,169 +100,257 @@ export default function Home() {
         </header>
 
         <main className="max-w-6xl mx-auto px-4 py-6 md:py-10">
-          {/* Barre d'accès aux modules sur mobile */}
-          <div className="flex items-center justify-between mb-4 lg:hidden">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-amber-900">
-                Modules
-              </span>
-              {kanjis.length > 0 && (
-                <span className="px-2 py-0.5 rounded-full text-[11px] bg-amber-100 text-amber-800 border border-amber-200">
-                  {kanjis.length} kanji{kanjis.length > 1 ? "s" : ""}
-                </span>
-              )}
-            </div>
-            <button
-              type="button"
-              onClick={() => setMobileModulesOpen((prev) => !prev)}
-              className="inline-flex items-center gap-1 text-xs font-medium text-amber-800 px-2 py-1 rounded-lg border border-amber-300 bg-amber-50 hover:bg-amber-100 transition-colors"
-            >
-              <span>{mobileModulesOpen ? "Masquer" : "Afficher"}</span>
-              <span className="text-sm">☰</span>
-            </button>
-          </div>
-
-          <div
-            className={
-              mobileModulesOpen
-                ? "grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8"
-                : "hidden lg:grid lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8"
-            }
-          >
-            {/* Groupe Kanjis & progression */}
-            <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 backdrop-blur-sm rounded-3xl p-7 shadow-lg border border-orange-200/60">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl shadow-md">
-                  <span className="text-2xl">🎯</span>
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-red-800 mb-1">
-                    練習 Kanjis & progression
-                  </h2>
-                  <p className="text-amber-800 text-sm">
-                    Révision ciblée, survie, collection et statistiques.
-                  </p>
-                </div>
+          {/* Vue principale : petite grille d'icônes */}
+          {activeSection === "main" && (
+            <>
+              <div className="mb-8 flex flex-col items-center text-center gap-2">
+                <p className="text-sm text-amber-800">
+                  Choisis une section pour continuer ton entraînement.
+                </p>
+                {kanjis.length > 0 && (
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 border border-amber-200 text-xs text-amber-800">
+                    <span>📚</span>
+                    <span>
+                      {kanjis.length} kanji{kanjis.length > 1 ? "s" : ""} dans ta
+                      collection
+                    </span>
+                  </div>
+                )}
               </div>
 
-              {kanjis.length > 0 && (
-                <div className="mb-4 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50/90 border border-red-200 text-xs text-red-700">
-                  <span>📚</span>
-                  <span>
-                    {kanjis.length} kanji{kanjis.length > 1 ? "s" : ""} dans ta
-                    collection
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6">
+                {/* Jeux */}
+                <button
+                  type="button"
+                  onClick={() => setActiveSection("games")}
+                  className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-100/90 to-blue-100/90 border border-indigo-200/70 px-4 py-6 shadow-md hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors"
+                >
+                  <span className="text-3xl mb-2">🎮</span>
+                  <span className="text-sm font-semibold text-indigo-900 mb-1">
+                    Jeux
                   </span>
+                  <span className="text-[11px] text-indigo-700 text-center">
+                    Quiz, survival, Kanji Legends, histoires...
+                  </span>
+                </button>
+
+                {/* Collection */}
+                <button
+                  type="button"
+                  onClick={() => setCurrentView("collection")}
+                  className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-emerald-100/90 to-green-100/90 border border-emerald-200/70 px-4 py-6 shadow-md hover:border-emerald-400 hover:bg-emerald-50/90 transition-colors"
+                >
+                  <span className="text-3xl mb-2">📖</span>
+                  <span className="text-sm font-semibold text-emerald-900 mb-1">
+                    Collection
+                  </span>
+                  <span className="text-[11px] text-emerald-700 text-center">
+                    Ajouter, éditer et réviser tes kanjis.
+                  </span>
+                </button>
+
+                {/* Grammaire */}
+                <button
+                  type="button"
+                  onClick={() => setActiveSection("grammar")}
+                  className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-amber-100/90 to-yellow-100/90 border border-amber-200/70 px-4 py-6 shadow-md hover:border-amber-400 hover:bg-amber-50/90 transition-colors"
+                >
+                  <span className="text-3xl mb-2">✏️</span>
+                  <span className="text-sm font-semibold text-amber-900 mb-1">
+                    Grammaire
+                  </span>
+                  <span className="text-[11px] text-amber-700 text-center">
+                    Verbes, adjectifs et particules.
+                  </span>
+                </button>
+
+                {/* Statistiques */}
+                <button
+                  type="button"
+                  onClick={() => router.push("/stats")}
+                  className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-rose-100/90 to-pink-100/90 border border-rose-200/70 px-4 py-6 shadow-md hover:border-rose-400 hover:bg-rose-50/90 transition-colors"
+                >
+                  <span className="text-3xl mb-2">📊</span>
+                  <span className="text-sm font-semibold text-rose-900 mb-1">
+                    Statistiques
+                  </span>
+                  <span className="text-[11px] text-rose-700 text-center">
+                    Visualise ta progression globale.
+                  </span>
+                </button>
+              </div>
+
+              {/* Message d'encouragement zen */}
+              {kanjis.length === 0 && (
+                <div className="mt-12 text-center">
+                  <div className="bg-gradient-to-r from-pink-100/90 to-rose-100/90 rounded-2xl p-8 border border-pink-200/50 shadow-lg max-w-md mx-auto backdrop-blur-sm">
+                    <span className="text-4xl mb-4 block">🌸</span>
+                    <h3 className="text-lg font-bold text-pink-800 mb-2">
+                      始まり - Nouveau Départ
+                    </h3>
+                    <p className="text-pink-700 text-sm">
+                      Commence ton voyage en ajoutant ton premier kanji.
+                    </p>
+                  </div>
                 </div>
               )}
+            </>
+          )}
 
-              <div className="mt-2 grid gap-3 sm:grid-cols-2">
+          {/* Sous-menu Jeux */}
+          {activeSection === "games" && (
+            <div className="space-y-6">
+              <button
+                type="button"
+                onClick={() => setActiveSection("main")}
+                className="inline-flex items-center gap-2 text-sm text-amber-800 hover:text-red-700 px-3 py-1.5 rounded-lg hover:bg-amber-100/80 transition-colors"
+              >
+                <span>←</span>
+                <span>Retour au menu principal</span>
+              </button>
+
+              <div className="flex flex-col gap-2 mb-2">
+                <h2 className="text-lg font-bold text-indigo-900 flex items-center gap-2">
+                  <span className="text-2xl">🎮</span>
+                  <span>Jeux & Sensei</span>
+                </h2>
+                <p className="text-sm text-indigo-800">
+                  Choisis un mode de jeu pour t'entraîner avec tes kanjis.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 <Link
                   href="/training"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-red-200/70 bg-white/80 px-3 py-2 hover:border-red-400 hover:bg-red-50/90 transition-colors shadow-sm"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
                 >
                   <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-red-800">
+                    <span className="text-sm font-semibold text-indigo-900">
                       Quiz kanjis
                     </span>
-                    <span className="text-xs text-red-500 group-hover:translate-x-0.5 transition-transform">
+                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
                       →
                     </span>
                   </div>
-                  <p className="text-xs text-red-700">
-                    Révisions adaptatives sur tes kanjis.
+                  <p className="text-xs text-indigo-700">
+                    Révisions adaptatives sur ta collection.
                   </p>
                 </Link>
 
                 <Link
                   href="/training?mode=survival"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-red-200/70 bg-white/80 px-3 py-2 hover:border-red-400 hover:bg-red-50/90 transition-colors shadow-sm"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
                 >
                   <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-red-800">
+                    <span className="text-sm font-semibold text-indigo-900">
                       Survival
                     </span>
-                    <span className="text-xs text-red-500 group-hover:translate-x-0.5 transition-transform">
+                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
                       →
                     </span>
                   </div>
-                  <p className="text-xs text-red-700">
+                  <p className="text-xs text-indigo-700">
                     3 vies, flux infini de questions.
                   </p>
                 </Link>
 
-                <button
-                  onClick={() => setCurrentView("collection")}
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-emerald-200/70 bg-white/80 px-3 py-2 hover:border-emerald-400 hover:bg-emerald-50/90 transition-colors shadow-sm text-left"
+                <Link
+                  href="/game/kanji-legends"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
                 >
                   <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-emerald-900">
-                      Collection
+                    <span className="text-sm font-semibold text-indigo-900">
+                      Kanji Legends
                     </span>
-                    <span className="text-xs text-emerald-600 group-hover:translate-x-0.5 transition-transform">
+                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
                       →
                     </span>
                   </div>
-                  <p className="text-xs text-emerald-700">
-                    Ajouter, éditer et parcourir tes kanjis.
+                  <p className="text-xs text-indigo-700">
+                    Assemble les composants et maîtrise les kanjis.
                   </p>
-                </button>
+                </Link>
 
                 <Link
-                  href="/stats"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-amber-200/70 bg-white/80 px-3 py-2 hover:border-amber-400 hover:bg-amber-50/90 transition-colors shadow-sm"
+                  href="/stories/mini"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-indigo-900">
+                      Mini histoires
+                    </span>
+                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
+                      →
+                    </span>
+                  </div>
+                  <p className="text-xs text-indigo-700">
+                    Lis des histoires générées avec tes kanjis.
+                  </p>
+                </Link>
+
+                <Link
+                  href="/chat"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-indigo-900">
+                      Chat Sensei
+                    </span>
+                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
+                      →
+                    </span>
+                  </div>
+                  <p className="text-xs text-indigo-700">
+                    Pose tes questions au professeur virtuel.
+                  </p>
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* Sous-menu Grammaire */}
+          {activeSection === "grammar" && (
+            <div className="space-y-6">
+              <button
+                type="button"
+                onClick={() => setActiveSection("main")}
+                className="inline-flex items-center gap-2 text-sm text-amber-800 hover:text-red-700 px-3 py-1.5 rounded-lg hover:bg-amber-100/80 transition-colors"
+              >
+                <span>←</span>
+                <span>Retour au menu principal</span>
+              </button>
+
+              <div className="flex flex-col gap-2 mb-2">
+                <h2 className="text-lg font-bold text-amber-900 flex items-center gap-2">
+                  <span className="text-2xl">✏️</span>
+                  <span>Grammaire & formes</span>
+                </h2>
+                <p className="text-sm text-amber-800">
+                  Choisis le type de point de grammaire à travailler.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                <Link
+                  href="/training/verbs"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-amber-200/70 bg-white/90 px-4 py-3 hover:border-amber-400 hover:bg-amber-50/90 transition-colors shadow-sm"
                 >
                   <div className="flex items-center justify-between w-full mb-1">
                     <span className="text-sm font-semibold text-amber-900">
-                      Statistiques
+                      Verbes
                     </span>
                     <span className="text-xs text-amber-600 group-hover:translate-x-0.5 transition-transform">
                       →
                     </span>
                   </div>
                   <p className="text-xs text-amber-700">
-                    Visualise ta progression dans le temps.
-                  </p>
-                </Link>
-              </div>
-            </div>
-
-            {/* Groupe Grammaire & vocabulaire */}
-            <div className="bg-gradient-to-br from-amber-100/90 to-yellow-100/90 backdrop-blur-sm rounded-3xl p-7 shadow-lg border border-amber-200/60">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-amber-500 to-yellow-600 rounded-2xl shadow-md">
-                  <span className="text-2xl">🎨</span>
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-amber-900 mb-1">
-                    文法 Grammaire & formes
-                  </h2>
-                  <p className="text-amber-800 text-sm">
-                    Travailler les verbes, adjectifs et particules.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-2 grid gap-3 sm:grid-cols-2">
-                <Link
-                  href="/training/verbs"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-rose-200/70 bg-white/80 px-3 py-2 hover:border-rose-400 hover:bg-rose-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-rose-900">
-                      Verbes
-                    </span>
-                    <span className="text-xs text-rose-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-rose-700">
                     Conjugaisons de base et formes utiles.
                   </p>
                 </Link>
 
                 <Link
                   href="/training/adjectives"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-amber-200/70 bg-white/80 px-3 py-2 hover:border-amber-400 hover:bg-amber-50/90 transition-colors shadow-sm"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-amber-200/70 bg-white/90 px-4 py-3 hover:border-amber-400 hover:bg-amber-50/90 transition-colors shadow-sm"
                 >
                   <div className="flex items-center justify-between w-full mb-1">
                     <span className="text-sm font-semibold text-amber-900">
@@ -290,7 +367,7 @@ export default function Home() {
 
                 <Link
                   href="/training/particles"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/80 px-3 py-2 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm sm:col-span-2"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
                 >
                   <div className="flex items-center justify-between w-full mb-1">
                     <span className="text-sm font-semibold text-indigo-900">
@@ -301,95 +378,9 @@ export default function Home() {
                     </span>
                   </div>
                   <p className="text-xs text-indigo-700">
-                    Compléter la particule manquante dans la phrase.
+                    Complète la particule manquante dans la phrase.
                   </p>
                 </Link>
-              </div>
-            </div>
-
-            {/* Groupe Jeux & Sensei */}
-            <div className="bg-gradient-to-br from-indigo-100/90 to-blue-100/90 backdrop-blur-sm rounded-3xl p-7 shadow-lg border border-indigo-200/60">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl shadow-md">
-                  <span className="text-2xl">🀄</span>
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-indigo-900 mb-1">
-                    遊び Jeux & Sensei
-                  </h2>
-                  <p className="text-indigo-800 text-sm">
-                    Gamification et professeur virtuel.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-2 grid gap-3">
-                <Link
-                  href="/game/kanji-legends"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/80 px-3 py-2 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-indigo-900">
-                      Kanji Legends
-                    </span>
-                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-indigo-700">
-                    Assemble des composants, débloque des pouvoirs.
-                  </p>
-                </Link>
-
-                <Link
-                  href="/chat"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-sky-200/70 bg-white/80 px-3 py-2 hover:border-sky-400 hover:bg-sky-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-sky-900">
-                      Chat Sensei
-                    </span>
-                    <span className="text-xs text-sky-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-sky-800">
-                    Pose des questions au professeur virtuel.
-                  </p>
-                </Link>
-
-                <Link
-                  href="/stories/mini"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-amber-200/70 bg-white/80 px-3 py-2 hover:border-amber-400 hover:bg-amber-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-amber-900">
-                      Mini histoires
-                    </span>
-                    <span className="text-xs text-amber-700 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-amber-700">
-                    Génère de courtes histoires avec tes kanjis.
-                  </p>
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Message d'encouragement zen */}
-          {kanjis.length === 0 && (
-            <div className="mt-12 text-center">
-              <div className="bg-gradient-to-r from-pink-100/90 to-rose-100/90 rounded-2xl p-8 border border-pink-200/50 shadow-lg max-w-md mx-auto backdrop-blur-sm">
-                <span className="text-4xl mb-4 block">🌸</span>
-                <h3 className="text-lg font-bold text-pink-800 mb-2">
-                  始まり - Nouveau Départ
-                </h3>
-                <p className="text-pink-700 text-sm">
-                  Commencez votre voyage d'apprentissage en ajoutant votre
-                  premier kanji
-                </p>
               </div>
             </div>
           )}

@@ -102,7 +102,7 @@ Contraintes importantes :
             content: userInstruction,
           },
         ],
-        temperature: 0.7,
+        temperature: 1,
       }),
     });
 

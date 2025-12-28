@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         model,
         messages,
-        temperature: 0.4,
+        temperature: 1,
       }),
     });
 
