@@ -23,86 +23,68 @@ import {
 } from "../../services/survivalService";
 
 // Composant interne qui utilise useSearchParams
+function TrainingPageContent() {
+  const searchParams = useSearchParams();
+  const { kanjis } = useKanjis();
+
+  // États généraux
+  const [allLearningKanjis, setAllLearningKanjis] = useState<SimpleLearningKanji[]>([]);
+  const [selectedKanjis, setSelectedKanjis] = useState<SimpleLearningKanji[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [stats, setStats] = useState({ correct: 0, total: 0, sessionComplete: false });
+  const [trainingMode, setTrainingMode] = useState<"fr-to-jp" | "jp-to-fr">("fr-to-jp");
+  const [difficultyMode, setDifficultyMode] = useState<"normal" | "hard" | "hardcore">("normal");
+  const [isHardcoreModeAvailable, setIsHardcoreModeAvailable] = useState(false);
+  const [learningStats, setLearningStats] = useState<any>(null);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [clearCanvas, setClearCanvas] = useState(0);
+  const [gameMode, setGameMode] = useState<'normal' | 'survival'>('normal');
   
+  // États pour les modaux
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedKanji, setSelectedKanji] = useState<SimpleLearningKanji | null>(null);
+
   // États pour le mode Survival
   const [survivalState, setSurvivalState] = useState<SurvivalState | null>(null);
   const [survivalStats, setSurvivalStats] = useState<SurvivalStats | null>(null);
-            <div className="flex items-center gap-3">
-              <button
-                onClick={startNewSession}
-                className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all text-sm"
-              >
-                🔄 新セッション
-              </button>
+  const [currentSurvivalKanji, setCurrentSurvivalKanji] = useState<SimpleLearningKanji | null>(null);
 
-              <div className="flex items-center gap-2">
-                <select
-                  value={trainingMode}
-                  onChange={(e) =>
-                    setTrainingMode(e.target.value as "fr-to-jp" | "jp-to-fr")
-                  }
-                  className="px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 focus:ring-red-500"
-                >
-                  <option value="fr-to-jp">🇫🇷 → 🇯🇵</option>
-                  <option value="jp-to-fr">🇯🇵 → 🇫🇷</option>
-                </select>
+  // Initialisation au montage
+  useEffect(() => {
+    const learningKanjis = kanjis.map((kanji) => {
+      const savedData = localStorage.getItem(`simple_learning_${kanji.id}`);
+      if (savedData) {
+        const parsed = JSON.parse(savedData);
+        return {
+          ...kanji,
+          learningData: parsed.learningData,
+          studyData: parsed.studyData || kanji.studyData,
+        };
+      }
+      return simpleAdaptiveLearningService.initializeLearningData(kanji);
+    });
 
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl overflow-hidden bg-amber-200/90">
-                    <img
-                      src={
-                        difficultyMode === "normal"
-                          ? "/sprites/logo_party.png"
-                          : difficultyMode === "hard"
-                          ? "/sprites/logo_gamer.png"
-                          : "/sprites/logo_colere.png"
-                      }
-                      alt={
-                        difficultyMode === "normal"
-                          ? "Mode normal (party)"
-                          : difficultyMode === "hard"
-                          ? "Mode difficile (gamer)"
-                          : "Mode hardcore (colère)"
-                      }
-                      className="w-full h-full object-cover"
-                    />
-                  </span>
-                  <select
-                    value={difficultyMode}
-                    onChange={(e) =>
-                      handleDifficultyModeChange(
-                        e.target.value as "normal" | "hard" | "hardcore"
-                      )
-                    }
-                    className={`px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 transition-all ${
-                      difficultyMode === "hardcore"
-                        ? "focus:ring-purple-500 border-purple-500/50"
-                        : "focus:ring-red-500"
-                    }`}
-                  >
-                    <option value="normal">普通 Normal</option>
-                    <option value="hard">難しい Difficile</option>
-                    <option
-                      value="hardcore"
-                      disabled={!isHardcoreModeAvailable}
-                      className={
-                        !isHardcoreModeAvailable
-                          ? "opacity-50 cursor-not-allowed"
-                          : ""
-                      }
-                    >
-                      HARDCORE {""}
-                      {!isHardcoreModeAvailable ? "(tout maîtrisé!)" : ""}
-                    </option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          )}
-      const firstKanji = survivalService.selectKanjiForSurvival(allLearningKanjis, 1);
+    setAllLearningKanjis(learningKanjis);
+    const tags = simpleAdaptiveLearningService.getAvailableTags(learningKanjis);
+    setAvailableTags(tags);
+
+    if (learningKanjis.length > 0) {
+      generateNewSession(learningKanjis, []);
+    }
+
+    // Charger le mode survival si demandé dans l'URL
+    const mode = searchParams.get('mode');
+    if (mode === 'survival' && learningKanjis.length > 0) {
+      setGameMode('survival');
+      const newSurvivalState = survivalService.initializeGame();
+      setSurvivalState(newSurvivalState);
+      setSurvivalStats(survivalService.getSurvivalStats());
+      const firstKanji = survivalService.selectKanjiForSurvival(learningKanjis, 1);
       setCurrentSurvivalKanji(firstKanji);
     }
-  }, [searchParams, allLearningKanjis, survivalState]);
+  }, [searchParams, kanjis]);
 
   // Générer une nouvelle session selon les tags sélectionnés
   const generateNewSession = (
