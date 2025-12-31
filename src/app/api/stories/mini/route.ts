@@ -87,6 +87,11 @@ export async function POST(req: NextRequest) {
 
   Pour chaque entrée de "extra_kanji", donne aussi quelques exemples de mots ou formes conjuguées utilisés dans l'histoire qui contiennent ce kanji, écrits uniquement en kana (idéalement en hiragana), sans kanji ni romaji (par exemple 食べる → "たべる"). Choisis 1 à 3 exemples représentatifs, en privilégiant les verbes ou expressions un peu complexes.
 
+  En plus des kanjis supplémentaires, identifie aussi 3 à 8 mots de vocabulaire un peu plus avancés écrits entièrement en kana dans l'histoire (surtout des verbes et adjectifs, ou petites expressions), et liste-les dans un tableau "extra_vocab_kana". Pour chacun d’eux :
+  - donne la forme telle qu’elle apparaît dans l’histoire, uniquement en kana (pas de kanji, pas de romaji),
+  - précise une petite catégorie simple en français (par ex. "verbe", "adjectif", "expression"),
+  - ajoute un court sens en français adapté à un apprenant.
+
   Tu dois répondre STRICTEMENT au format JSON suivant (sans texte avant ou après, sans commentaires) :
 {
   "story_ja": "<l'histoire complète en japonais, sans traduction, sans furigana, sans romaji>",
@@ -101,10 +106,17 @@ export async function POST(req: NextRequest) {
         "..."
       ]
     }
+  ],
+  "extra_vocab_kana": [
+    {
+      "kana": "<mot ou forme en kana (verbe, adjectif ou expression) pris dans l'histoire>",
+      "category": "<catégorie simple en français, par ex. 'verbe', 'adjectif', 'expression'>",
+      "sens_fr": "<sens principal en français>"
+    }
   ]
 }
 
-Assure-toi que chaque kanji listé dans "extra_kanji" apparaît vraiment dans l'histoire, et qu'aucun kanji déjà présent dans la liste de départ n'est répété dans "extra_kanji".
+Assure-toi que chaque kanji listé dans "extra_kanji" apparaît vraiment dans l'histoire, et qu'aucun kanji déjà présent dans la liste de départ n'est répété dans "extra_kanji". Assure-toi aussi que chaque entrée de "extra_vocab_kana" correspond bien à un mot/forme réellement utilisé dans l'histoire.
 `;
 
     const response = await fetch(OPENAI_API_URL, {
@@ -150,6 +162,11 @@ Assure-toi que chaque kanji listé dans "extra_kanji" apparaît vraiment dans l'
       sens_fr?: string;
       examplesKana?: string[];
     }[] = [];
+    let extraVocabKana: {
+      kana: string;
+      category?: string;
+      sens_fr?: string;
+    }[] = [];
 
     try {
       const parsed = JSON.parse(rawContent);
@@ -171,14 +188,26 @@ Assure-toi que chaque kanji listé dans "extra_kanji" apparaît vraiment dans l'
               : undefined,
           }));
       }
+      if (Array.isArray(parsed.extra_vocab_kana)) {
+        extraVocabKana = parsed.extra_vocab_kana
+          .filter((item: any) => item && typeof item.kana === "string")
+          .map((item: any) => ({
+            kana: item.kana,
+            category:
+              typeof item.category === "string" ? item.category : undefined,
+            sens_fr:
+              typeof item.sens_fr === "string" ? item.sens_fr : undefined,
+          }));
+      }
     } catch (e) {
       console.warn("Impossible de parser la réponse JSON de l'histoire, utilisation du texte brut.");
       story = typeof rawContent === "string" ? rawContent.trim() : "";
       translation = "";
       extraKanji = [];
+      extraVocabKana = [];
     }
 
-    return NextResponse.json({ story, translation, extraKanji });
+    return NextResponse.json({ story, translation, extraKanji, extraVocabKana });
   } catch (error) {
     console.error("/api/stories/mini error", error);
     return NextResponse.json(

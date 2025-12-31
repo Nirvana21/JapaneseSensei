@@ -20,6 +20,9 @@ export default function MiniStoriesPage() {
   const [extraKanji, setExtraKanji] = useState<
     { char: string; lecture?: string; sens_fr?: string; examplesKana?: string[] }[]
   >([]);
+  const [extraVocabKana, setExtraVocabKana] = useState<
+    { kana: string; category?: string; sens_fr?: string }[]
+  >([]);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [focusedKanji, setFocusedKanji] = useState<KanjiEntry | null>(null);
@@ -44,6 +47,7 @@ export default function MiniStoriesPage() {
     setStory("");
     setTranslation("");
     setExtraKanji([]);
+    setExtraVocabKana([]);
     setError(null);
     setSelectedLevels((prev) =>
       prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]
@@ -61,6 +65,7 @@ export default function MiniStoriesPage() {
     setStory("");
     setTranslation("");
     setExtraKanji([]);
+    setExtraVocabKana([]);
     setFocusedKanji(null);
 
     try {
@@ -96,9 +101,11 @@ export default function MiniStoriesPage() {
       const text = (data?.story as string) || "";
       const trans = (data?.translation as string) || "";
       const extra = (data?.extraKanji as { char: string; lecture?: string; sens_fr?: string; examplesKana?: string[] }[]) || [];
+      const extraVocab = (data?.extraVocabKana as { kana: string; category?: string; sens_fr?: string }[]) || [];
       setStory(text.trim());
       setTranslation(trans.trim());
       setExtraKanji(extra);
+      setExtraVocabKana(extraVocab);
     } catch (err: any) {
       console.error("Mini story error", err);
       setError(err.message || "Impossible de générer l'histoire.");
@@ -374,6 +381,36 @@ export default function MiniStoriesPage() {
                   <p className="mt-2 text-[11px] md:text-xs text-amber-600">
                     Ces kanjis ne sont pas encore dans ta collection, mais ils apparaissent dans l'histoire.
                     Tu peux les ajouter plus tard si tu veux les travailler — les mots en かな ci-dessus montrent quelques usages plus complexes (verbes, expressions...).
+                  </p>
+                </div>
+              )}
+              {extraVocabKana.length > 0 && (
+                <div className="mt-4 pt-3 border-t border-dashed border-amber-100">
+                  <h3 className="text-xs md:text-sm font-semibold text-amber-900 mb-2 flex items-center gap-1">
+                    <span>✏️</span>
+                    <span>Vocabulaire en かな un peu plus avancé</span>
+                  </h3>
+                  <ul className="space-y-1.5 text-xs md:text-sm text-amber-800">
+                    {extraVocabKana.map((v, idx) => (
+                      <li key={`${v.kana}-${idx}`} className="flex flex-wrap items-center gap-1.5">
+                        <span className="px-2 py-0.5 rounded-full bg-amber-100 border border-amber-200 text-amber-900 text-[11px] md:text-xs">
+                          {v.kana}
+                        </span>
+                        {v.category && (
+                          <span className="text-[11px] md:text-xs text-amber-700">
+                            ({v.category})
+                          </span>
+                        )}
+                        {v.sens_fr && (
+                          <span className="text-[11px] md:text-xs text-amber-700">
+                            — {v.sens_fr}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-2 text-[11px] md:text-xs text-amber-600">
+                    Ces mots sont écrits uniquement en かな dans l'histoire : ce sont des verbes, adjectifs ou petites expressions un peu plus complexes, utiles à retenir.
                   </p>
                 </div>
               )}
