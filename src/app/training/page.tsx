@@ -453,16 +453,16 @@ function TrainingPageContent() {
                         : "HARDCORE";
                     const src =
                       mode === "normal"
-                        ? "/sprites/logo_sans_fond.png"
+                        ? "/sprites/logo_party.png"
                         : mode === "hard"
-                        ? "/sprites/logo_sport.png"
-                        : "/sprites/logo_victoire.png";
+                        ? "/sprites/logo_gamer.png"
+                        : "/sprites/logo_colere.png";
                     const alt =
                       mode === "normal"
-                        ? "Mode normal"
+                        ? "Mode normal (party)"
                         : mode === "hard"
-                        ? "Mode difficile"
-                        : "Mode hardcore";
+                        ? "Mode difficile (gamer)"
+                        : "Mode hardcore (colère)";
                     return (
                       <button
                         key={mode}
