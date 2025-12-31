@@ -179,13 +179,27 @@ export default function StatsPage() {
   };
 
   const getMasteryIcon = (score: number) => {
-    const icons = {
-      0: "🆕",
-      1: "❌",
-      2: "⚠️",
-      3: "✅",
-    };
-    return icons[score as keyof typeof icons] || "❓";
+    const src =
+      score === 0
+        ? "/sprites/logo_sans_fond.png"
+        : score === 1
+        ? "/sprites/logo_triste.png"
+        : score === 2
+        ? "/sprites/logo_sport.png"
+        : "/sprites/logo_victoire.png";
+    const alt =
+      score === 0
+        ? "Nouveau kanji"
+        : score === 1
+        ? "Kanji difficile"
+        : score === 2
+        ? "Kanji en entraînement"
+        : "Kanji maîtrisé";
+    return (
+      <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-white/60">
+        <img src={src} alt={alt} className="w-full h-full object-cover" />
+      </span>
+    );
   };
 
   if (loading || !stats) {
@@ -209,7 +223,13 @@ export default function StatsPage() {
               href="/"
               className="flex items-center gap-2 px-4 py-2 bg-amber-200/50 hover:bg-orange-200/50 rounded-xl transition-all duration-300 border border-amber-300/50"
             >
-              <span className="text-lg">🏠</span>
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-amber-300/60">
+                <img
+                  src="/sprites/logo_maison.png"
+                  alt="Retour"
+                  className="w-full h-full object-cover"
+                />
+              </span>
               <span className="text-amber-800 font-medium text-sm">戻る</span>
             </Link>
 

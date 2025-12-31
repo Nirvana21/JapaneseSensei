@@ -346,7 +346,13 @@ function TrainingPageContent() {
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center p-8 bg-gradient-to-br from-orange-100/90 to-red-100/90 backdrop-blur-sm rounded-2xl shadow-lg border border-orange-200/50 max-w-md">
-            <div className="text-6xl mb-6">📚</div>
+            <div className="mb-6 inline-flex items-center justify-center w-20 h-20 rounded-3xl overflow-hidden bg-red-200/80 shadow-md">
+              <img
+                src="/sprites/logo_lecteur.png"
+                alt="Collection vide"
+                className="w-full h-full object-cover"
+              />
+            </div>
             <h2 className="text-2xl font-bold text-red-800 mb-4">
               コレクション空 Collection vide
             </h2>
@@ -358,7 +364,13 @@ function TrainingPageContent() {
               href="/"
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-500 to-orange-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
             >
-              <span>🏠</span>
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-red-500/20">
+                <img
+                  src="/sprites/logo_maison.png"
+                  alt="Retour au menu"
+                  className="w-full h-full object-cover"
+                />
+              </span>
               <span>戻る Menu</span>
             </Link>
           </div>
@@ -384,11 +396,22 @@ function TrainingPageContent() {
               <span className="hidden sm:inline">戻る</span>
             </Link>
 
-            <h1 className="text-xl font-bold text-red-800 text-center">
-              🎯 練習 Entraînement ({selectedKanjis.length} carte
-              {selectedKanjis.length > 1 ? "s" : ""})
+            <h1 className="text-xl font-bold text-red-800 text-center flex flex-col items-center gap-1">
+              <span className="inline-flex items-center justify-center gap-2">
+                <span className="inline-flex items-center justify-center w-8 h-8 rounded-2xl overflow-hidden bg-red-200/90">
+                  <img
+                    src="/sprites/logo_sport.png"
+                    alt="Mode entraînement"
+                    className="w-full h-full object-cover"
+                  />
+                </span>
+                <span>
+                  練習 Entraînement ({selectedKanjis.length} carte
+                  {selectedKanjis.length > 1 ? "s" : ""})
+                </span>
+              </span>
               {selectedKanjis.length < 20 && (
-                <span className="text-sm text-amber-700 block mt-1">
+                <span className="text-sm text-amber-700 block">
                   ℹ️ Toutes les cartes disponibles incluses
                 </span>
               )}
@@ -417,35 +440,59 @@ function TrainingPageContent() {
                   <option value="fr-to-jp">🇫🇷 → 🇯🇵</option>
                   <option value="jp-to-fr">🇯🇵 → 🇫🇷</option>
                 </select>
-
-                <select
-                  value={difficultyMode}
-                  onChange={(e) =>
-                    handleDifficultyModeChange(
-                      e.target.value as "normal" | "hard" | "hardcore"
-                    )
-                  }
-                  className={`px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 transition-all ${
-                    difficultyMode === "hardcore"
-                      ? "focus:ring-purple-500 border-purple-500/50"
-                      : "focus:ring-red-500"
-                  }`}
-                >
-                  <option value="normal">😊 普通 Normal</option>
-                  <option value="hard">💀 難しい Difficile</option>
-                  <option
-                    value="hardcore"
-                    disabled={!isHardcoreModeAvailable}
-                    className={
-                      !isHardcoreModeAvailable
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }
-                  >
-                    🔥 HARDCORE{" "}
-                    {!isHardcoreModeAvailable ? "(tout maîtrisé!)" : ""}
-                  </option>
-                </select>
+                <div className="flex items-center gap-1">
+                  {["normal", "hard", "hardcore"].map((mode) => {
+                    const isActive = difficultyMode === mode;
+                    const isDisabled =
+                      mode === "hardcore" && !isHardcoreModeAvailable;
+                    const label =
+                      mode === "normal"
+                        ? "普通"
+                        : mode === "hard"
+                        ? "難しい"
+                        : "HARDCORE";
+                    const src =
+                      mode === "normal"
+                        ? "/sprites/logo_sans_fond.png"
+                        : mode === "hard"
+                        ? "/sprites/logo_sport.png"
+                        : "/sprites/logo_victoire.png";
+                    const alt =
+                      mode === "normal"
+                        ? "Mode normal"
+                        : mode === "hard"
+                        ? "Mode difficile"
+                        : "Mode hardcore";
+                    return (
+                      <button
+                        key={mode}
+                        type="button"
+                        disabled={isDisabled}
+                        onClick={() =>
+                          handleDifficultyModeChange(
+                            mode as "normal" | "hard" | "hardcore"
+                          )
+                        }
+                        className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+                          isActive
+                            ? "bg-red-500 text-white border-red-600 shadow-sm"
+                            : "bg-amber-100/90 text-amber-800 border-amber-300/70 hover:bg-amber-200/90"
+                        } ${
+                          isDisabled ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                      >
+                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-white/70">
+                          <img
+                            src={src}
+                            alt={alt}
+                            className="w-full h-full object-cover"
+                          />
+                        </span>
+                        <span>{label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
               {/* Statistiques centrées zen - masquées pendant la session */}
@@ -481,17 +528,45 @@ function TrainingPageContent() {
           {gameMode === 'normal' && learningStats && (
             <div className="flex items-center justify-center">
               <div className="flex items-center gap-3 text-xs">
-                <div className="px-2 py-1 bg-blue-100/90 text-blue-700 rounded border border-blue-300/50">
-                  🆕 {learningStats.byScore[0]}
+                <div className="px-2 py-1 bg-blue-100/90 text-blue-700 rounded border border-blue-300/50 flex items-center gap-1.5">
+                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-blue-200/80">
+                    <img
+                      src="/sprites/logo_sans_fond.png"
+                      alt="Nouveaux kanjis"
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
+                  <span>{learningStats.byScore[0]}</span>
                 </div>
-                <div className="px-2 py-1 bg-red-100/90 text-red-700 rounded border border-red-300/50">
-                  😓 {learningStats.byScore[1]}
+                <div className="px-2 py-1 bg-red-100/90 text-red-700 rounded border border-red-300/50 flex items-center gap-1.5">
+                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-red-200/80">
+                    <img
+                      src="/sprites/logo_triste.png"
+                      alt="Kanjis difficiles"
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
+                  <span>{learningStats.byScore[1]}</span>
                 </div>
-                <div className="px-2 py-1 bg-yellow-100/90 text-yellow-700 rounded border border-yellow-300/50">
-                  📚 {learningStats.byScore[2]}
+                <div className="px-2 py-1 bg-yellow-100/90 text-yellow-700 rounded border border-yellow-300/50 flex items-center gap-1.5">
+                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-yellow-200/80">
+                    <img
+                      src="/sprites/logo_sport.png"
+                      alt="Kanjis en entraînement"
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
+                  <span>{learningStats.byScore[2]}</span>
                 </div>
-                <div className="px-2 py-1 bg-green-100/90 text-green-700 rounded border border-green-300/50">
-                  ✨ {learningStats.byScore[3]}
+                <div className="px-2 py-1 bg-green-100/90 text-green-700 rounded border border-green-300/50 flex items-center gap-1.5">
+                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-green-200/80">
+                    <img
+                      src="/sprites/logo_victoire.png"
+                      alt="Kanjis maîtrisés"
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
+                  <span>{learningStats.byScore[3]}</span>
                 </div>
                 {learningStats.needsReview > 0 && (
                   <div className="px-2 py-1 bg-orange-100/90 text-orange-700 rounded border border-orange-300/50 animate-pulse">
@@ -629,7 +704,7 @@ function TrainingPageContent() {
                                 スコア Score:
                               </span>
                               <div
-                                className={`flex items-center gap-1 text-sm font-medium ${
+                                className={`flex items-center gap-1.5 text-sm font-medium ${
                                   currentKanji.learningData.score === 0
                                     ? "text-blue-600"
                                     : currentKanji.learningData.score === 1
@@ -639,10 +714,42 @@ function TrainingPageContent() {
                                     : "text-green-600"
                                 }`}
                               >
-                                {currentKanji.learningData.score === 0 && "🆕"}
-                                {currentKanji.learningData.score === 1 && "😓"}
-                                {currentKanji.learningData.score === 2 && "📚"}
-                                {currentKanji.learningData.score === 3 && "✨"}
+                                {currentKanji.learningData.score === 0 && (
+                                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-blue-200/80">
+                                    <img
+                                      src="/sprites/logo_sans_fond.png"
+                                      alt="Nouveau kanji"
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </span>
+                                )}
+                                {currentKanji.learningData.score === 1 && (
+                                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-red-200/80">
+                                    <img
+                                      src="/sprites/logo_triste.png"
+                                      alt="Kanji difficile"
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </span>
+                                )}
+                                {currentKanji.learningData.score === 2 && (
+                                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-yellow-200/80">
+                                    <img
+                                      src="/sprites/logo_sport.png"
+                                      alt="Kanji en entraînement"
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </span>
+                                )}
+                                {currentKanji.learningData.score === 3 && (
+                                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-green-200/80">
+                                    <img
+                                      src="/sprites/logo_victoire.png"
+                                      alt="Kanji maîtrisé"
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </span>
+                                )}
                                 <span>{currentKanji.learningData.score}/3</span>
                               </div>
                             </div>
@@ -744,7 +851,7 @@ function TrainingPageContent() {
                                 Score:
                               </span>
                               <div
-                                className={`flex items-center gap-1 text-sm font-medium ${
+                                className={`flex items-center gap-1.5 text-sm font-medium ${
                                   currentKanji.learningData.score === 0
                                     ? "text-blue-400"
                                     : currentKanji.learningData.score === 1
@@ -754,10 +861,42 @@ function TrainingPageContent() {
                                     : "text-green-400"
                                 }`}
                               >
-                                {currentKanji.learningData.score === 0 && "🆕"}
-                                {currentKanji.learningData.score === 1 && "😓"}
-                                {currentKanji.learningData.score === 2 && "📚"}
-                                {currentKanji.learningData.score === 3 && "✨"}
+                                {currentKanji.learningData.score === 0 && (
+                                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-blue-300/50">
+                                    <img
+                                      src="/sprites/logo_sans_fond.png"
+                                      alt="Nouveau kanji"
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </span>
+                                )}
+                                {currentKanji.learningData.score === 1 && (
+                                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-red-300/40">
+                                    <img
+                                      src="/sprites/logo_triste.png"
+                                      alt="Kanji difficile"
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </span>
+                                )}
+                                {currentKanji.learningData.score === 2 && (
+                                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-yellow-300/40">
+                                    <img
+                                      src="/sprites/logo_sport.png"
+                                      alt="Kanji en entraînement"
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </span>
+                                )}
+                                {currentKanji.learningData.score === 3 && (
+                                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-green-300/40">
+                                    <img
+                                      src="/sprites/logo_victoire.png"
+                                      alt="Kanji maîtrisé"
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </span>
+                                )}
                                 <span>{currentKanji.learningData.score}/3</span>
                               </div>
                             </div>
@@ -926,7 +1065,13 @@ function TrainingPageContent() {
                   if (percentage >= 90) {
                     return (
                       <>
-                        <div className="text-6xl mb-4">🏆</div>
+                        <div className="mb-4 inline-flex items-center justify-center w-20 h-20 rounded-3xl overflow-hidden bg-yellow-300/30 shadow-lg">
+                          <img
+                            src="/sprites/logo_victoire.png"
+                            alt="Excellent"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                         <h3 className="text-2xl font-bold text-yellow-300 mb-2">
                           Excellent !
                         </h3>
@@ -935,7 +1080,13 @@ function TrainingPageContent() {
                   } else if (percentage >= 75) {
                     return (
                       <>
-                        <div className="text-6xl mb-4">�</div>
+                        <div className="mb-4 inline-flex items-center justify-center w-20 h-20 rounded-3xl overflow-hidden bg-green-300/20 shadow-lg">
+                          <img
+                            src="/sprites/logo_sport.png"
+                            alt="Très bien"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                         <h3 className="text-2xl font-bold text-green-300 mb-2">
                           Très bien !
                         </h3>
@@ -944,7 +1095,13 @@ function TrainingPageContent() {
                   } else if (percentage >= 50) {
                     return (
                       <>
-                        <div className="text-6xl mb-4">📚</div>
+                        <div className="mb-4 inline-flex items-center justify-center w-20 h-20 rounded-3xl overflow-hidden bg-blue-300/20 shadow-lg">
+                          <img
+                            src="/sprites/logo_lecteur.png"
+                            alt="Bon travail"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                         <h3 className="text-2xl font-bold text-blue-300 mb-2">
                           Bon travail !
                         </h3>
@@ -953,7 +1110,13 @@ function TrainingPageContent() {
                   } else {
                     return (
                       <>
-                        <div className="text-6xl mb-4">💪</div>
+                        <div className="mb-4 inline-flex items-center justify-center w-20 h-20 rounded-3xl overflow-hidden bg-orange-300/20 shadow-lg">
+                          <img
+                            src="/sprites/logo_triste.png"
+                            alt="Continue tes efforts"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
                         <h3 className="text-2xl font-bold text-orange-300 mb-2">
                           Continue tes efforts !
                         </h3>
@@ -1040,7 +1203,14 @@ function TrainingPageContent() {
                   href="/"
                   className="block w-full px-6 py-3 bg-slate-700/80 text-slate-300 font-medium text-center rounded-xl hover:bg-slate-600/80 transition-all"
                 >
-                  🏠 Retour au menu
+                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-slate-600/80 mr-2 align-middle">
+                    <img
+                      src="/sprites/logo_maison.png"
+                      alt="Retour au menu"
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
+                  Retour au menu
                 </Link>
               </div>
 
@@ -1100,7 +1270,13 @@ export default function TrainingPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-6xl mb-4">🎯</div>
+          <div className="mb-4 inline-flex items-center justify-center w-20 h-20 rounded-3xl overflow-hidden bg-red-200/80 shadow-lg">
+            <img
+              src="/sprites/logo_sport.png"
+              alt="Entraînement en cours de chargement"
+              className="w-full h-full object-cover"
+            />
+          </div>
           <h2 className="text-2xl font-bold text-orange-800 mb-2">
             Chargement...
           </h2>
