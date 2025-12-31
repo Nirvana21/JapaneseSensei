@@ -422,13 +422,19 @@ function TrainingPageContent() {
               className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all text-sm"
             >
               🔄 新セッション
-            </button>
-          </div>
-
-          {/* Deuxième ligne : Contrôles et statistiques zen - uniquement en mode normal */}
-          {gameMode === 'normal' && (
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-3">
-              {/* Sélecteurs de mode zen */}
+                <button
+                  onClick={onBackToMenu}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-100/80 text-amber-900 text-xs font-medium border border-amber-200 hover:bg-amber-200/80 transition-colors"
+                >
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-white/80">
+                    <img
+                      src="/sprites/logo_maison.png"
+                      alt="Menu principal"
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
+                  <span>Menu</span>
+                </button>
               <div className="flex items-center gap-2">
                 <select
                   value={trainingMode}
@@ -440,58 +446,55 @@ function TrainingPageContent() {
                   <option value="fr-to-jp">🇫🇷 → 🇯🇵</option>
                   <option value="jp-to-fr">🇯🇵 → 🇫🇷</option>
                 </select>
-                <div className="flex items-center gap-1">
-                  {["normal", "hard", "hardcore"].map((mode) => {
-                    const isActive = difficultyMode === mode;
-                    const isDisabled =
-                      mode === "hardcore" && !isHardcoreModeAvailable;
-                    const label =
-                      mode === "normal"
-                        ? "普通"
-                        : mode === "hard"
-                        ? "難しい"
-                        : "HARDCORE";
-                    const src =
-                      mode === "normal"
-                        ? "/sprites/logo_party.png"
-                        : mode === "hard"
-                        ? "/sprites/logo_gamer.png"
-                        : "/sprites/logo_colere.png";
-                    const alt =
-                      mode === "normal"
-                        ? "Mode normal (party)"
-                        : mode === "hard"
-                        ? "Mode difficile (gamer)"
-                        : "Mode hardcore (colère)";
-                    return (
-                      <button
-                        key={mode}
-                        type="button"
-                        disabled={isDisabled}
-                        onClick={() =>
-                          handleDifficultyModeChange(
-                            mode as "normal" | "hard" | "hardcore"
-                          )
-                        }
-                        className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
-                          isActive
-                            ? "bg-red-500 text-white border-red-600 shadow-sm"
-                            : "bg-amber-100/90 text-amber-800 border-amber-300/70 hover:bg-amber-200/90"
-                        } ${
-                          isDisabled ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
-                      >
-                        <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-white/70">
-                          <img
-                            src={src}
-                            alt={alt}
-                            className="w-full h-full object-cover"
-                          />
-                        </span>
-                        <span>{label}</span>
-                      </button>
-                    );
-                  })}
+
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl overflow-hidden bg-amber-200/90">
+                    <img
+                      src={
+                        difficultyMode === "normal"
+                          ? "/sprites/logo_party.png"
+                          : difficultyMode === "hard"
+                          ? "/sprites/logo_gamer.png"
+                          : "/sprites/logo_colere.png"
+                      }
+                      alt={
+                        difficultyMode === "normal"
+                          ? "Mode normal (party)"
+                          : difficultyMode === "hard"
+                          ? "Mode difficile (gamer)"
+                          : "Mode hardcore (colère)"
+                      }
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
+                  <select
+                    value={difficultyMode}
+                    onChange={(e) =>
+                      handleDifficultyModeChange(
+                        e.target.value as "normal" | "hard" | "hardcore"
+                      )
+                    }
+                    className={`px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 transition-all ${
+                      difficultyMode === "hardcore"
+                        ? "focus:ring-purple-500 border-purple-500/50"
+                        : "focus:ring-red-500"
+                    }`}
+                  >
+                    <option value="normal">普通 Normal</option>
+                    <option value="hard">難しい Difficile</option>
+                    <option
+                      value="hardcore"
+                      disabled={!isHardcoreModeAvailable}
+                      className={
+                        !isHardcoreModeAvailable
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }
+                    >
+                      HARDCORE {""}
+                      {!isHardcoreModeAvailable ? "(tout maîtrisé!)" : ""}
+                    </option>
+                  </select>
                 </div>
               </div>
 
