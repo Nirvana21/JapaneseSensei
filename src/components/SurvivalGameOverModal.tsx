@@ -37,9 +37,17 @@ const SurvivalGameOverModal: React.FC<SurvivalGameOverModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
       <div className="bg-gradient-to-br from-orange-50/95 to-red-50/95 backdrop-blur-md rounded-3xl border border-orange-200/80 shadow-2xl max-w-md w-full p-8 text-center animate-scale-in">
-        {/* Titre Game Over avec animation */}
+        {/* Titre Game Over avec animation et logo */}
         <div className="mb-6 animate-fade-in-up">
-          <div className="text-6xl mb-4 animate-wiggle">💥</div>
+          <div className="mb-4 flex justify-center">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shadow-md bg-red-100 flex items-center justify-center">
+              <img
+                src="/sprites/logo_pensif.png"
+                alt="Japanese Sensei pensif"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
           <h2 className="text-3xl font-bold text-red-700 mb-2">
             ゲームオーバー
           </h2>

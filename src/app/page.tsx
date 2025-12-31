@@ -75,8 +75,12 @@ export default function Home() {
         <header className="bg-gradient-to-r from-amber-100/90 to-orange-100/90 backdrop-blur-md border-b border-amber-200/50">
           <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">
-              <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-red-600 to-orange-700 rounded-xl shadow-md">
-                <span className="text-xl">🇯🇵</span>
+              <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-red-600 to-orange-700 rounded-xl shadow-md overflow-hidden">
+                <img
+                  src="/sprites/logo_sans_fond.jpeg"
+                  alt="Japanese Sensei"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="flex flex-col leading-tight min-w-0">
                 <span className="text-base md:text-lg font-bold bg-gradient-to-r from-red-800 to-orange-800 bg-clip-text text-transparent truncate">

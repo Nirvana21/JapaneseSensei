@@ -64,7 +64,21 @@ export default function RootLayout({
         <meta name="msapplication-config" content="/browserconfig.xml" />
         <meta name="msapplication-TileColor" content="#1e293b" />
         <link rel="manifest" href="/manifest.json" />
+        {/* Favicon set */}
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/sprites/logo_basique.jpeg"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/sprites/logo_basique.jpeg"
+        />
         <link rel="icon" type="image/png" href="/Logo_Sensei.png" />
+        {/* Apple / PWA icons */}
         <link rel="apple-touch-icon" href="/Logo_Sensei.png" />
         <link rel="apple-touch-icon-precomposed" href="/Logo_Sensei.png" />
       </head>

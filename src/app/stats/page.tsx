@@ -214,10 +214,18 @@ export default function StatsPage() {
             </Link>
 
             <div className="text-center flex-1 mx-4">
-              <h1 className="text-2xl md:text-3xl font-light text-red-800">
-                <span className="text-3xl md:text-4xl mr-3">📊</span>
-                <span className="hidden sm:inline">統計 Statistiques</span>
-                <span className="sm:hidden">統計</span>
+              <h1 className="text-2xl md:text-3xl font-light text-red-800 flex items-center justify-center gap-3">
+                <span className="hidden xs:inline-flex w-10 h-10 rounded-2xl overflow-hidden shadow-md bg-red-100 sm:w-11 sm:h-11">
+                  <img
+                    src="/sprites/logo_pensif.png"
+                    alt="Japanese Sensei Statistiques"
+                    className="w-full h-full object-cover"
+                  />
+                </span>
+                <span>
+                  <span className="hidden sm:inline">統計 Statistiques</span>
+                  <span className="sm:hidden">統計</span>
+                </span>
               </h1>
             </div>
 

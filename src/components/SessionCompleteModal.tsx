@@ -31,24 +31,32 @@ export default function SessionCompleteModal({
         icon: "🏆",
         title: "優秀！ Excellent !",
         color: "text-yellow-600",
+        imageSrc: "/sprites/logo_party.png",
+        imageAlt: "Japanese Sensei fête ta réussite",
       };
     } else if (percentage >= 75) {
       return {
         icon: "⭐",
         title: "とても良い！ Très bien !",
         color: "text-green-700",
+        imageSrc: "/sprites/logo_sans_fond.jpeg",
+        imageAlt: "Japanese Sensei content",
       };
     } else if (percentage >= 50) {
       return {
         icon: "📚",
         title: "良い仕事！ Bon travail !",
         color: "text-blue-700",
+        imageSrc: "/sprites/logo_sans_fond.jpeg",
+        imageAlt: "Japanese Sensei encourage tes progrès",
       };
     } else {
       return {
         icon: "💪",
         title: "頑張り続けて！ Continue tes efforts !",
         color: "text-orange-700",
+        imageSrc: "/sprites/logo_pensif.png",
+        imageAlt: "Japanese Sensei pensif t'encourage",
       };
     }
   };
@@ -116,7 +124,15 @@ export default function SessionCompleteModal({
 
             {/* Icône et titre selon la performance */}
             <div className="mb-6 text-center">
-              <div className="text-6xl mb-4">{performanceData.icon}</div>
+              <div className="mb-4 flex justify-center">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shadow-md bg-orange-200/80 flex items-center justify-center">
+                  <img
+                    src={performanceData.imageSrc}
+                    alt={performanceData.imageAlt}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
               <h3
                 className={`text-2xl font-bold ${performanceData.color} mb-2`}
               >
