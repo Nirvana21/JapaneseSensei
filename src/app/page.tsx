@@ -77,7 +77,7 @@ export default function Home() {
             <div className="flex items-center gap-2 min-w-0">
               <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-red-600 to-orange-700 rounded-xl shadow-md overflow-hidden">
                 <img
-                  src="/sprites/logo_sans_fond.jpeg"
+                  src="/sprites/logo_sans_fond.png"
                   alt="Japanese Sensei"
                   className="w-full h-full object-cover"
                 />

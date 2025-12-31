@@ -39,7 +39,7 @@ export default function SessionCompleteModal({
         icon: "⭐",
         title: "とても良い！ Très bien !",
         color: "text-green-700",
-        imageSrc: "/sprites/logo_sans_fond.jpeg",
+        imageSrc: "/sprites/logo_sans_fond.png",
         imageAlt: "Japanese Sensei content",
       };
     } else if (percentage >= 50) {
@@ -47,7 +47,7 @@ export default function SessionCompleteModal({
         icon: "📚",
         title: "良い仕事！ Bon travail !",
         color: "text-blue-700",
-        imageSrc: "/sprites/logo_sans_fond.jpeg",
+        imageSrc: "/sprites/logo_sans_fond.png",
         imageAlt: "Japanese Sensei encourage tes progrès",
       };
     } else {
