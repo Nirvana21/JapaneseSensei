@@ -82,7 +82,16 @@ export default function VerbsTrainingPage() {
             <span>←</span>
             <span className="hidden sm:inline">戻る</span>
           </Link>
-          <h1 className="text-xl font-bold text-red-800">📚 Verbes – formes</h1>
+          <h1 className="text-xl font-bold text-red-800 flex items-center gap-2">
+            <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl overflow-hidden bg-red-200/80">
+              <img
+                src="/sprites/logo_lecteur.png"
+                alt="Verbes – formes"
+                className="w-full h-full object-cover"
+              />
+            </span>
+            <span>Verbes – formes</span>
+          </h1>
           <div className="w-16" />
         </div>
       </header>

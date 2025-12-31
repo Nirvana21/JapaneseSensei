@@ -153,7 +153,13 @@ export default function KanjiDetailModal({
           <div className="bg-amber-100/80 rounded-xl p-4 border border-amber-300">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-lg font-bold text-amber-800 flex items-center gap-2">
-                <span>✏️</span>
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-lg overflow-hidden bg-amber-200/90">
+                  <img
+                    src="/sprites/logo_pensif.png"
+                    alt="Ordre des traits"
+                    className="w-full h-full object-cover"
+                  />
+                </span>
                 <span>筆順 Ordre des traits</span>
               </h3>
               <button

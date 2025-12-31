@@ -115,8 +115,15 @@ const SurvivalGameOverModal: React.FC<SurvivalGameOverModalProps> = ({
 
         {/* Statistiques globales */}
         <div className="mb-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200/50">
-          <h4 className="text-sm font-bold text-amber-700 mb-3">
-            📊 Statistiques globales
+          <h4 className="text-sm font-bold text-amber-700 mb-3 flex items-center gap-2">
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-amber-200/90">
+              <img
+                src="/sprites/logo_maths.png"
+                alt="Statistiques globales"
+                className="w-full h-full object-cover"
+              />
+            </span>
+            <span>Statistiques globales</span>
           </h4>
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
@@ -172,9 +179,16 @@ const SurvivalGameOverModal: React.FC<SurvivalGameOverModalProps> = ({
         >
           <button
             onClick={onNewGame}
-            className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-glow-orange active:scale-95"
+            className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-glow-orange active:scale-95 flex items-center justify-center gap-2"
           >
-            🎮 Nouvelle partie
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-red-200/80">
+              <img
+                src="/sprites/logo_gamer.png"
+                alt="Nouvelle partie"
+                className="w-full h-full object-cover"
+              />
+            </span>
+            <span>Nouvelle partie</span>
           </button>
           <button
             onClick={onClose}

@@ -217,7 +217,7 @@ export default function StatsPage() {
               <h1 className="text-2xl md:text-3xl font-light text-red-800 flex items-center justify-center gap-3">
                 <span className="hidden xs:inline-flex w-10 h-10 rounded-2xl overflow-hidden shadow-md bg-red-100 sm:w-11 sm:h-11">
                   <img
-                    src="/sprites/logo_pensif.png"
+                    src="/sprites/logo_maths.png"
                     alt="Japanese Sensei Statistiques"
                     className="w-full h-full object-cover"
                   />
@@ -254,7 +254,13 @@ export default function StatsPage() {
                   {stats.totalKanjis}
                 </p>
               </div>
-              <div className="text-4xl opacity-60">📚</div>
+              <div className="opacity-60 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden bg-red-200/90">
+                <img
+                  src="/sprites/logo_lecteur.png"
+                  alt="Kanjis"
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
           </div>
 
@@ -332,7 +338,13 @@ export default function StatsPage() {
                       {survivalStats.totalSessions}
                     </p>
                   </div>
-                  <div className="text-4xl opacity-60">🎮</div>
+                  <div className="opacity-60 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden bg-orange-200/90">
+                    <img
+                      src="/sprites/logo_gamer.png"
+                      alt="Parties jouées"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -346,7 +358,13 @@ export default function StatsPage() {
                       {Math.round(survivalStats.averageStreak)}
                     </p>
                   </div>
-                  <div className="text-4xl opacity-60">📊</div>
+                  <div className="opacity-60 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden bg-amber-200/90">
+                    <img
+                      src="/sprites/logo_maths.png"
+                      alt="Moyenne survival"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 </div>
               </div>
 

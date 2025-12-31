@@ -849,8 +849,15 @@ import {
             {trainingMode === "fr-to-jp" && (
               <div className="flex justify-center mb-6">
                 <div className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-4 border border-slate-700/50 shadow-lg">
-                  <p className="text-center text-slate-300 mb-3 text-sm">
-                    ✏️ Entraînez-vous à écrire
+                  <p className="text-center text-slate-300 mb-3 text-sm flex items-center justify-center gap-2">
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-slate-700/80">
+                      <img
+                        src="/sprites/logo_pensif.png"
+                        alt="Entraînement écriture"
+                        className="w-full h-full object-cover"
+                      />
+                    </span>
+                    <span>Entraînez-vous à écrire</span>
                   </p>
                   <div className="flex justify-center">
                     <div className="w-72 h-72 sm:w-96 sm:h-96">

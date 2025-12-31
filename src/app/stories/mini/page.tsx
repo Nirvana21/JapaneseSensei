@@ -309,7 +309,13 @@ export default function MiniStoriesPage() {
             <>
               <div className="flex items-center justify-between gap-2 mb-1">
                 <h2 className="text-sm md:text-base font-semibold text-amber-900 flex items-center gap-2">
-                  <span>📖</span>
+                  <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-amber-200/90">
+                    <img
+                      src="/sprites/logo_lecteur.png"
+                      alt="Histoire générée"
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
                   <span>Histoire générée</span>
                 </h2>
               </div>

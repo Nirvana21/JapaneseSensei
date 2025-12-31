@@ -142,8 +142,15 @@ const SurvivalCard: React.FC<SurvivalCardProps> = ({
         {/* Canvas pour dessiner AVANT de révéler (FR → JP seulement) */}
         {direction === "fr-to-jp" && !showAnswer && (
           <div className="mb-6 w-full">
-            <p className="text-xs text-orange-600 mb-3 text-center font-medium">
-              ✏️ Essayez d'écrire le kanji puis révélez la réponse
+            <p className="text-xs text-orange-600 mb-3 text-center font-medium flex items-center justify-center gap-2">
+              <span className="inline-flex items-center justify-center w-4 h-4 rounded-md overflow-hidden bg-orange-200/80">
+                <img
+                  src="/sprites/logo_pensif.png"
+                  alt="Écriture du kanji"
+                  className="w-full h-full object-cover"
+                />
+              </span>
+              <span>Essayez d'écrire le kanji puis révélez la réponse</span>
             </p>
             <div className="flex justify-center">
               <div className="w-72 h-72 sm:w-96 sm:h-96 bg-orange-50 rounded-xl border-2 border-orange-200 shadow-inner relative z-0">

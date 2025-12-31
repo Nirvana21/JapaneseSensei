@@ -113,7 +113,13 @@ export default function Home() {
                 </p>
                 {kanjis.length > 0 && (
                   <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 border border-amber-200 text-xs text-amber-800">
-                    <span>📚</span>
+                    <span className="inline-flex items-center justify-center w-4 h-4 rounded-full overflow-hidden bg-amber-200">
+                      <img
+                        src="/sprites/logo_lecteur.png"
+                        alt="Kanjis dans ta collection"
+                        className="w-full h-full object-cover"
+                      />
+                    </span>
                     <span>
                       {kanjis.length} kanji{kanjis.length > 1 ? "s" : ""} dans ta
                       collection
@@ -129,7 +135,13 @@ export default function Home() {
                   onClick={() => setActiveSection("games")}
                   className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-100/90 to-blue-100/90 border border-indigo-200/70 px-4 py-6 shadow-md hover:border-indigo-400 hover:bg-indigo-50/90 transition-bounce hover:-translate-y-0.5"
                 >
-                  <span className="text-3xl mb-2">🎮</span>
+                  <span className="mb-2 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden shadow-md bg-indigo-200/90">
+                    <img
+                      src="/sprites/logo_gamer.png"
+                      alt="Jeux"
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
                   <span className="text-sm font-semibold text-indigo-900 mb-1">
                     Jeux
                   </span>
@@ -144,7 +156,13 @@ export default function Home() {
                   onClick={() => setCurrentView("collection")}
                   className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-emerald-100/90 to-green-100/90 border border-emerald-200/70 px-4 py-6 shadow-md hover:border-emerald-400 hover:bg-emerald-50/90 transition-bounce hover:-translate-y-0.5"
                 >
-                  <span className="text-3xl mb-2">📖</span>
+                  <span className="mb-2 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden shadow-md bg-emerald-200/90">
+                    <img
+                      src="/sprites/logo_lecteur.png"
+                      alt="Collection"
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
                   <span className="text-sm font-semibold text-emerald-900 mb-1">
                     Collection
                   </span>
@@ -159,7 +177,13 @@ export default function Home() {
                   onClick={() => setActiveSection("grammar")}
                   className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-amber-100/90 to-yellow-100/90 border border-amber-200/70 px-4 py-6 shadow-md hover:border-amber-400 hover:bg-amber-50/90 transition-bounce hover:-translate-y-0.5"
                 >
-                  <span className="text-3xl mb-2">✏️</span>
+                  <span className="mb-2 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden shadow-md bg-amber-200/90">
+                    <img
+                      src="/sprites/logo_pensif.png"
+                      alt="Grammaire"
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
                   <span className="text-sm font-semibold text-amber-900 mb-1">
                     Grammaire
                   </span>
@@ -174,7 +198,13 @@ export default function Home() {
                   onClick={() => router.push("/stats")}
                   className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-rose-100/90 to-pink-100/90 border border-rose-200/70 px-4 py-6 shadow-md hover:border-rose-400 hover:bg-rose-50/90 transition-bounce hover:-translate-y-0.5"
                 >
-                  <span className="text-3xl mb-2">📊</span>
+                  <span className="mb-2 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden shadow-md bg-rose-200/90">
+                    <img
+                      src="/sprites/logo_maths.png"
+                      alt="Statistiques"
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
                   <span className="text-sm font-semibold text-rose-900 mb-1">
                     Statistiques
                   </span>
@@ -215,7 +245,13 @@ export default function Home() {
 
               <div className="flex flex-col gap-2 mb-2">
                 <h2 className="text-lg font-bold text-indigo-900 flex items-center gap-2">
-                  <span className="text-2xl">🎮</span>
+                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl overflow-hidden bg-indigo-200/90">
+                    <img
+                      src="/sprites/logo_gamer.png"
+                      alt="Jeux"
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
                   <span>Jeux & Sensei</span>
                 </h2>
                 <p className="text-sm text-indigo-800">
@@ -326,7 +362,13 @@ export default function Home() {
 
               <div className="flex flex-col gap-2 mb-2">
                 <h2 className="text-lg font-bold text-amber-900 flex items-center gap-2">
-                  <span className="text-2xl">✏️</span>
+                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl overflow-hidden bg-amber-200/90">
+                    <img
+                      src="/sprites/logo_pensif.png"
+                      alt="Grammaire"
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
                   <span>Grammaire & formes</span>
                 </h2>
                 <p className="text-sm text-amber-800">

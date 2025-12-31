@@ -177,7 +177,14 @@ export default function AddKanjiForm({ onKanjiAdded }: AddKanjiFormProps) {
                 : "bg-orange-200 text-orange-800 hover:bg-orange-300"
             }`}
           >
-            ✏️ 手動 Saisie manuelle
+            <span className="inline-flex items-center justify-center w-4 h-4 rounded-md overflow-hidden bg-orange-300/80 mr-2 align-middle">
+              <img
+                src="/sprites/logo_pensif.png"
+                alt="Saisie manuelle"
+                className="w-full h-full object-cover"
+              />
+            </span>
+            <span>手動 Saisie manuelle</span>
           </button>
         </div>
       </div>
