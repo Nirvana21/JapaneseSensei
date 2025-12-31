@@ -14,31 +14,23 @@ import SurvivalHUD from "../../components/SurvivalHUD";
 import SurvivalGameOverModal from "../../components/SurvivalGameOverModal";
 import {
   simpleAdaptiveLearningService,
-      <header className="bg-gradient-to-r from-amber-100/90 to-orange-100/90 backdrop-blur-md border-b border-amber-200/50">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <Link
-              href="/"
-              className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-amber-200/80 hover:bg-amber-300 text-amber-900 text-lg font-semibold shadow-sm border border-amber-300 transition-smooth hover:-translate-y-0.5"
-            >
-              ←
-            </Link>
-            <div className="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden shadow-md bg-red-100">
-              <img
-                src="/sprites/logo_sans_fond.png"
-                alt="Japanese Sensei - Entraînement"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="flex flex-col min-w-0">
-              <h1 className="text-lg md:text-xl font-bold bg-gradient-to-r from-red-800 to-orange-800 bg-clip-text text-transparent truncate">
-                Entraînement aux kanjis
-              </h1>
-              <p className="text-[11px] md:text-xs text-amber-700 truncate">
-                Swipe, écriture et quiz adaptatif sur ta collection.
-              </p>
-            </div>
-          </div>
+  SimpleLearningKanji,
+} from "../../services/adaptiveLearningService";
+import {
+  survivalService,
+  SurvivalState,
+  SurvivalStats,
+} from "../../services/survivalService";
+
+// Composant interne qui utilise useSearchParams
+function TrainingPageContent() {
+  const { kanjis } = useKanjis();
+  const searchParams = useSearchParams();
+  const [selectedKanjis, setSelectedKanjis] = useState<SimpleLearningKanji[]>(
+    []
+  );
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [showAnswer, setShowAnswer] = useState(false);
   const [trainingMode, setTrainingMode] = useState<"fr-to-jp" | "jp-to-fr">(
     "fr-to-jp"
   );

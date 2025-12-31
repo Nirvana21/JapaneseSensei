@@ -85,6 +85,8 @@ export async function POST(req: NextRequest) {
   - Évite les phrases qui ressemblent à une traduction littérale du français : écris comme le ferait un locuteur natif japonais pour un apprenant (phrases plutôt courtes, expressions fréquentes, registre neutre/poli en です・ます en dehors des dialogues).
   - Assure-toi que l'histoire a une petite structure narrative (mise en place → petit problème ou objectif → résolution/fin).
 
+  Pour chaque entrée de "extra_kanji", donne aussi quelques exemples de mots ou formes conjuguées utilisés dans l'histoire qui contiennent ce kanji, écrits uniquement en kana (idéalement en hiragana), sans kanji ni romaji (par exemple 食べる → "たべる"). Choisis 1 à 3 exemples représentatifs, en privilégiant les verbes ou expressions un peu complexes.
+
   Tu dois répondre STRICTEMENT au format JSON suivant (sans texte avant ou après, sans commentaires) :
 {
   "story_ja": "<l'histoire complète en japonais, sans traduction, sans furigana, sans romaji>",
@@ -93,7 +95,11 @@ export async function POST(req: NextRequest) {
     {
       "char": "<un kanji utilisé dans l'histoire mais qui ne vient PAS de la liste de départ>",
       "lecture": "<lecture principale en hiragana>",
-      "sens_fr": "<sens principal en français>"
+      "sens_fr": "<sens principal en français>",
+      "examples_kana": [
+        "<mot ou forme en kana utilisant ce kanji>",
+        "..."
+      ]
     }
   ]
 }
@@ -138,7 +144,12 @@ Assure-toi que chaque kanji listé dans "extra_kanji" apparaît vraiment dans l'
 
     let story = "";
     let translation = "";
-    let extraKanji: { char: string; lecture?: string; sens_fr?: string }[] = [];
+    let extraKanji: {
+      char: string;
+      lecture?: string;
+      sens_fr?: string;
+      examplesKana?: string[];
+    }[] = [];
 
     try {
       const parsed = JSON.parse(rawContent);
@@ -155,6 +166,9 @@ Assure-toi que chaque kanji listé dans "extra_kanji" apparaît vraiment dans l'
             char: item.char,
             lecture: typeof item.lecture === "string" ? item.lecture : undefined,
             sens_fr: typeof item.sens_fr === "string" ? item.sens_fr : undefined,
+            examplesKana: Array.isArray(item.examples_kana)
+              ? item.examples_kana.filter((v: any) => typeof v === "string")
+              : undefined,
           }));
       }
     } catch (e) {

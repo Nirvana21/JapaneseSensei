@@ -18,7 +18,7 @@ export default function MiniStoriesPage() {
   const [story, setStory] = useState("");
   const [translation, setTranslation] = useState("");
   const [extraKanji, setExtraKanji] = useState<
-    { char: string; lecture?: string; sens_fr?: string }[]
+    { char: string; lecture?: string; sens_fr?: string; examplesKana?: string[] }[]
   >([]);
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,7 +95,7 @@ export default function MiniStoriesPage() {
       const data = await res.json();
       const text = (data?.story as string) || "";
       const trans = (data?.translation as string) || "";
-      const extra = (data?.extraKanji as { char: string; lecture?: string; sens_fr?: string }[]) || [];
+      const extra = (data?.extraKanji as { char: string; lecture?: string; sens_fr?: string; examplesKana?: string[] }[]) || [];
       setStory(text.trim());
       setTranslation(trans.trim());
       setExtraKanji(extra);
@@ -345,20 +345,35 @@ export default function MiniStoriesPage() {
                     <span>🧩</span>
                     <span>Autres kanjis rencontrés dans l'histoire</span>
                   </h3>
-                  <ul className="space-y-1 text-xs md:text-sm text-amber-800">
+                  <ul className="space-y-2 text-xs md:text-sm text-amber-800">
                     {extraKanji.map((k) => (
-                      <li key={k.char} className="flex items-baseline gap-2">
-                        <span className="text-lg">{k.char}</span>
-                        <span className="text-amber-700">
-                          {k.lecture && <span className="mr-2">[{k.lecture}]</span>}
-                          {k.sens_fr || "(sens non précisé)"}
-                        </span>
+                      <li key={k.char} className="flex flex-col gap-0.5">
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-lg">{k.char}</span>
+                          <span className="text-amber-700">
+                            {k.lecture && <span className="mr-2">[{k.lecture}]</span>}
+                            {k.sens_fr || "(sens non précisé)"}
+                          </span>
+                        </div>
+                        {k.examplesKana && k.examplesKana.length > 0 && (
+                          <div className="pl-7 text-[11px] md:text-xs text-amber-700 flex flex-wrap gap-1.5 items-center">
+                            <span className="font-medium text-amber-800">Exemples (かな) :</span>
+                            {k.examplesKana.slice(0, 3).map((ex, idx) => (
+                              <span
+                                key={`${k.char}-ex-${idx}`}
+                                className="px-2 py-0.5 rounded-full bg-amber-100 border border-amber-200 text-amber-900"
+                              >
+                                {ex}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </li>
                     ))}
                   </ul>
                   <p className="mt-2 text-[11px] md:text-xs text-amber-600">
                     Ces kanjis ne sont pas encore dans ta collection, mais ils apparaissent dans l'histoire.
-                    Tu peux les ajouter plus tard si tu veux les travailler.
+                    Tu peux les ajouter plus tard si tu veux les travailler — les mots en かな ci-dessus montrent quelques usages plus complexes (verbes, expressions...).
                   </p>
                 </div>
               )}
