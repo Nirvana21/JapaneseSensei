@@ -238,7 +238,13 @@ export default function KanjiLegendsPage() {
       <header className="sticky top-0 z-50 bg-gradient-to-r from-indigo-100/90 to-blue-100/90 backdrop-blur-md border-b border-indigo-200/50 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 px-3 py-2 bg-indigo-200/50 hover:bg-blue-200/50 text-indigo-800 font-medium rounded-lg transition-colors">
-            <span>←</span>
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-indigo-300/70">
+              <img
+                src="/sprites/logo_maison.png"
+                alt="Menu principal"
+                className="w-full h-full object-cover"
+              />
+            </span>
             <span className="hidden sm:inline">Menu</span>
           </Link>
           <h1 className="text-xl font-bold text-indigo-900">🔶 Kanji Legends (mode radicaux)</h1>

@@ -171,9 +171,16 @@ export default function MiniStoriesPage() {
           </div>
           <Link
             href="/"
-            className="px-3 py-1.5 rounded-xl bg-amber-200/80 hover:bg-amber-300 text-amber-900 text-xs md:text-sm font-medium shadow-sm border border-amber-300 transition-colors"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-200/80 hover:bg-amber-300 text-amber-900 text-xs md:text-sm font-medium shadow-sm border border-amber-300 transition-colors"
           >
-            ← Menu
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-amber-300/70">
+              <img
+                src="/sprites/logo_maison.png"
+                alt="Menu principal"
+                className="w-full h-full object-cover"
+              />
+            </span>
+            <span className="hidden sm:inline">Menu</span>
           </Link>
         </div>
       </header>

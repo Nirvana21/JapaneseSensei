@@ -23,92 +23,82 @@ import {
 } from "../../services/survivalService";
 
 // Composant interne qui utilise useSearchParams
-function TrainingPageContent() {
-  const { kanjis } = useKanjis();
-  const searchParams = useSearchParams();
-  const [selectedKanjis, setSelectedKanjis] = useState<SimpleLearningKanji[]>(
-    []
-  );
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [showAnswer, setShowAnswer] = useState(false);
-  const [trainingMode, setTrainingMode] = useState<"fr-to-jp" | "jp-to-fr">(
-    "fr-to-jp"
-  );
-  const [difficultyMode, setDifficultyMode] = useState<
-    "normal" | "hard" | "hardcore"
-  >("normal");
-  const [isHardcoreModeAvailable, setIsHardcoreModeAvailable] = useState(true);
-  const [stats, setStats] = useState({
-    correct: 0,
-    total: 0,
-    sessionComplete: false,
-  });
-  const [selectedKanji, setSelectedKanji] =
-    useState<SimpleLearningKanji | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [clearCanvas, setClearCanvas] = useState(0);
-  const [learningStats, setLearningStats] = useState<any>(null);
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   
   // États pour le mode Survival
-  const [gameMode, setGameMode] = useState<'normal' | 'survival'>('normal');
   const [survivalState, setSurvivalState] = useState<SurvivalState | null>(null);
   const [survivalStats, setSurvivalStats] = useState<SurvivalStats | null>(null);
-  const [currentSurvivalKanji, setCurrentSurvivalKanji] = useState<SimpleLearningKanji | null>(null);
-  const [allLearningKanjis, setAllLearningKanjis] = useState<
-    SimpleLearningKanji[]
-  >([]);
-  const [trainingStrokeScale, setTrainingStrokeScale] = useState<number>(1);
-  const [survivalStrokeScale, setSurvivalStrokeScale] = useState<number>(1);
+            <div className="flex items-center gap-3">
+              <button
+                onClick={startNewSession}
+                className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all text-sm"
+              >
+                🔄 新セッション
+              </button>
 
-  // Initialiser avec les kanjis et le nouveau système simple
-  useEffect(() => {
-    if (kanjis.length > 0) {
-      // Convertir les kanjis en SimpleLearningKanji
-      const learningKanjis = kanjis.map((kanji) => {
-        // Charger les données existantes depuis localStorage
-        const existingData = localStorage.getItem(
-          `simple_learning_${kanji.id}`
-        );
-        if (existingData) {
-          const parsed = JSON.parse(existingData);
-          return {
-            ...kanji,
-            learningData: {
-              ...parsed.learningData,
-              lastSeen: new Date(parsed.learningData.lastSeen),
-            },
-            studyData: parsed.studyData,
-          };
-        }
-        return simpleAdaptiveLearningService.initializeLearningData(kanji);
-      });
+              <div className="flex items-center gap-2">
+                <select
+                  value={trainingMode}
+                  onChange={(e) =>
+                    setTrainingMode(e.target.value as "fr-to-jp" | "jp-to-fr")
+                  }
+                  className="px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 focus:ring-red-500"
+                >
+                  <option value="fr-to-jp">🇫🇷 → 🇯🇵</option>
+                  <option value="jp-to-fr">🇯🇵 → 🇫🇷</option>
+                </select>
 
-      setAllLearningKanjis(learningKanjis);
-
-      // Extraire les tags disponibles
-      const tags =
-        simpleAdaptiveLearningService.getAvailableTags(learningKanjis);
-      setAvailableTags(tags);
-
-      // Générer une nouvelle session (20 cartes par défaut)
-      generateNewSession(learningKanjis, []);
-    }
-  }, [kanjis]);
-
-  // Détecter le mode Survival dans l'URL
-  useEffect(() => {
-    const mode = searchParams.get('mode');
-    // Ne pas ré-initialiser si on a déjà un état de survie
-    if (mode === 'survival' && allLearningKanjis.length > 0 && !survivalState) {
-      // Lancer le mode Survival directement
-      setGameMode('survival');
-      const newSurvivalState = survivalService.initializeGame();
-      setSurvivalState(newSurvivalState);
-      setSurvivalStats(survivalService.getSurvivalStats());
-      
-      // Sélectionner le premier kanji
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl overflow-hidden bg-amber-200/90">
+                    <img
+                      src={
+                        difficultyMode === "normal"
+                          ? "/sprites/logo_party.png"
+                          : difficultyMode === "hard"
+                          ? "/sprites/logo_gamer.png"
+                          : "/sprites/logo_colere.png"
+                      }
+                      alt={
+                        difficultyMode === "normal"
+                          ? "Mode normal (party)"
+                          : difficultyMode === "hard"
+                          ? "Mode difficile (gamer)"
+                          : "Mode hardcore (colère)"
+                      }
+                      className="w-full h-full object-cover"
+                    />
+                  </span>
+                  <select
+                    value={difficultyMode}
+                    onChange={(e) =>
+                      handleDifficultyModeChange(
+                        e.target.value as "normal" | "hard" | "hardcore"
+                      )
+                    }
+                    className={`px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 transition-all ${
+                      difficultyMode === "hardcore"
+                        ? "focus:ring-purple-500 border-purple-500/50"
+                        : "focus:ring-red-500"
+                    }`}
+                  >
+                    <option value="normal">普通 Normal</option>
+                    <option value="hard">難しい Difficile</option>
+                    <option
+                      value="hardcore"
+                      disabled={!isHardcoreModeAvailable}
+                      className={
+                        !isHardcoreModeAvailable
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }
+                    >
+                      HARDCORE {""}
+                      {!isHardcoreModeAvailable ? "(tout maîtrisé!)" : ""}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          )}
       const firstKanji = survivalService.selectKanjiForSurvival(allLearningKanjis, 1);
       setCurrentSurvivalKanji(firstKanji);
     }
@@ -392,8 +382,14 @@ function TrainingPageContent() {
               href="/"
               className="flex items-center gap-2 px-3 py-2 bg-amber-200/50 hover:bg-orange-200/50 text-amber-800 font-medium rounded-lg transition-colors"
             >
-              <span>←</span>
-              <span className="hidden sm:inline">戻る</span>
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-amber-300/60">
+                <img
+                  src="/sprites/logo_maison.png"
+                  alt="Menu principal"
+                  className="w-full h-full object-cover"
+                />
+              </span>
+              <span className="hidden sm:inline">戻る Menu</span>
             </Link>
 
             <h1 className="text-xl font-bold text-red-800 text-center flex flex-col items-center gap-1">
@@ -661,9 +657,16 @@ function TrainingPageContent() {
               </button>
               <Link
                 href="/"
-                className="inline-block px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all shadow-lg transform hover:scale-105 hover:-translate-y-1"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all shadow-lg transform hover:scale-105 hover:-translate-y-1"
               >
-                🏠 Menu
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-blue-600/20">
+                  <img
+                    src="/sprites/logo_maison.png"
+                    alt="Menu principal"
+                    className="w-full h-full object-cover"
+                  />
+                </span>
+                <span>Menu</span>
               </Link>
             </div>
           </div>

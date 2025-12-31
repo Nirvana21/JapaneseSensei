@@ -239,7 +239,13 @@ export default function Home() {
                 onClick={() => setActiveSection("main")}
                 className="inline-flex items-center gap-2 text-sm text-amber-800 hover:text-red-700 px-3 py-1.5 rounded-lg hover:bg-amber-100/80 transition-colors"
               >
-                <span>←</span>
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-amber-300/70">
+                  <img
+                    src="/sprites/logo_maison.png"
+                    alt="Menu principal"
+                    className="w-full h-full object-cover"
+                  />
+                </span>
                 <span>Retour au menu principal</span>
               </button>
 
@@ -356,7 +362,13 @@ export default function Home() {
                 onClick={() => setActiveSection("main")}
                 className="inline-flex items-center gap-2 text-sm text-amber-800 hover:text-red-700 px-3 py-1.5 rounded-lg hover:bg-amber-100/80 transition-colors"
               >
-                <span>←</span>
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-amber-300/70">
+                  <img
+                    src="/sprites/logo_maison.png"
+                    alt="Menu principal"
+                    className="w-full h-full object-cover"
+                  />
+                </span>
                 <span>Retour au menu principal</span>
               </button>
 
@@ -446,7 +458,13 @@ export default function Home() {
               onClick={() => setCurrentView("menu")}
               className="flex items-center gap-2 px-4 py-2 text-amber-700 hover:text-red-700 transition-colors rounded-lg hover:bg-amber-200/50"
             >
-              <span>←</span>
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-amber-300/70">
+                <img
+                  src="/sprites/logo_maison.png"
+                  alt="Menu principal"
+                  className="w-full h-full object-cover"
+                />
+              </span>
               <span className="hidden sm:inline">戻る Menu</span>
             </button>
             <div className="text-center">

@@ -77,9 +77,16 @@ export default function ChatPage() {
           </div>
           <Link
             href="/"
-            className="px-3 py-2 rounded-xl bg-amber-200/80 hover:bg-amber-300 text-amber-900 text-sm font-medium shadow-sm border border-amber-300 transition-smooth hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-200/80 hover:bg-amber-300 text-amber-900 text-sm font-medium shadow-sm border border-amber-300 transition-smooth hover:-translate-y-0.5"
           >
-            ← Menu principal
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-amber-300/70">
+              <img
+                src="/sprites/logo_maison.png"
+                alt="Menu principal"
+                className="w-full h-full object-cover"
+              />
+            </span>
+            <span className="hidden sm:inline">Menu principal</span>
           </Link>
         </div>
       </header>
