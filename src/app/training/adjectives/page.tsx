@@ -75,7 +75,16 @@ export default function AdjectivesTrainingPage() {
             <span>←</span>
             <span className="hidden sm:inline">戻る</span>
           </Link>
-          <h1 className="text-xl font-bold text-red-800">🎨 Adjectifs – formes</h1>
+          <h1 className="text-xl font-bold text-red-800 flex items-center gap-2">
+            <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl overflow-hidden bg-red-200/80">
+              <img
+                src="/sprites/logo_pensif.png"
+                alt="Adjectifs – formes"
+                className="w-full h-full object-cover"
+              />
+            </span>
+            <span>Adjectifs – formes</span>
+          </h1>
           <div className="w-16" />
         </div>
       </header>

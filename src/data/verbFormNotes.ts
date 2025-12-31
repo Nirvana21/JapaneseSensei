@@ -22,14 +22,15 @@ export function getVerbFormNote(spec: VerbFormSpec): VerbFormNote {
     case 'masu':
       return {
         title: 'Forme ます (polie)',
-        usage: politeSuffix(spec.tense, spec.polarity),
+        usage: politeSuffix(spec.tense, spec.polarity) + ' — registre poli pour parler de ses actions.',
         tips: [
           'Registre poli – à utiliser avec inconnus, supérieur hiérarchique, contexte formel.',
           'Pas de distinction futur/présent en japonais: 〜ます couvre les deux selon le contexte.',
         ],
         examples: [
-          '食べます (je mange/je mangerai)',
-          '食べませんでした (je n’ai pas mangé)',
+          '毎朝七時に起きます。— Je me lève à sept heures tous les matins.',
+          '昨日映画を見ました。— J’ai regardé un film hier.',
+          '今日は行きません。— Aujourd’hui, je n’y vais pas.',
         ],
       };
     case 'te':
@@ -41,8 +42,9 @@ export function getVerbFormNote(spec: VerbFormSpec): VerbFormNote {
           'Très polyvalente, sert aussi pour relier des propositions.',
         ],
         examples: [
-          '読んでください (lisez s.v.p.)',
-          '今、読んでいる (je suis en train de lire)',
+          '本を読んで、寝ます。— Je lis un livre et je vais dormir.',
+          '窓を開けてください。— Ouvrez la fenêtre, s’il vous plaît.',
+          '今、本を読んでいる。— Je suis en train de lire un livre.',
         ],
       };
     case 'ta':
@@ -53,8 +55,8 @@ export function getVerbFormNote(spec: VerbFormSpec): VerbFormNote {
           'Équivalent familier de ました.',
         ],
         examples: [
-          '食べた (j’ai mangé)',
-          '行った (je suis allé)',
+          '晩ご飯を食べた。— J’ai mangé le dîner.',
+          '昨日京都に行った。— Je suis allé à Kyoto hier.',
         ],
       };
     case 'nai':
@@ -65,8 +67,8 @@ export function getVerbFormNote(spec: VerbFormSpec): VerbFormNote {
           'Pour le poli, utilisez 〜ません.',
         ],
         examples: [
-          '読まない (je ne lis pas)',
-          'しない (je ne fais pas)',
+          'お酒を飲まない。— Je ne bois pas d’alcool.',
+          '宿題をしない。— Je ne fais pas mes devoirs.',
         ],
       };
     case 'volitional': {
@@ -78,8 +80,8 @@ export function getVerbFormNote(spec: VerbFormSpec): VerbFormNote {
           'Courant: 〜よう / Godan: o + う. Polie: 〜ましょう.',
         ],
         examples: [
-          '食べよう (mangeons !)',
-          '読みましょう (lisons !)',
+          '映画を見よう。— Et si on regardait un film ?',
+          '一緒に勉強しましょう。— Étudions ensemble.',
         ],
       };
     }
@@ -92,8 +94,8 @@ export function getVerbFormNote(spec: VerbFormSpec): VerbFormNote {
           'Ichidan: 〜られる ; Godan: rang e + る ; する→できる ; 来る→来られる.',
         ],
         examples: [
-          '読める / 読めます (je peux lire)',
-          '来られる / 来られます (je peux venir)',
+          '日本語が話せます。— Je peux parler japonais.',
+          '泳げない。— Je ne peux pas nager.',
         ],
       };
     }
@@ -106,8 +108,8 @@ export function getVerbFormNote(spec: VerbFormSpec): VerbFormNote {
           'Ichidan: 〜られる ; Godan: rang a + れる ; する→される ; 来る→来られる.',
         ],
         examples: [
-          '読まれる / 読まれます (être lu)',
-          'される / されます (être fait)',
+          '犬に噛まれた。— Je me suis fait mordre par un chien.',
+          '先生にほめられた。— J’ai été félicité par le professeur.',
         ],
       };
     }
@@ -120,8 +122,8 @@ export function getVerbFormNote(spec: VerbFormSpec): VerbFormNote {
           'Ichidan: 〜させる ; Godan: rang a + せる ; 来る→来させる ; する→させる.',
         ],
         examples: [
-          '読ませる / 読ませます (faire lire)',
-          '来させる / 来させます (faire venir)',
+          '子どもに野菜を食べさせる。— Faire manger des légumes à l’enfant.',
+          '友達を待たせてしまった。— J’ai laissé/fait attendre mon ami.',
         ],
       };
     }

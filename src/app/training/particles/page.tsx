@@ -47,7 +47,16 @@ export default function ParticlesTrainingPage() {
             <span>←</span>
             <span className="hidden sm:inline">戻る</span>
           </Link>
-          <h1 className="text-xl font-bold text-red-800">🧩 Particules – trous</h1>
+          <h1 className="text-xl font-bold text-red-800 flex items-center gap-2">
+            <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl overflow-hidden bg-red-200/80">
+              <img
+                src="/sprites/logo_pensif.png"
+                alt="Particules – cours"
+                className="w-full h-full object-cover"
+              />
+            </span>
+            <span>Particules – trous & règle</span>
+          </h1>
           <div className="w-16" />
         </div>
       </header>

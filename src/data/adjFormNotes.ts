@@ -31,8 +31,10 @@ export function getAdjFormNote(spec: AdjFormSpec): AdjFormNote {
           'na-adjectifs: copule だ (courant) / です (poli) ; négation じゃない.',
         ],
         examples: [
-          '高いです / 高くないです / 高かったです',
-          '静かだ / 静かじゃない / 静かでした',
+          'この本は面白いです。— Ce livre est intéressant.',
+          '今日は寒くないです。— Aujourd’hui, il ne fait pas froid.',
+          '部屋は静かだ。— La chambre est calme.',
+          'この町は静かじゃない。— Cette ville n’est pas calme.',
         ],
       };
     }
@@ -44,8 +46,8 @@ export function getAdjFormNote(spec: AdjFormSpec): AdjFormNote {
           'i-adjectifs: 〜くて ; na-adjectifs: 〜で.',
         ],
         examples: [
-          '安くておいしい (pas cher et bon)',
-          '便利で静か (pratique et calme)'
+          '安くておいしい。— C’est pas cher et bon.',
+          '便利で静かです。— C’est pratique et calme.',
         ],
       };
     case 'adverbial':
@@ -56,8 +58,8 @@ export function getAdjFormNote(spec: AdjFormSpec): AdjFormNote {
           'i-adjectifs: 〜く ; na-adjectifs: 〜に.',
         ],
         examples: [
-          '早く起きる (se lever tôt)',
-          '静かに話す (parler calmement)'
+          '早く起きる。— Se lever tôt.',
+          '静かに話す。— Parler calmement.',
         ],
       };
     default:
