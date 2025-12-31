@@ -58,13 +58,22 @@ export default function ChatPage() {
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 flex flex-col">
       <header className="bg-gradient-to-r from-amber-100/90 to-orange-100/90 backdrop-blur-md border-b border-amber-200/50">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-red-800 to-orange-800 bg-clip-text text-transparent">
-              Japanese Sensei - Chat
-            </h1>
-            <p className="text-amber-700 text-sm md:text-base">
-              Pose tes questions sur les kanjis, la grammaire ou le vocabulaire.
-            </p>
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden shadow-md bg-red-100">
+              <img
+                src="/sprites/logo_amour.png"
+                alt="Japanese Sensei - Chat"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-red-800 to-orange-800 bg-clip-text text-transparent truncate">
+                Japanese Sensei - Chat
+              </h1>
+              <p className="text-amber-700 text-sm md:text-base truncate">
+                Pose tes questions sur les kanjis, la grammaire ou le vocabulaire.
+              </p>
+            </div>
           </div>
           <Link
             href="/"
