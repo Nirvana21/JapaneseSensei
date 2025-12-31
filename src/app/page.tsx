@@ -103,7 +103,7 @@ export default function Home() {
           {/* Vue principale : petite grille d'icônes */}
           {activeSection === "main" && (
             <>
-              <div className="mb-8 flex flex-col items-center text-center gap-2">
+              <div className="mb-8 flex flex-col items-center text-center gap-2 animate-fade-in-up">
                 <p className="text-sm text-amber-800">
                   Choisis une section pour continuer ton entraînement.
                 </p>
@@ -118,12 +118,12 @@ export default function Home() {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6 animate-fade-in-up">
                 {/* Jeux */}
                 <button
                   type="button"
                   onClick={() => setActiveSection("games")}
-                  className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-100/90 to-blue-100/90 border border-indigo-200/70 px-4 py-6 shadow-md hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors"
+                  className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-100/90 to-blue-100/90 border border-indigo-200/70 px-4 py-6 shadow-md hover:border-indigo-400 hover:bg-indigo-50/90 transition-bounce hover:-translate-y-0.5"
                 >
                   <span className="text-3xl mb-2">🎮</span>
                   <span className="text-sm font-semibold text-indigo-900 mb-1">
@@ -138,7 +138,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => setCurrentView("collection")}
-                  className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-emerald-100/90 to-green-100/90 border border-emerald-200/70 px-4 py-6 shadow-md hover:border-emerald-400 hover:bg-emerald-50/90 transition-colors"
+                  className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-emerald-100/90 to-green-100/90 border border-emerald-200/70 px-4 py-6 shadow-md hover:border-emerald-400 hover:bg-emerald-50/90 transition-bounce hover:-translate-y-0.5"
                 >
                   <span className="text-3xl mb-2">📖</span>
                   <span className="text-sm font-semibold text-emerald-900 mb-1">
@@ -153,7 +153,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => setActiveSection("grammar")}
-                  className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-amber-100/90 to-yellow-100/90 border border-amber-200/70 px-4 py-6 shadow-md hover:border-amber-400 hover:bg-amber-50/90 transition-colors"
+                  className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-amber-100/90 to-yellow-100/90 border border-amber-200/70 px-4 py-6 shadow-md hover:border-amber-400 hover:bg-amber-50/90 transition-bounce hover:-translate-y-0.5"
                 >
                   <span className="text-3xl mb-2">✏️</span>
                   <span className="text-sm font-semibold text-amber-900 mb-1">
@@ -168,7 +168,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => router.push("/stats")}
-                  className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-rose-100/90 to-pink-100/90 border border-rose-200/70 px-4 py-6 shadow-md hover:border-rose-400 hover:bg-rose-50/90 transition-colors"
+                  className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-rose-100/90 to-pink-100/90 border border-rose-200/70 px-4 py-6 shadow-md hover:border-rose-400 hover:bg-rose-50/90 transition-bounce hover:-translate-y-0.5"
                 >
                   <span className="text-3xl mb-2">📊</span>
                   <span className="text-sm font-semibold text-rose-900 mb-1">

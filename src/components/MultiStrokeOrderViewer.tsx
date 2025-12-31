@@ -116,15 +116,6 @@ export default function MultiStrokeOrderViewer({
               </div>
             ))}
           </div>
-
-          {/* Informations supplémentaires */}
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h4 className="font-medium text-blue-800 mb-2">💡 Conseil d&apos;étude</h4>
-            <p className="text-sm text-blue-700">
-              Pour bien mémoriser, pratiquez d&apos;abord chaque kanji individuellement, 
-              puis écrivez le mot complet &quot;{text}&quot; en respectant l&apos;ordre des traits.
-            </p>
-          </div>
         </div>
       )}
     </div>

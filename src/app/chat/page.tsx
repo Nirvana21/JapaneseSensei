@@ -68,7 +68,7 @@ export default function ChatPage() {
           </div>
           <Link
             href="/"
-            className="px-3 py-2 rounded-xl bg-amber-200/80 hover:bg-amber-300 text-amber-900 text-sm font-medium shadow-sm border border-amber-300 transition-colors"
+            className="px-3 py-2 rounded-xl bg-amber-200/80 hover:bg-amber-300 text-amber-900 text-sm font-medium shadow-sm border border-amber-300 transition-smooth hover:-translate-y-0.5"
           >
             ← Menu principal
           </Link>
@@ -76,7 +76,7 @@ export default function ChatPage() {
       </header>
 
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-6 flex flex-col gap-4">
-        <div className="flex-1 overflow-y-auto bg-white/70 backdrop-blur-sm rounded-3xl shadow-md border border-amber-100 p-4 space-y-3">
+        <div className="flex-1 overflow-y-auto bg-white/70 backdrop-blur-sm rounded-3xl shadow-md border border-amber-100 p-4 space-y-3 animate-fade-in-up">
           {messages.length === 0 && (
             <div className="text-center text-amber-700 text-sm md:text-base">
               💬 Commence par demander :
@@ -118,7 +118,7 @@ export default function ChatPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md border border-amber-100 p-3 flex flex-col gap-2"
+          className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md border border-amber-100 p-3 flex flex-col gap-2 animate-fade-in-up"
         >
           <textarea
             className="w-full rounded-xl border border-amber-200 bg-amber-50/70 px-3 py-2 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 resize-none min-h-[70px] max-h-40"
@@ -133,7 +133,7 @@ export default function ChatPage() {
             <button
               type="submit"
               disabled={loading || !input.trim()}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-red-500 to-orange-500 text-white text-sm font-semibold shadow-md disabled:opacity-60 disabled:cursor-not-allowed hover:shadow-lg transition-shadow"
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-red-500 to-orange-500 text-white text-sm font-semibold shadow-md disabled:opacity-60 disabled:cursor-not-allowed hover:shadow-lg transition-bounce hover:-translate-y-0.5"
             >
               {loading ? "Envoi en cours…" : "Envoyer"}
             </button>

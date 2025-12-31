@@ -478,10 +478,6 @@ export default function KanjiLegendsPage() {
                       <StrokeOrderViewer kanji={target.char} className="w-full max-w-[220px]" />
                     </div>
                   </div>
-
-                  <p className="text-[11px] text-indigo-500 leading-snug">
-                    Astuce: observe la logique des radicaux (forme + sens) puis réécris le kanji en respectant l&apos;ordre des traits.
-                  </p>
                 </>
               ) : (
                 <p className="text-xs text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-xl px-3 py-2">

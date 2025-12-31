@@ -237,7 +237,7 @@ export default function StatsPage() {
       {/* Contenu principal épuré */}
       <main className="max-w-6xl mx-auto px-4 py-8">
         {/* Métriques principales zen */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-fade-in-up">
           <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 rounded-2xl p-6 border border-orange-200/50 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
@@ -361,7 +361,7 @@ export default function StatsPage() {
 
         {/* Distribution de maîtrise zen */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div className="bg-gradient-to-br from-red-100/90 to-pink-100/90 rounded-2xl p-6 border border-red-200/50 shadow-sm">
+          <div className="bg-gradient-to-br from-red-100/90 to-pink-100/90 rounded-2xl p-6 border border-red-200/50 shadow-sm animate-fade-in-up">
             <h2 className="text-xl font-light text-red-800 mb-6 flex items-center gap-3">
               <span>🎯</span>
               <span>習熟度 Maîtrise</span>
@@ -422,7 +422,7 @@ export default function StatsPage() {
           </div>
 
           {/* Tags zen */}
-          <div className="bg-gradient-to-br from-green-100/90 to-emerald-100/90 rounded-2xl p-6 border border-green-200/50 shadow-sm">
+          <div className="bg-gradient-to-br from-green-100/90 to-emerald-100/90 rounded-2xl p-6 border border-green-200/50 shadow-sm animate-fade-in-up">
             <h2 className="text-xl font-light text-green-800 mb-6 flex items-center gap-3">
               <span>🏷️</span>
               <span>タグ Tags</span>
@@ -461,7 +461,7 @@ export default function StatsPage() {
 
         {/* Kanjis zen */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div className="bg-gradient-to-br from-amber-100/90 to-orange-100/90 rounded-2xl p-6 border border-amber-200/50 shadow-sm">
+          <div className="bg-gradient-to-br from-amber-100/90 to-orange-100/90 rounded-2xl p-6 border border-amber-200/50 shadow-sm animate-fade-in-up">
             <h2 className="text-xl font-light text-amber-800 mb-6 flex items-center gap-3">
               <span>💡</span>
               <span>練習必要 À travailler</span>
@@ -503,7 +503,7 @@ export default function StatsPage() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-yellow-100/90 to-amber-100/90 rounded-2xl p-6 border border-yellow-200/50 shadow-sm">
+          <div className="bg-gradient-to-br from-yellow-100/90 to-amber-100/90 rounded-2xl p-6 border border-yellow-200/50 shadow-sm animate-fade-in-up">
             <h2 className="text-xl font-light text-yellow-800 mb-6 flex items-center gap-3">
               <span>🏆</span>
               <span>習得済み Maîtrisés</span>

@@ -658,7 +658,7 @@ function TrainingPageContent() {
                             className="w-full p-4 bg-orange-200/80 hover:bg-orange-300/80 rounded-xl border border-orange-300 hover:border-orange-400 transition-all group"
                           >
                             <p className="text-sm text-orange-700 mb-2">
-                              漢字詳細 Kanji (cliquez pour les détails) :
+                              漢字詳細 Détails du kanji
                             </p>
                             <div className="flex items-center justify-center gap-3">
                               <p className="text-4xl sm:text-6xl font-bold text-red-900 group-hover:scale-110 transition-transform">
@@ -680,11 +680,7 @@ function TrainingPageContent() {
                                 </svg>
                               </div>
                             </div>
-                            <p className="text-xs text-orange-600 mt-2">
-                              筆順・読み方・詳細を見るためにクリック Cliquez
-                              pour voir l'ordre des traits, lectures et plus de
-                              détails
-                            </p>
+                            
                           </button>
                         </div>
                       )}

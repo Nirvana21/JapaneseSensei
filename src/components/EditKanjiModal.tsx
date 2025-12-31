@@ -319,11 +319,7 @@ export default function EditKanjiModal({
                 </button>
               ))}
             </div>
-            <p className="text-xs text-orange-600 mt-2">
-              💡 習熟度を調整してセッション頻度を変更 Modifie le niveau de
-              maîtrise pour influencer la fréquence d'apparition dans les
-              sessions
-            </p>
+            
           </div>
 
           {/* Notes personnelles */}
@@ -352,10 +348,7 @@ export default function EditKanjiModal({
               rows={2}
               className="w-full px-3 py-2 bg-white/80 border border-orange-300 text-red-900 placeholder-orange-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors resize-none"
             />
-            <p className="text-xs text-orange-600 mt-1">
-              💡 カンマでタグを分ける Utilisez des virgules pour séparer les
-              tags. Ex: "difficile, important, N3"
-            </p>
+            
           </div>
 
           {/* Difficulté */}

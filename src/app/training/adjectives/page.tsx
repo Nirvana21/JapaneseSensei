@@ -82,7 +82,7 @@ export default function AdjectivesTrainingPage() {
 
       <main className="max-w-3xl mx-auto px-4 py-8">
         {/* Controls */}
-        <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 rounded-2xl border border-orange-200/50 p-4 sm:p-6 shadow-lg mb-6">
+        <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 rounded-2xl border border-orange-200/50 p-4 sm:p-6 shadow-lg mb-6 animate-fade-in-up">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm text-orange-700 mb-1">Forme</label>
@@ -124,7 +124,7 @@ export default function AdjectivesTrainingPage() {
 
         {/* Card */}
         {current && (
-          <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 rounded-3xl border border-orange-200/50 p-6 shadow-xl">
+          <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 rounded-3xl border border-orange-200/50 p-6 shadow-xl animate-fade-in-up">
             <div className="text-center mb-4">
               <p className="text-sm text-orange-700">Adjectif</p>
               <div className="text-4xl font-bold text-red-800">{current.dict}</div>

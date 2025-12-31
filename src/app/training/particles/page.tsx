@@ -54,7 +54,7 @@ export default function ParticlesTrainingPage() {
 
       <main className="max-w-3xl mx-auto px-4 py-8">
         {current && (
-          <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 rounded-3xl border border-orange-200/50 p-6 shadow-xl">
+          <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 rounded-3xl border border-orange-200/50 p-6 shadow-xl animate-fade-in-up">
             <div className="text-center mb-4">
               <p className="text-sm text-orange-700">Complétez avec la particule correcte</p>
               <div className="text-2xl sm:text-3xl font-bold text-red-800 break-words leading-relaxed">

@@ -169,7 +169,7 @@ export default function MiniStoriesPage() {
 
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 py-4 md:py-6 flex flex-col gap-4 md:gap-6">
         {/* Panneau de configuration */}
-        <section className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-md border border-amber-100 p-4 md:p-5 space-y-4">
+        <section className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-md border border-amber-100 p-4 md:p-5 space-y-4 animate-fade-in-up">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="text-sm md:text-base font-semibold text-amber-900 flex items-center gap-2">
@@ -300,7 +300,7 @@ export default function MiniStoriesPage() {
         </section>
 
         {/* Zone d'histoire */}
-        <section className="flex-1 bg-white/85 backdrop-blur-sm rounded-3xl shadow-md border border-amber-100 p-4 md:p-6 min-h-[260px] space-y-4">
+        <section className="flex-1 bg-white/85 backdrop-blur-sm rounded-3xl shadow-md border border-amber-100 p-4 md:p-6 min-h-[260px] space-y-4 animate-fade-in-up">
           {story ? (
             <>
               <div className="flex items-center justify-between gap-2 mb-1">
