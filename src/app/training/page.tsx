@@ -400,84 +400,76 @@ function TrainingPageContent() {
               className="px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-medium rounded-lg hover:from-green-600 hover:to-emerald-700 transition-all text-sm"
             >
               🔄 新セッション
-                <button
-                  onClick={onBackToMenu}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-100/80 text-amber-900 text-xs font-medium border border-amber-200 hover:bg-amber-200/80 transition-colors"
-                >
-                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-white/80">
-                    <img
-                      src="/sprites/logo_maison.png"
-                      alt="Menu principal"
-                      className="w-full h-full object-cover"
-                    />
-                  </span>
-                  <span>Menu</span>
-                </button>
+            </button>
+          </div>
+
+          {/* Deuxième ligne : Contrôles zen */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <select
+                value={trainingMode}
+                onChange={(e) =>
+                  setTrainingMode(e.target.value as "fr-to-jp" | "jp-to-fr")
+                }
+                className="px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 focus:ring-red-500"
+              >
+                <option value="fr-to-jp">🇫🇷 → 🇯🇵</option>
+                <option value="jp-to-fr">🇯🇵 → 🇫🇷</option>
+              </select>
+
               <div className="flex items-center gap-2">
-                <select
-                  value={trainingMode}
-                  onChange={(e) =>
-                    setTrainingMode(e.target.value as "fr-to-jp" | "jp-to-fr")
-                  }
-                  className="px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 focus:ring-red-500"
-                >
-                  <option value="fr-to-jp">🇫🇷 → 🇯🇵</option>
-                  <option value="jp-to-fr">🇯🇵 → 🇫🇷</option>
-                </select>
-
-                <div className="flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl overflow-hidden bg-amber-200/90">
-                    <img
-                      src={
-                        difficultyMode === "normal"
-                          ? "/sprites/logo_party.png"
-                          : difficultyMode === "hard"
-                          ? "/sprites/logo_gamer.png"
-                          : "/sprites/logo_colere.png"
-                      }
-                      alt={
-                        difficultyMode === "normal"
-                          ? "Mode normal (party)"
-                          : difficultyMode === "hard"
-                          ? "Mode difficile (gamer)"
-                          : "Mode hardcore (colère)"
-                      }
-                      className="w-full h-full object-cover"
-                    />
-                  </span>
-                  <select
-                    value={difficultyMode}
-                    onChange={(e) =>
-                      handleDifficultyModeChange(
-                        e.target.value as "normal" | "hard" | "hardcore"
-                      )
+                <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl overflow-hidden bg-amber-200/90">
+                  <img
+                    src={
+                      difficultyMode === "normal"
+                        ? "/sprites/logo_party.png"
+                        : difficultyMode === "hard"
+                        ? "/sprites/logo_gamer.png"
+                        : "/sprites/logo_colere.png"
                     }
-                    className={`px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 transition-all ${
-                      difficultyMode === "hardcore"
-                        ? "focus:ring-purple-500 border-purple-500/50"
-                        : "focus:ring-red-500"
-                    }`}
+                    alt={
+                      difficultyMode === "normal"
+                        ? "Mode normal (party)"
+                        : difficultyMode === "hard"
+                        ? "Mode difficile (gamer)"
+                        : "Mode hardcore (colère)"
+                    }
+                    className="w-full h-full object-cover"
+                  />
+                </span>
+                <select
+                  value={difficultyMode}
+                  onChange={(e) =>
+                    handleDifficultyModeChange(
+                      e.target.value as "normal" | "hard" | "hardcore"
+                    )
+                  }
+                  className={`px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 transition-all ${
+                    difficultyMode === "hardcore"
+                      ? "focus:ring-purple-500 border-purple-500/50"
+                      : "focus:ring-red-500"
+                  }`}
+                >
+                  <option value="normal">普通 Normal</option>
+                  <option value="hard">難しい Difficile</option>
+                  <option
+                    value="hardcore"
+                    disabled={!isHardcoreModeAvailable}
+                    className={
+                      !isHardcoreModeAvailable
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }
                   >
-                    <option value="normal">普通 Normal</option>
-                    <option value="hard">難しい Difficile</option>
-                    <option
-                      value="hardcore"
-                      disabled={!isHardcoreModeAvailable}
-                      className={
-                        !isHardcoreModeAvailable
-                          ? "opacity-50 cursor-not-allowed"
-                          : ""
-                      }
-                    >
-                      HARDCORE {""}
-                      {!isHardcoreModeAvailable ? "(tout maîtrisé!)" : ""}
-                    </option>
-                  </select>
-                </div>
+                    HARDCORE {""}
+                    {!isHardcoreModeAvailable ? "(tout maîtrisé!)" : ""}
+                  </option>
+                </select>
               </div>
+            </div>
 
-              {/* Statistiques centrées zen - masquées pendant la session */}
-              <div className="flex items-center gap-3">
+            {/* Statistiques centrées zen - masquées pendant la session */}
+            <div className="flex items-center gap-3">
                 {/* Score masqué pendant la session pour éviter de spoiler */}
                 {stats.sessionComplete && (
                   <div className="px-3 py-1 bg-green-100/90 text-green-700 rounded-lg text-sm border border-green-300/50">
