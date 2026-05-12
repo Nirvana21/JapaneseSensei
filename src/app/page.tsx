@@ -146,7 +146,7 @@ export default function Home() {
                     Jeux
                   </span>
                   <span className="text-[11px] text-indigo-700 text-center">
-                    Quiz, survival, Kanji Legends, histoires...
+                    Speed Match, Kana Rain, Mémory, JLPT...
                   </span>
                 </button>
 
@@ -301,19 +301,119 @@ export default function Home() {
                 </Link>
 
                 <Link
-                  href="/game/kanji-legends"
+                  href="/game/speed-match"
                   className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
                 >
                   <div className="flex items-center justify-between w-full mb-1">
                     <span className="text-sm font-semibold text-indigo-900">
-                      Kanji Legends
+                      Speed Match
                     </span>
                     <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
                       →
                     </span>
                   </div>
                   <p className="text-xs text-indigo-700">
-                    Assemble les composants et maîtrise les kanjis.
+                    QCM chrono — trouve le sens avant la fin du temps !
+                  </p>
+                </Link>
+
+                <Link
+                  href="/game/kana-rain"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-indigo-900">
+                      Kana Rain
+                    </span>
+                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
+                      →
+                    </span>
+                  </div>
+                  <p className="text-xs text-indigo-700">
+                    Les kanjis tombent — tape leur lecture à temps !
+                  </p>
+                </Link>
+
+                <Link
+                  href="/game/sens-cache"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-indigo-900">
+                      Sens Caché
+                    </span>
+                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
+                      →
+                    </span>
+                  </div>
+                  <p className="text-xs text-indigo-700">
+                    Un mot en japonais — retrouve son sens dans la liste.
+                  </p>
+                </Link>
+
+                <Link
+                  href="/game/memory"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-indigo-900">
+                      Mémory
+                    </span>
+                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
+                      →
+                    </span>
+                  </div>
+                  <p className="text-xs text-indigo-700">
+                    Associe les paires kanji–sens retournés.
+                  </p>
+                </Link>
+
+                <Link
+                  href="/game/histoire-a-trous"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-indigo-900">
+                      Histoire à trous
+                    </span>
+                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
+                      →
+                    </span>
+                  </div>
+                  <p className="text-xs text-indigo-700">
+                    Complète les blancs dans une mini-histoire japonaise.
+                  </p>
+                </Link>
+
+                <Link
+                  href="/game/duo-duel"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-purple-400 hover:bg-purple-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-indigo-900">
+                      Duo Duel
+                    </span>
+                    <span className="text-[10px] text-purple-600 font-medium bg-purple-100 px-1.5 py-0.5 rounded-full">bientôt</span>
+                  </div>
+                  <p className="text-xs text-indigo-700">
+                    Affronte un ami en temps réel sur tes kanjis.
+                  </p>
+                </Link>
+
+                <Link
+                  href="/jlpt"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-teal-200/70 bg-gradient-to-br from-teal-50/90 to-cyan-50/90 px-4 py-3 hover:border-teal-400 hover:bg-teal-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-teal-900">
+                      Base JLPT N5/N4
+                    </span>
+                    <span className="text-xs text-teal-600 group-hover:translate-x-0.5 transition-transform">
+                      →
+                    </span>
+                  </div>
+                  <p className="text-xs text-teal-700">
+                    Kanjis officiels N5 et N4 à apprendre.
                   </p>
                 </Link>
 
@@ -348,6 +448,23 @@ export default function Home() {
                   </div>
                   <p className="text-xs text-indigo-700">
                     Pose tes questions au professeur virtuel.
+                  </p>
+                </Link>
+
+                <Link
+                  href="/social"
+                  className="group flex flex-col items-start justify-between rounded-2xl border border-purple-200/70 bg-white/90 px-4 py-3 hover:border-purple-400 hover:bg-purple-50/90 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <span className="text-sm font-semibold text-purple-900">
+                      Social
+                    </span>
+                    <span className="text-xs text-purple-600 group-hover:translate-x-0.5 transition-transform">
+                      →
+                    </span>
+                  </div>
+                  <p className="text-xs text-purple-700">
+                    Amis, défis et classements entre joueurs.
                   </p>
                 </Link>
               </div>

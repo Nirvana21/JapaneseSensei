@@ -1,282 +1,140 @@
-import { KanjiEntry } from "@/types/kanji";
+﻿import { KanjiEntry } from "@/types/kanji";
+
+const MIGRATION_FLAG = "js_migrated_to_db_v1";
+const LEGACY_STORAGE_KEY = "japanese-sensei-kanjis";
+
+function deserialize(raw: KanjiEntry & { dateAdded: string; lastModified: string }): KanjiEntry {
+  return {
+    ...raw,
+    dateAdded: new Date(raw.dateAdded),
+    lastModified: new Date(raw.lastModified),
+    studyData: raw.studyData
+      ? {
+          ...raw.studyData,
+          lastStudied: raw.studyData.lastStudied
+            ? new Date(raw.studyData.lastStudied as unknown as string)
+            : undefined,
+        }
+      : undefined,
+  };
+}
 
 /**
- * Service de stockage local pour les kanjis
- * Utilise localStorage avec une couche d'abstraction pour faciliter
- * la migration vers IndexedDB plus tard si nécessaire
+ * Service de stockage pour les kanjis â€” maintenant sauvegardÃ© via l'API REST (/api/kanjis).
+ * Migration automatique depuis localStorage au premier chargement.
  */
 export class KanjiStorageService {
-  private static readonly STORAGE_KEY = "japanese-sensei-kanjis";
-  private static readonly VERSION_KEY = "japanese-sensei-version";
-  private static readonly CURRENT_VERSION = "1.0.0";
-
-  /**
-   * Initialise le stockage et vérifie la version
-   */
+  /** Lance la migration localStorage â†’ DB si pas encore faite. */
   static async initialize(): Promise<void> {
+    if (typeof window === "undefined") return;
+    if (localStorage.getItem(MIGRATION_FLAG)) return;
+
+    const legacyRaw = localStorage.getItem(LEGACY_STORAGE_KEY);
+    if (!legacyRaw) {
+      localStorage.setItem(MIGRATION_FLAG, "1");
+      return;
+    }
+
     try {
-      const version = localStorage.getItem(this.VERSION_KEY);
-      if (version !== this.CURRENT_VERSION) {
-        // Migration si nécessaire
-        await this.migrate(version);
-        localStorage.setItem(this.VERSION_KEY, this.CURRENT_VERSION);
+      const kanjis: KanjiEntry[] = JSON.parse(legacyRaw);
+      if (kanjis.length === 0) {
+        localStorage.setItem(MIGRATION_FLAG, "1");
+        return;
       }
-    } catch (error) {
-      console.error("Erreur initialisation stockage:", error);
+
+      // VÃ©rifier si la DB a dÃ©jÃ  des kanjis (migration dÃ©jÃ  faite)
+      const existing = await this.getAllKanjis().catch(() => null);
+      if (existing && existing.length > 0) {
+        localStorage.setItem(MIGRATION_FLAG, "1");
+        return;
+      }
+
+      // Importer kanji par kanji en prÃ©servant les UUIDs existants
+      for (const kanji of kanjis) {
+        await fetch("/api/kanjis", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(kanji),
+        }).catch(console.error);
+      }
+
+      localStorage.setItem(MIGRATION_FLAG, "1");
+      console.info(`Migration: ${kanjis.length} kanjis importÃ©s en DB.`);
+    } catch (e) {
+      console.error("Migration localStorage â†’ DB Ã©chouÃ©e :", e);
     }
   }
 
-  /**
-   * Récupère tous les kanjis stockés
-   */
   static async getAllKanjis(): Promise<KanjiEntry[]> {
-    try {
-      const data = localStorage.getItem(this.STORAGE_KEY);
-      if (!data) return [];
-
-      const kanjis: KanjiEntry[] = JSON.parse(data);
-
-      // Convertir les dates string en Date objects
-      return kanjis.map((kanji) => ({
-        ...kanji,
-        dateAdded: new Date(kanji.dateAdded),
-        lastModified: new Date(kanji.lastModified),
-        studyData: kanji.studyData
-          ? {
-              ...kanji.studyData,
-              lastStudied: kanji.studyData.lastStudied
-                ? new Date(kanji.studyData.lastStudied)
-                : undefined,
-            }
-          : undefined,
-      }));
-    } catch (error) {
-      console.error("Erreur récupération kanjis:", error);
-      return [];
-    }
+    const res = await fetch("/api/kanjis");
+    if (!res.ok) throw new Error(`Erreur API kanjis: ${res.status}`);
+    const data = await res.json();
+    return (data as (KanjiEntry & { dateAdded: string; lastModified: string })[]).map(deserialize);
   }
 
-  /**
-   * Récupère un kanji par son ID
-   */
   static async getKanjiById(id: string): Promise<KanjiEntry | null> {
     const kanjis = await this.getAllKanjis();
-    return kanjis.find((k) => k.id === id) || null;
+    return kanjis.find((k) => k.id === id) ?? null;
   }
 
-  /**
-   * Récupère un kanji par son caractère
-   */
-  static async getKanjiByCharacter(
-    character: string
-  ): Promise<KanjiEntry | null> {
+  static async getKanjiByCharacter(character: string): Promise<KanjiEntry | null> {
     const kanjis = await this.getAllKanjis();
-    return kanjis.find((k) => k.kanji === character) || null;
+    return kanjis.find((k) => k.kanji === character) ?? null;
   }
 
-  /**
-   * Sauvegarde un nouveau kanji
-   */
+  /** CrÃ©e ou met Ã  jour un kanji (upsert par id). */
   static async saveKanji(kanji: KanjiEntry): Promise<void> {
-    try {
-      const kanjis = await this.getAllKanjis();
-
-      // Vérifier si le kanji existe déjà
-      const existingIndex = kanjis.findIndex((k) => k.id === kanji.id);
-
-      if (existingIndex >= 0) {
-        // Mise à jour
-        kanjis[existingIndex] = { ...kanji, lastModified: new Date() };
-      } else {
-        // Nouveau kanji
-        kanjis.push(kanji);
-      }
-
-      await this.saveAllKanjis(kanjis);
-    } catch (error) {
-      console.error("Erreur sauvegarde kanji:", error);
-      throw error;
-    }
+    const res = await fetch("/api/kanjis", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...kanji, lastModified: new Date() }),
+    });
+    if (!res.ok) throw new Error(`Erreur sauvegarde kanji: ${res.status}`);
   }
 
-  /**
-   * Supprime un kanji
-   */
   static async deleteKanji(id: string): Promise<void> {
-    try {
-      const kanjis = await this.getAllKanjis();
-      const filteredKanjis = kanjis.filter((k) => k.id !== id);
-      await this.saveAllKanjis(filteredKanjis);
-    } catch (error) {
-      console.error("Erreur suppression kanji:", error);
-      throw error;
+    const res = await fetch(`/api/kanjis/${id}`, { method: "DELETE" });
+    if (!res.ok) throw new Error(`Erreur suppression kanji: ${res.status}`);
+  }
+
+  static async updateStudyData(id: string, studyData: KanjiEntry["studyData"]): Promise<void> {
+    const kanji = await this.getKanjiById(id);
+    if (kanji) {
+      await this.saveKanji({ ...kanji, studyData, lastModified: new Date() });
     }
   }
 
-  /**
-   * Met à jour les données d'étude d'un kanji
-   */
-  static async updateStudyData(
-    id: string,
-    studyData: KanjiEntry["studyData"]
-  ): Promise<void> {
-    try {
-      const kanji = await this.getKanjiById(id);
-      if (kanji) {
-        kanji.studyData = studyData;
-        kanji.lastModified = new Date();
-        await this.saveKanji(kanji);
-      }
-    } catch (error) {
-      console.error("Erreur mise à jour données étude:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Recherche des kanjis par critères
-   */
   static async searchKanjis(query: string): Promise<KanjiEntry[]> {
-    try {
-      const kanjis = await this.getAllKanjis();
-      const lowerQuery = query.toLowerCase();
-
-      return kanjis.filter(
-        (kanji) =>
-          kanji.kanji.includes(query) ||
-          kanji.meanings.some((meaning) =>
-            meaning.toLowerCase().includes(lowerQuery)
-          ) ||
-          kanji.onyomi.some((reading) => reading.includes(query)) ||
-          kanji.kunyomi.some((reading) => reading.includes(query)) ||
-          kanji.primaryMeaning?.toLowerCase().includes(lowerQuery) ||
-          kanji.primaryReading?.includes(query) ||
-          kanji.customNotes?.toLowerCase().includes(lowerQuery)
-      );
-    } catch (error) {
-      console.error("Erreur recherche kanjis:", error);
-      return [];
-    }
+    const kanjis = await this.getAllKanjis();
+    const q = query.toLowerCase();
+    return kanjis.filter(
+      (k) =>
+        k.kanji.includes(query) ||
+        k.meanings.some((m) => m.toLowerCase().includes(q)) ||
+        k.onyomi.some((r) => r.includes(query)) ||
+        k.kunyomi.some((r) => r.includes(query)) ||
+        k.primaryMeaning?.toLowerCase().includes(q) ||
+        k.primaryReading?.includes(query) ||
+        k.customNotes?.toLowerCase().includes(q)
+    );
   }
 
-  /**
-   * Exporte tous les kanjis au format JSON
-   */
   static async exportKanjis(): Promise<string> {
     const kanjis = await this.getAllKanjis();
     return JSON.stringify(kanjis, null, 2);
   }
 
-  /**
-   * Importe des kanjis depuis du JSON
-   */
-  static async importKanjis(
-    jsonData: string,
-    overwrite: boolean = false
-  ): Promise<number> {
-    try {
-      const importedKanjis: KanjiEntry[] = JSON.parse(jsonData);
-      const existingKanjis = overwrite ? [] : await this.getAllKanjis();
+  static async importKanjis(jsonData: string, overwrite = false): Promise<number> {
+    const imported: KanjiEntry[] = JSON.parse(jsonData);
+    const existing = overwrite ? [] : await this.getAllKanjis();
+    const existingChars = new Set(existing.map((k) => k.kanji));
 
-      // Fusionner ou remplacer
-      const allKanjis = [...existingKanjis];
-      let importCount = 0;
-
-      importedKanjis.forEach((importedKanji) => {
-        const existingIndex = allKanjis.findIndex(
-          (k) => k.kanji === importedKanji.kanji
-        );
-        if (existingIndex >= 0) {
-          if (overwrite) {
-            allKanjis[existingIndex] = importedKanji;
-            importCount++;
-          }
-        } else {
-          allKanjis.push(importedKanji);
-          importCount++;
-        }
-      });
-
-      await this.saveAllKanjis(allKanjis);
-      return importCount;
-    } catch (error) {
-      console.error("Erreur import kanjis:", error);
-      throw error;
+    let count = 0;
+    for (const kanji of imported) {
+      if (!overwrite && existingChars.has(kanji.kanji)) continue;
+      await this.saveKanji(kanji);
+      count++;
     }
-  }
-
-  /**
-   * Obtient des statistiques sur la collection
-   */
-  static async getStats(): Promise<{
-    totalKanjis: number;
-    studiedKanjis: number;
-    averageCorrectRate: number;
-    lastStudyDate?: Date;
-  }> {
-    const kanjis = await this.getAllKanjis();
-    const studiedKanjis = kanjis.filter(
-      (k) => k.studyData && k.studyData.timesStudied > 0
-    );
-
-    const totalCorrect = studiedKanjis.reduce(
-      (sum, k) => sum + (k.studyData?.correctAnswers || 0),
-      0
-    );
-    const totalAttempts = studiedKanjis.reduce(
-      (sum, k) => sum + (k.studyData?.timesStudied || 0),
-      0
-    );
-
-    const lastStudyDates = studiedKanjis
-      .map((k) => k.studyData?.lastStudied)
-      .filter(Boolean) as Date[];
-
-    return {
-      totalKanjis: kanjis.length,
-      studiedKanjis: studiedKanjis.length,
-      averageCorrectRate:
-        totalAttempts > 0 ? (totalCorrect / totalAttempts) * 100 : 0,
-      lastStudyDate:
-        lastStudyDates.length > 0
-          ? new Date(Math.max(...lastStudyDates.map((d) => d.getTime())))
-          : undefined,
-    };
-  }
-
-  /**
-   * Sauvegarde tous les kanjis
-   */
-  private static async saveAllKanjis(kanjis: KanjiEntry[]): Promise<void> {
-    try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(kanjis));
-    } catch (error) {
-      if (error instanceof Error && error.name === "QuotaExceededError") {
-        throw new Error(
-          "Espace de stockage insuffisant. Veuillez libérer de l'espace."
-        );
-      }
-      throw error;
-    }
-  }
-
-  /**
-   * Migration des données entre versions
-   */
-  private static async migrate(fromVersion: string | null): Promise<void> {
-    // Ici on ajoutera la logique de migration si nécessaire
-    console.log(
-      `Migration du stockage depuis ${fromVersion || "nouveau"} vers ${
-        this.CURRENT_VERSION
-      }`
-    );
-  }
-
-  /**
-   * Efface toutes les données (avec confirmation)
-   */
-  static async clearAllData(): Promise<void> {
-    localStorage.removeItem(this.STORAGE_KEY);
-    localStorage.removeItem(this.VERSION_KEY);
+    return count;
   }
 }

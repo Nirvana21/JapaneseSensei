@@ -16,6 +16,7 @@ function getSecretKey(): Uint8Array {
 
 export interface AuthUser {
   username: string;
+  userId: string;
 }
 
 export async function createSession(user: AuthUser) {
@@ -23,7 +24,7 @@ export async function createSession(user: AuthUser) {
   const expires = new Date();
   expires.setDate(expires.getDate() + SESSION_DURATION_DAYS);
 
-  const token = await new SignJWT({ username: user.username })
+  const token = await new SignJWT({ username: user.username, userId: user.userId })
     .setProtectedHeader({ alg: "HS256" })
     .setExpirationTime(expires.getTime() / 1000)
     .setIssuedAt()
@@ -53,7 +54,8 @@ export async function getSessionUser(): Promise<AuthUser | null> {
     const secretKey = getSecretKey();
     const { payload } = await jwtVerify(token, secretKey);
     if (typeof payload.username !== "string") return null;
-    return { username: payload.username };
+    if (typeof payload.userId !== "string") return null;
+    return { username: payload.username, userId: payload.userId };
   } catch {
     return null;
   }

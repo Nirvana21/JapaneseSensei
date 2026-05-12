@@ -50,6 +50,8 @@ function TrainingPageContent() {
   const [survivalState, setSurvivalState] = useState<SurvivalState | null>(null);
   const [survivalStats, setSurvivalStats] = useState<SurvivalStats | null>(null);
   const [currentSurvivalKanji, setCurrentSurvivalKanji] = useState<SimpleLearningKanji | null>(null);
+  const [survivalStrokeScale, setSurvivalStrokeScale] = useState(1);
+  const [trainingStrokeScale, setTrainingStrokeScale] = useState(1);
 
   // Initialisation au montage
   useEffect(() => {
@@ -403,7 +405,8 @@ function TrainingPageContent() {
             </button>
           </div>
 
-          {/* Deuxième ligne : Contrôles zen */}
+          {/* Deuxième ligne : Contrôles zen - uniquement en mode normal */}
+          {gameMode === 'normal' && (
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <select
