@@ -36,7 +36,7 @@ interface DetailedStats {
 }
 
 export default function StatsPage() {
-  const { kanjis } = useKanjis();
+  const { kanjis, loading: kanjisLoading } = useKanjis();
   const [stats, setStats] = useState<DetailedStats | null>(null);
   const [survivalStats, setSurvivalStats] = useState<SurvivalStats | null>(
     null
@@ -47,10 +47,10 @@ export default function StatsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (kanjis.length > 0) {
+    if (!kanjisLoading) {
       calculateDetailedStats();
     }
-  }, [kanjis]);
+  }, [kanjis, kanjisLoading]);
 
   const calculateDetailedStats = () => {
     setLoading(true);

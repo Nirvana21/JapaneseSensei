@@ -59,6 +59,26 @@ export default function Home() {
     }
   };
 
+  const handleImport = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json,application/json";
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const count = await KanjiStorageService.importKanjis(text, false);
+        await refreshKanjis();
+        alert(`${count} kanji${count > 1 ? "s" : ""} importé${count > 1 ? "s" : ""} avec succès !`);
+      } catch (err) {
+        console.error("Erreur import kanjis", err);
+        alert("Fichier invalide ou erreur lors de l'import.");
+      }
+    };
+    input.click();
+  };
+
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
@@ -593,6 +613,12 @@ export default function Home() {
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <button
+                onClick={handleImport}
+                className="px-3 py-2 rounded-lg bg-blue-200/80 hover:bg-blue-300 text-blue-900 text-xs sm:text-sm font-medium shadow-sm border border-blue-300 transition-colors"
+              >
+                📥 Importer
+              </button>
               <button
                 onClick={handleExport}
                 className="px-3 py-2 rounded-lg bg-emerald-200/80 hover:bg-emerald-300 text-emerald-900 text-xs sm:text-sm font-medium shadow-sm border border-emerald-300 transition-colors"
