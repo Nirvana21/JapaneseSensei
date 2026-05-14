@@ -13,13 +13,13 @@ function parseKanji(raw: unknown): KanjiEntry {
     dateAdded: k.dateAdded ? new Date(k.dateAdded as string) : new Date(),
     lastModified: k.lastModified ? new Date(k.lastModified as string) : new Date(),
     studyData: k.studyData
-      ? {
+      ? ({
           ...(k.studyData as unknown as KanjiEntry["studyData"]),
           lastStudied:
             (k.studyData as Record<string, unknown>).lastStudied
               ? new Date((k.studyData as Record<string, unknown>).lastStudied as string)
               : undefined,
-        }
+        } as unknown as KanjiEntry["studyData"])
       : undefined,
   };
 }
