@@ -159,7 +159,7 @@ export default function Home() {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">
                 {/* Jeux */}
                 <button
                   type="button"
@@ -210,6 +210,32 @@ export default function Home() {
                   </span>
                   <span className="text-sm font-semibold text-[#f5ede0] mb-1">Stats</span>
                   <span className="text-[11px] text-[#f5ede0]/40 text-center leading-tight">Visualise ta progression.</span>
+                </button>
+
+                {/* Social */}
+                <button
+                  type="button"
+                  onClick={() => router.push("/social")}
+                  className="group flex flex-col items-center justify-center rounded-3xl bg-white/[0.04] border border-white/[0.08] px-4 py-6 hover:border-blue-500/40 hover:bg-blue-900/10 transition-all hover:-translate-y-0.5 shadow-lg"
+                >
+                  <span className="mb-2.5 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden border border-white/10">
+                    <img src="/sprites/logo_victoire.png" alt="Social" className="w-full h-full object-cover" />
+                  </span>
+                  <span className="text-sm font-semibold text-[#f5ede0] mb-1">Social</span>
+                  <span className="text-[11px] text-[#f5ede0]/40 text-center leading-tight">Amis, défis, classement.</span>
+                </button>
+
+                {/* JLPT */}
+                <button
+                  type="button"
+                  onClick={() => router.push("/jlpt")}
+                  className="group flex flex-col items-center justify-center rounded-3xl bg-white/[0.04] border border-white/[0.08] px-4 py-6 hover:border-[#c9a84c]/50 hover:bg-[#c9a84c]/5 transition-all hover:-translate-y-0.5 shadow-lg"
+                >
+                  <span className="mb-2.5 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden border border-white/10">
+                    <img src="/sprites/logo_sport.png" alt="JLPT" className="w-full h-full object-cover" />
+                  </span>
+                  <span className="text-sm font-semibold text-[#f5ede0] mb-1">JLPT</span>
+                  <span className="text-[11px] text-[#f5ede0]/40 text-center leading-tight">Référence N5 / N4.</span>
                 </button>
               </div>
 
@@ -272,6 +298,9 @@ export default function Home() {
                   { href: "/game/kana-rain", label: "Kana Rain", desc: "Identifie les kana avant qu'ils touchent le sol." },
                   { href: "/game/speed-match", label: "Speed Match", desc: "Associe le kanji à sa signification à toute vitesse." },
                   { href: "/game/memory", label: "Memory", desc: "Retrouve les paires kanji ↔ sens." },
+                  { href: "/game/duo-duel", label: "Duo Duel", desc: "Affronte quelqu'un sur les kanjis en temps réel." },
+                  { href: "/game/histoire-a-trous", label: "Histoire à trous", desc: "Complète les blancs dans une histoire en japonais." },
+                  { href: "/game/sens-cache", label: "Sens Caché", desc: "Retrouve le sens caché derrière les kanjis." },
                   { href: "/stories/mini", label: "Mini histoires", desc: "Lis des histoires générées avec tes kanjis." },
                   { href: "/chat", label: "Chat Sensei", desc: "Pose tes questions au professeur virtuel." },
                 ] as { href: string; label: string; desc: string }[]).map(({ href, label, desc }) => (

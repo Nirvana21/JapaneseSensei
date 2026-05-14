@@ -204,38 +204,38 @@ export default function StatsPage() {
 
   if (loading || !stats) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#100c08] flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Calcul des statistiques...</p>
+          <div className="w-16 h-16 border-4 border-[#c9a84c] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-[#f5ede0]/50">Calcul des statistiques...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+    <div className="min-h-screen bg-[#100c08] text-[#f5ede0]">
       {/* Header zen japonais */}
-      <header className="bg-gradient-to-r from-amber-100/90 to-orange-100/90 backdrop-blur-md border-b border-amber-200/50 shadow-sm">
+      <header className="bg-black/30 backdrop-blur-md border-b border-white/[0.08]">
         <div className="max-w-6xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <Link
               href="/"
-              className="flex items-center gap-2 px-4 py-2 bg-amber-200/50 hover:bg-orange-200/50 rounded-xl transition-all duration-300 border border-amber-300/50"
+              className="flex items-center gap-2 px-4 py-2 bg-white/[0.06] hover:bg-white/[0.10] rounded-xl transition-all duration-300 border border-white/[0.10]"
             >
-              <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-amber-300/60">
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden border border-white/10">
                 <img
                   src="/sprites/logo_maison.png"
                   alt="Retour"
                   className="w-full h-full object-cover"
                 />
               </span>
-              <span className="text-amber-800 font-medium text-sm">戻る</span>
+              <span className="text-[#f5ede0] font-medium text-sm">戻る</span>
             </Link>
 
             <div className="text-center flex-1 mx-4">
-              <h1 className="text-2xl md:text-3xl font-light text-red-800 flex items-center justify-center gap-3">
-                <span className="hidden xs:inline-flex w-10 h-10 rounded-2xl overflow-hidden shadow-md bg-red-100 sm:w-11 sm:h-11">
+              <h1 className="text-2xl md:text-3xl font-light text-[#f5ede0] flex items-center justify-center gap-3" style={{ fontFamily: "var(--font-noto-serif-jp, serif)" }}>
+                <span className="hidden xs:inline-flex w-10 h-10 rounded-2xl overflow-hidden shadow-md border border-white/10 sm:w-11 sm:h-11">
                   <img
                     src="/sprites/logo_maths.png"
                     alt="Japanese Sensei Statistiques"
@@ -251,10 +251,10 @@ export default function StatsPage() {
 
             <button
               onClick={resetGlobalStats}
-              className="flex items-center gap-2 px-4 py-2 bg-red-100/50 hover:bg-red-200/50 rounded-xl transition-all duration-300 border border-red-300/50"
+              className="flex items-center gap-2 px-4 py-2 bg-white/[0.06] hover:bg-white/[0.10] rounded-xl transition-all duration-300 border border-white/[0.10]"
             >
               <span className="text-lg">🗑️</span>
-              <span className="text-red-700 font-medium text-sm hidden sm:inline">
+              <span className="text-[#f5ede0]/70 font-medium text-sm hidden sm:inline">
                 リセット
               </span>
             </button>
@@ -266,15 +266,15 @@ export default function StatsPage() {
       <main className="max-w-6xl mx-auto px-4 py-8">
         {/* Métriques principales zen */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-fade-in-up">
-          <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 rounded-2xl p-6 border border-orange-200/50 shadow-sm">
+          <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/[0.08]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-red-700 text-sm font-medium">漢字 Kanjis</p>
-                <p className="text-3xl font-light text-red-800">
+                <p className="text-[#f5ede0]/60 text-sm font-medium">漢字 Kanjis</p>
+                <p className="text-3xl font-light text-[#f5ede0]">
                   {stats.totalKanjis}
                 </p>
               </div>
-              <div className="opacity-60 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden bg-red-200/90">
+              <div className="opacity-60 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden border border-white/10">
                 <img
                   src="/sprites/logo_lecteur.png"
                   alt="Kanjis"
@@ -284,13 +284,13 @@ export default function StatsPage() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-yellow-100/90 to-orange-100/90 rounded-2xl p-6 border border-yellow-200/50 shadow-sm">
+          <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/[0.08]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-orange-700 text-sm font-medium">
+                <p className="text-[#f5ede0]/60 text-sm font-medium">
                   連続 Streak
                 </p>
-                <p className="text-3xl font-light text-orange-800">
+                <p className="text-3xl font-light text-[#f5ede0]">
                   {stats.studyStreak}
                 </p>
               </div>
@@ -298,13 +298,13 @@ export default function StatsPage() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-green-100/90 to-emerald-100/90 rounded-2xl p-6 border border-green-200/50 shadow-sm">
+          <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/[0.08]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-700 text-sm font-medium">
+                <p className="text-[#f5ede0]/60 text-sm font-medium">
                   練習 Sessions
                 </p>
-                <p className="text-3xl font-light text-green-800">
+                <p className="text-3xl font-light text-[#f5ede0]">
                   {stats.totalStudySessions}
                 </p>
               </div>
@@ -312,11 +312,11 @@ export default function StatsPage() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-amber-100/90 to-yellow-100/90 rounded-2xl p-6 border border-amber-200/50 shadow-sm">
+          <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/[0.08]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-amber-700 text-sm font-medium">成績 Score</p>
-                <p className="text-3xl font-light text-amber-800">
+                <p className="text-[#f5ede0]/60 text-sm font-medium">成績 Score</p>
+                <p className="text-3xl font-light text-[#f5ede0]">
                   {stats.averageSessionScore.toFixed(0)}%
                 </p>
               </div>
@@ -328,19 +328,19 @@ export default function StatsPage() {
         {/* Statistiques Mode Survival */}
         {survivalStats && survivalStats.totalSessions > 0 && (
           <div className="mb-8">
-            <h2 className="text-2xl font-light text-red-800 mb-6 flex items-center gap-3">
+            <h2 className="text-2xl font-light text-[#f5ede0] mb-6 flex items-center gap-3" style={{ fontFamily: "var(--font-noto-serif-jp, serif)" }}>
               <span>🔥</span>
               <span>持久モード Survival</span>
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-gradient-to-br from-red-100/90 to-pink-100/90 rounded-2xl p-6 border border-red-200/50 shadow-sm">
+              <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/[0.08]">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-red-700 text-sm font-medium">
+                    <p className="text-[#f5ede0]/60 text-sm font-medium">
                       最高記録 Record
                     </p>
-                    <p className="text-3xl font-light text-red-800">
+                    <p className="text-3xl font-light text-[#f5ede0]">
                       {survivalStats.bestStreak}
                     </p>
                   </div>
@@ -348,17 +348,17 @@ export default function StatsPage() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 rounded-2xl p-6 border border-orange-200/50 shadow-sm">
+              <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/[0.08]">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-orange-700 text-sm font-medium">
+                    <p className="text-[#f5ede0]/60 text-sm font-medium">
                       試合数 Parties
                     </p>
-                    <p className="text-3xl font-light text-orange-800">
+                    <p className="text-3xl font-light text-[#f5ede0]">
                       {survivalStats.totalSessions}
                     </p>
                   </div>
-                  <div className="opacity-60 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden bg-orange-200/90">
+                  <div className="opacity-60 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden border border-white/10">
                     <img
                       src="/sprites/logo_gamer.png"
                       alt="Parties jouées"
@@ -368,17 +368,17 @@ export default function StatsPage() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-amber-100/90 to-orange-100/90 rounded-2xl p-6 border border-amber-200/50 shadow-sm">
+              <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/[0.08]">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-amber-700 text-sm font-medium">
+                    <p className="text-[#f5ede0]/60 text-sm font-medium">
                       平均 Moyenne
                     </p>
-                    <p className="text-3xl font-light text-amber-800">
+                    <p className="text-3xl font-light text-[#f5ede0]">
                       {Math.round(survivalStats.averageStreak)}
                     </p>
                   </div>
-                  <div className="opacity-60 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden bg-amber-200/90">
+                  <div className="opacity-60 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden border border-white/10">
                     <img
                       src="/sprites/logo_maths.png"
                       alt="Moyenne survival"
@@ -388,13 +388,13 @@ export default function StatsPage() {
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-yellow-100/90 to-amber-100/90 rounded-2xl p-6 border border-yellow-200/50 shadow-sm">
+              <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/[0.08]">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-yellow-700 text-sm font-medium">
+                    <p className="text-[#f5ede0]/60 text-sm font-medium">
                       総質問数 Total
                     </p>
-                    <p className="text-3xl font-light text-yellow-800">
+                    <p className="text-3xl font-light text-[#f5ede0]">
                       {survivalStats.totalQuestions}
                     </p>
                   </div>
@@ -407,8 +407,8 @@ export default function StatsPage() {
 
         {/* Distribution de maîtrise zen */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div className="bg-gradient-to-br from-red-100/90 to-pink-100/90 rounded-2xl p-6 border border-red-200/50 shadow-sm animate-fade-in-up">
-            <h2 className="text-xl font-light text-red-800 mb-6 flex items-center gap-3">
+          <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/[0.08] animate-fade-in-up">
+            <h2 className="text-xl font-light text-[#f5ede0] mb-6 flex items-center gap-3" style={{ fontFamily: "var(--font-noto-serif-jp, serif)" }}>
               <span>🎯</span>
               <span>習熟度 Maîtrise</span>
             </h2>
@@ -447,15 +447,15 @@ export default function StatsPage() {
                 return (
                   <div key={item.label}>
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-red-800 flex items-center gap-2 font-medium">
+                      <span className="text-[#f5ede0]/80 flex items-center gap-2 font-medium">
                         <span>{getMasteryIcon(item.score)}</span>
                         <span>{item.label}</span>
                       </span>
-                      <span className="text-red-600 text-sm">
+                      <span className="text-[#c9a84c] text-sm">
                         {item.count} ({percentage.toFixed(0)}%)
                       </span>
                     </div>
-                    <div className="w-full bg-red-100 rounded-full h-2">
+                    <div className="w-full bg-white/10 rounded-full h-2">
                       <div
                         className={`${item.color} h-2 rounded-full transition-all duration-500`}
                         style={{ width: `${percentage}%` }}
@@ -468,8 +468,8 @@ export default function StatsPage() {
           </div>
 
           {/* Tags zen */}
-          <div className="bg-gradient-to-br from-green-100/90 to-emerald-100/90 rounded-2xl p-6 border border-green-200/50 shadow-sm animate-fade-in-up">
-            <h2 className="text-xl font-light text-green-800 mb-6 flex items-center gap-3">
+          <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/[0.08] animate-fade-in-up">
+            <h2 className="text-xl font-light text-[#f5ede0] mb-6 flex items-center gap-3" style={{ fontFamily: "var(--font-noto-serif-jp, serif)" }}>
               <span>🏷️</span>
               <span>タグ Tags</span>
             </h2>
@@ -481,13 +481,13 @@ export default function StatsPage() {
                   className="flex justify-between items-center py-2"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-green-600 font-medium text-sm">
+                    <span className="text-[#c9a84c] font-medium text-sm">
                       #{index + 1}
                     </span>
-                    <span className="text-green-800">{tagStat.tag}</span>
+                    <span className="text-[#f5ede0]/80">{tagStat.tag}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-green-600 text-sm">
+                    <span className="text-[#f5ede0]/50 text-sm">
                       {tagStat.count} kanjis
                     </span>
                     <span
@@ -507,8 +507,8 @@ export default function StatsPage() {
 
         {/* Kanjis zen */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div className="bg-gradient-to-br from-amber-100/90 to-orange-100/90 rounded-2xl p-6 border border-amber-200/50 shadow-sm animate-fade-in-up">
-            <h2 className="text-xl font-light text-amber-800 mb-6 flex items-center gap-3">
+          <div className="bg-white/[0.04] rounded-2xl p-6 border border-white/[0.08] animate-fade-in-up">
+            <h2 className="text-xl font-light text-[#f5ede0] mb-6 flex items-center gap-3" style={{ fontFamily: "var(--font-noto-serif-jp, serif)" }}>
               <span>💡</span>
               <span>練習必要 À travailler</span>
             </h2>
@@ -517,15 +517,15 @@ export default function StatsPage() {
               {stats.weakestKanjis.slice(0, 5).map((kanji, index) => (
                 <div
                   key={kanji.id}
-                  className="flex justify-between items-center p-3 bg-amber-50 rounded-xl"
+                  className="flex justify-between items-center p-3 bg-white/[0.04] rounded-xl"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{kanji.kanji}</span>
                     <div>
-                      <p className="text-amber-900 font-medium">
+                      <p className="text-[#f5ede0] font-medium">
                         {kanji.primaryMeaning || kanji.meanings[0]}
                       </p>
-                      <p className="text-amber-700 text-sm">
+                      <p className="text-[#f5ede0]/60 text-sm">
                         {kanji.primaryReading ||
                           kanji.onyomi[0] ||
                           kanji.kunyomi[0]}
@@ -559,15 +559,15 @@ export default function StatsPage() {
               {stats.strongestKanjis.slice(0, 5).map((kanji, index) => (
                 <div
                   key={kanji.id}
-                  className="flex justify-between items-center p-3 bg-yellow-50 rounded-xl"
+                  className="flex justify-between items-center p-3 bg-white/[0.04] rounded-xl"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{kanji.kanji}</span>
                     <div>
-                      <p className="text-yellow-900 font-medium">
+                      <p className="text-[#f5ede0] font-medium">
                         {kanji.primaryMeaning || kanji.meanings[0]}
                       </p>
-                      <p className="text-yellow-700 text-sm">
+                      <p className="text-[#f5ede0]/60 text-sm">
                         {kanji.primaryReading ||
                           kanji.onyomi[0] ||
                           kanji.kunyomi[0]}
@@ -582,7 +582,7 @@ export default function StatsPage() {
                     >
                       {getMasteryIcon(kanji.learningData.score)}
                     </span>
-                    <span className="text-yellow-600 text-sm">
+                    <span className="text-[#f5ede0]/50 text-sm">
                       {kanji.learningData.totalAttempts || 0}x
                     </span>
                   </div>
@@ -596,7 +596,7 @@ export default function StatsPage() {
         <div className="flex items-center justify-center">
           <button
             onClick={calculateDetailedStats}
-            className="flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-red-500 to-orange-600 hover:from-red-600 hover:to-orange-700 text-white font-medium rounded-xl transition-all duration-300 shadow-lg"
+            className="flex items-center gap-3 px-8 py-4 bg-[#c41e1e]/80 hover:bg-[#c41e1e] text-[#f5ede0] font-medium rounded-xl transition-all duration-300 shadow-lg"
           >
             <span className="text-xl">🔄</span>
             <span>更新 Actualiser</span>
