@@ -17,54 +17,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const sql = getSQL();
+    const expectedUsername = process.env.AUTH_USERNAME;
+    const expectedPassword = process.env.AUTH_PASSWORD;
 
-    // 1. Vérifier si l'utilisateur existe en DB avec le bon mot de passe
-    const dbUsers = await q<{ id: string }>(sql`
-      SELECT id FROM users
-      WHERE username = ${username}
-        AND password_hash = crypt(${password}, password_hash)
-    `);
-
-    let userId: string;
-
-    if (dbUsers.length > 0) {
-      // Utilisateur DB trouvé
-      userId = dbUsers[0].id;
-      // Mettre à jour last_seen_at
-      await sql`UPDATE users SET last_seen_at = NOW() WHERE id = ${userId}`;
-    } else {
-      // Fallback : vérifier les variables d'env (utilisateur principal)
-      const expectedUsername = process.env.AUTH_USERNAME;
-      const expectedPassword = process.env.AUTH_PASSWORD;
-
-      if (
-        !expectedUsername ||
-        !expectedPassword ||
-        username !== expectedUsername ||
-        password !== expectedPassword
-      ) {
-        return NextResponse.json(
-          { error: "Invalid username or password" },
-          { status: 401 }
-        );
-      }
-
-      // Auto-créer l'utilisateur principal depuis les env vars (première connexion)
-      const inserted = await q<{ id: string }>(sql`
-        INSERT INTO users (username, password_hash, display_name)
-        VALUES (
-          ${username},
-          crypt(${password}, gen_salt('bf', 8)),
-          ${username}
-        )
-        ON CONFLICT (username) DO UPDATE SET last_seen_at = NOW()
-        RETURNING id
-      `);
-      userId = inserted[0].id;
+    if (!expectedUsername || !expectedPassword) {
+      return NextResponse.json(
+        { error: "Auth is not configured on the server" },
+        { status: 500 }
+      );
     }
 
+    if (username !== expectedUsername || password !== expectedPassword) {
+      return NextResponse.json(
+        { error: "Invalid username or password" },
+        { status: 401 }
+      );
+    }
+
+    // Look up the user's UUID from the DB (needed for kanji storage and social features)
+    const sql = getSQL();
+    const rows = await q<{ id: string }>(sql`
+      SELECT id FROM users WHERE username = ${username} LIMIT 1
+    `);
+    const userId = rows[0]?.id ?? null;
+
     await createSession({ username, userId });
+
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("Login error", error);

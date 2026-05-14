@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS users (
   username     VARCHAR(50)  UNIQUE NOT NULL,
   password_hash TEXT        NOT NULL,
   display_name VARCHAR(100),
-  avatar_emoji  VARCHAR(10)  DEFAULT '\uD83C\uDF00',
+  avatar_emoji  TEXT         DEFAULT '\uD83C\uDF00',
   created_at   TIMESTAMPTZ  DEFAULT NOW(),
   last_seen_at TIMESTAMPTZ  DEFAULT NOW()
 );
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS users (
   username    VARCHAR(50)  UNIQUE NOT NULL,
   password_hash TEXT       NOT NULL,
   display_name  VARCHAR(100),
-  avatar_emoji  VARCHAR(10)  DEFAULT '🎌',
+  avatar_emoji  TEXT         DEFAULT '🎌',
   created_at  TIMESTAMPTZ  DEFAULT NOW(),
   last_seen_at TIMESTAMPTZ DEFAULT NOW()
 );

@@ -16,7 +16,7 @@ function getSecretKey(): Uint8Array {
 
 export interface AuthUser {
   username: string;
-  userId: string;
+  userId: string | null;
 }
 
 export async function createSession(user: AuthUser) {
@@ -54,8 +54,8 @@ export async function getSessionUser(): Promise<AuthUser | null> {
     const secretKey = getSecretKey();
     const { payload } = await jwtVerify(token, secretKey);
     if (typeof payload.username !== "string") return null;
-    if (typeof payload.userId !== "string") return null;
-    return { username: payload.username, userId: payload.userId };
+    const userId = typeof payload.userId === "string" ? payload.userId : null;
+    return { username: payload.username, userId };
   } catch {
     return null;
   }
