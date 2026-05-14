@@ -4,8 +4,8 @@
   "description": "Progressive Web App for Japanese language learning",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#6366f1",
+  "background_color": "#100c08",
+  "theme_color": "#c41e1e",
   "orientation": "portrait-primary",
   "icons": [
     {
