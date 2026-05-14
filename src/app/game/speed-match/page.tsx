@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { useKanjis } from "../../../hooks/useKanjis";
-import { ALL_JLPT_KANJI, JLPTKanjiData } from "../../../data/jlptData";
+import { JLPT_N5, JLPT_N4, ALL_JLPT_KANJI, JLPTKanjiData } from "../../../data/jlptData";
 import {
   simpleAdaptiveLearningService,
   SimpleLearningKanji,
@@ -12,7 +12,7 @@ import {
 // ----------------------------------------------------------------
 // Types
 // ----------------------------------------------------------------
-type SourceMode = "personal" | "jlpt";
+type SourceMode = "personal" | "n5" | "n4" | "n5n4";
 type GamePhase = "menu" | "playing" | "result";
 
 interface Question {
@@ -89,7 +89,7 @@ function buildJlptQuestion(
 export default function SpeedMatchPage() {
   const { kanjis } = useKanjis();
 
-  const [sourceMode, setSourceMode] = useState<SourceMode>("personal");
+  const [sourceMode, setSourceMode] = useState<SourceMode>("n5");
   const [phase, setPhase] = useState<GamePhase>("menu");
 
   // Session
@@ -122,10 +122,11 @@ export default function SpeedMatchPage() {
         if (q) qs.push(q);
       }
     } else {
-      if (ALL_JLPT_KANJI.length < 4) return null;
-      const pool = shuffleArray(ALL_JLPT_KANJI).slice(0, QUESTIONS_PER_ROUND);
+      const base = sourceMode === "n5" ? JLPT_N5 : sourceMode === "n4" ? JLPT_N4 : ALL_JLPT_KANJI;
+      if (base.length < 4) return null;
+      const pool = shuffleArray(base).slice(0, QUESTIONS_PER_ROUND);
       for (const k of pool) {
-        const q = buildJlptQuestion(k, ALL_JLPT_KANJI);
+        const q = buildJlptQuestion(k, base);
         if (q) qs.push(q);
       }
     }
@@ -287,14 +288,40 @@ export default function SpeedMatchPage() {
                 )}
               </button>
               <button
-                onClick={() => setSourceMode("jlpt")}
+                onClick={() => setSourceMode("n5")}
                 className={`py-3 px-4 rounded-2xl text-sm font-semibold border-2 transition-all ${
-                  sourceMode === "jlpt"
+                  sourceMode === "n5"
                     ? "border-teal-500 bg-teal-500 text-white shadow-md"
                     : "border-teal-200 bg-white text-teal-700 hover:border-teal-400"
                 }`}
               >
-                <div>JLPT N5/N4</div>
+                <div>JLPT N5</div>
+                <div className="text-[10px] mt-0.5 font-normal opacity-80">
+                  {JLPT_N5.length} kanjis · débutant
+                </div>
+              </button>
+              <button
+                onClick={() => setSourceMode("n4")}
+                className={`py-3 px-4 rounded-2xl text-sm font-semibold border-2 transition-all ${
+                  sourceMode === "n4"
+                    ? "border-sky-500 bg-sky-500 text-white shadow-md"
+                    : "border-sky-200 bg-white text-sky-700 hover:border-sky-400"
+                }`}
+              >
+                <div>JLPT N4</div>
+                <div className="text-[10px] mt-0.5 font-normal opacity-80">
+                  {JLPT_N4.length} kanjis · élémentaire
+                </div>
+              </button>
+              <button
+                onClick={() => setSourceMode("n5n4")}
+                className={`py-3 px-4 rounded-2xl text-sm font-semibold border-2 col-span-2 transition-all ${
+                  sourceMode === "n5n4"
+                    ? "border-purple-500 bg-purple-500 text-white shadow-md"
+                    : "border-purple-200 bg-white text-purple-700 hover:border-purple-400"
+                }`}
+              >
+                <div>N5 + N4 mélangé</div>
                 <div className="text-[10px] mt-0.5 font-normal opacity-80">
                   {ALL_JLPT_KANJI.length} kanjis
                 </div>

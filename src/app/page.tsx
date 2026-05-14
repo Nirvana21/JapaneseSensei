@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AddKanjiForm from "@/components/AddKanjiForm";
@@ -10,56 +10,461 @@ import { useKanjis } from "@/hooks/useKanjis";
 import { KanjiEntry } from "@/types/kanji";
 import { KanjiStorageService } from "@/services/kanjiStorage";
 
-export default function Home() {
-  const router = useRouter();
-  const [currentView, setCurrentView] =
-    useState<"menu" | "collection">("menu");
-  const [activeSection, setActiveSection] =
-    useState<"main" | "games" | "grammar">("main");
-  const [editingKanji, setEditingKanji] = useState<KanjiEntry | null>(null);
-  const { kanjis, loading, error, updateKanji, deleteKanji, refreshKanjis } =
-    useKanjis();
+// ================================================================
+// Types
+// ================================================================
+type Tab = "home" | "play" | "dojo" | "social";
 
-  const handleEdit = (kanji: KanjiEntry) => {
-    setEditingKanji(kanji);
+// ================================================================
+// Catalogues
+// ================================================================
+const TRAININGS = [
+  { href: "/training", emoji: "📖", name: "Quiz Kanjis", desc: "Révisions adaptatives sur ta collection" },
+  { href: "/training?mode=survival", emoji: "💥", name: "Survival", desc: "3 vies, questions en flux infini" },
+];
+const GAMES_LIST = [
+  { href: "/game/speed-match", emoji: "⚡", name: "Speed Match", desc: "Trouve le sens avant la limite de temps" },
+  { href: "/game/kana-quiz", emoji: "🔤", name: "Kana Quiz", desc: "Maîtrise les hiragana & katakana" },
+  { href: "/game/kana-rain", emoji: "🌧️", name: "Kana Rain", desc: "Tape la lecture des kanjis qui tombent" },
+  { href: "/game/memory", emoji: "🃏", name: "Mémory", desc: "Associe les paires kanji ↔ sens" },
+  { href: "/game/sens-cache", emoji: "👁️", name: "Sens Caché", desc: "Retrouve le sens masqué" },
+  { href: "/game/histoire-a-trous", emoji: "✍️", name: "À trous", desc: "Complète les histoires" },
+  { href: "/game/kanji-legends", emoji: "🏆", name: "Kanji Legends", desc: "Assemble les composants kanji" },
+  { href: "/stories/mini", emoji: "📖", name: "Mini histoires", desc: "Lis des histoires avec tes kanjis" },
+  { href: "/chat", emoji: "🤖", name: "Chat Sensei", desc: "Pose tes questions au professeur IA" },
+];
+const GRAMMAR_LIST = [
+  { href: "/training/verbs", emoji: "動", name: "Verbes", desc: "Conjugaisons et formes courantes" },
+  { href: "/training/adjectives", emoji: "形", name: "Adjectifs", desc: "い-adj / な-adj et transformations" },
+  { href: "/training/particles", emoji: "は", name: "Particules", desc: "Complète la particule manquante" },
+];
+
+// ================================================================
+// Bottom Nav
+// ================================================================
+function BottomNav({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
+  const items: { key: Tab; label: string }[] = [
+    { key: "home", label: "Accueil" },
+    { key: "play", label: "Jouer" },
+    { key: "dojo", label: "Dojo" },
+    { key: "social", label: "Social" },
+  ];
+
+  const icons: Record<Tab, React.ReactNode> = {
+    home: (
+      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" strokeWidth={2}>
+        <path d="M3 12L12 3L21 12V21H15V15H9V21H3V12Z" stroke="currentColor" strokeLinejoin="round" strokeLinecap="round" />
+      </svg>
+    ),
+    play: (
+      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" strokeWidth={2}>
+        <circle cx="12" cy="12" r="9" stroke="currentColor" />
+        <path d="M10 8.5L16 12L10 15.5V8.5Z" fill="currentColor" />
+      </svg>
+    ),
+    dojo: (
+      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" strokeWidth={2}>
+        <path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="currentColor" strokeLinecap="round" />
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="currentColor" />
+      </svg>
+    ),
+    social: (
+      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" strokeWidth={2}>
+        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" strokeLinecap="round" />
+        <circle cx="9" cy="7" r="4" stroke="currentColor" />
+        <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeLinecap="round" />
+      </svg>
+    ),
   };
 
-  const handleSaveEdit = async (updatedKanji: KanjiEntry) => {
-    await updateKanji(updatedKanji);
+  return (
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200"
+      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+    >
+      <div className="max-w-lg mx-auto flex justify-around">
+        {items.map(({ key, label }) => (
+          <button
+            key={key}
+            onClick={() => setTab(key)}
+            className={`flex flex-col items-center gap-0.5 flex-1 py-2.5 transition-colors ${
+              tab === key ? "text-red-600" : "text-slate-400 hover:text-slate-600"
+            }`}
+          >
+            {icons[key]}
+            <span className={`text-[10px] font-bold ${tab === key ? "text-red-600" : "text-slate-400"}`}>
+              {label}
+            </span>
+          </button>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
+// ================================================================
+// Composant Card de jeu
+// ================================================================
+function GameCard({ href, emoji, name, desc }: { href: string; emoji: string; name: string; desc: string }) {
+  return (
+    <Link
+      href={href}
+      className="flex items-center gap-3.5 p-3.5 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 active:scale-[0.98] transition-all"
+    >
+      <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-xl flex-shrink-0">
+        {emoji}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-slate-800">{name}</p>
+        <p className="text-xs text-slate-400 truncate">{desc}</p>
+      </div>
+      <svg viewBox="0 0 24 24" className="w-4 h-4 text-slate-300 flex-shrink-0" fill="none" strokeWidth={2.5}>
+        <path d="M9 18l6-6-6-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </Link>
+  );
+}
+
+function SectionHeader({ title, color = "text-slate-500" }: { title: string; color?: string }) {
+  return <h3 className={`text-[11px] font-bold uppercase tracking-widest ${color} px-0.5`}>{title}</h3>;
+}
+
+// ================================================================
+// Onglet Accueil
+// ================================================================
+function HomeTab({ kanjis, loading }: { kanjis: KanjiEntry[]; loading: boolean }) {
+  const hour = new Date().getHours();
+  const greetings = [
+    { text: "Ohayō !", ja: "おはようございます" },
+    { text: "Konnichiwa !", ja: "こんにちは" },
+    { text: "Konbanwa !", ja: "こんばんは" },
+  ];
+  const { text: greeting, ja: greetingJa } = greetings[hour < 12 ? 0 : hour < 18 ? 1 : 2];
+
+  const [hasPlayed, setHasPlayed] = useState(false);
+  useEffect(() => {
+    setHasPlayed(!!localStorage.getItem("js_has_played"));
+  }, []);
+
+  const steps = [
+    { label: "Ajouter ton premier kanji", done: kanjis.length > 0, href: null as string | null },
+    { label: "Jouer à un premier jeu", done: hasPlayed, href: "/game/kana-quiz" },
+    { label: "Explorer les kanjis JLPT", done: false, href: "/game/speed-match" },
+    { label: "Trouver un ami", done: false, href: "/social" },
+  ];
+
+  const doneCount = steps.filter((s) => s.done).length;
+  const allDone = doneCount === steps.length;
+
+  const QUICK = [
+    { href: "/training", emoji: "📖", name: "Quiz", bg: "bg-indigo-50 border-indigo-200", text: "text-indigo-700" },
+    { href: "/game/speed-match", emoji: "⚡", name: "Speed", bg: "bg-amber-50 border-amber-200", text: "text-amber-700" },
+    { href: "/game/kana-quiz", emoji: "🔤", name: "Kana", bg: "bg-emerald-50 border-emerald-200", text: "text-emerald-700" },
+    { href: "/game/kana-rain", emoji: "🌧️", name: "Rain", bg: "bg-blue-50 border-blue-200", text: "text-blue-700" },
+  ];
+
+  return (
+    <div className="space-y-5">
+      {/* Hero */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-red-600 to-rose-700 rounded-3xl p-5 text-white shadow-lg">
+        <div className="absolute -top-4 -right-4 text-9xl opacity-10 leading-none select-none pointer-events-none">日</div>
+        <p className="text-xs font-medium opacity-70 mb-0.5">{greetingJa}</p>
+        <h2 className="text-2xl font-bold mb-4">{greeting}</h2>
+        <div className="flex gap-3">
+          <div className="bg-white/20 rounded-xl px-3 py-2 text-center">
+            {loading ? (
+              <div className="w-8 h-5 bg-white/20 rounded animate-pulse mx-auto" />
+            ) : (
+              <p className="text-xl font-bold">{kanjis.length}</p>
+            )}
+            <p className="text-[10px] opacity-80">kanjis</p>
+          </div>
+          <div className="bg-white/20 rounded-xl px-3 py-2 text-center">
+            <p className="text-xl font-bold">
+              {doneCount}/{steps.length}
+            </p>
+            <p className="text-[10px] opacity-80">objectifs</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Jouer rapidement */}
+      <div className="space-y-2.5">
+        <SectionHeader title="Jouer maintenant" />
+        <div className="grid grid-cols-4 gap-2">
+          {QUICK.map(({ href, emoji, name, bg, text }) => (
+            <Link
+              key={href}
+              href={href}
+              onClick={() => localStorage.setItem("js_has_played", "1")}
+              className={`flex flex-col items-center gap-1.5 py-3 rounded-2xl border ${bg} active:scale-95 transition-transform`}
+            >
+              <span className="text-2xl">{emoji}</span>
+              <span className={`text-[11px] font-semibold ${text}`}>{name}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Onboarding */}
+      {!allDone && (
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="px-4 pt-4 pb-3">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-bold text-slate-700">🗺️ Premiers pas</h3>
+              <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+                {doneCount}/{steps.length}
+              </span>
+            </div>
+            <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-red-500 to-rose-500 rounded-full transition-all duration-500"
+                style={{ width: `${(doneCount / steps.length) * 100}%` }}
+              />
+            </div>
+          </div>
+          <div className="divide-y divide-slate-100">
+            {steps.map((step, i) => (
+              <div
+                key={i}
+                className={`flex items-center gap-3 px-4 py-3 ${step.done ? "opacity-40" : ""}`}
+              >
+                <div
+                  className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center ${
+                    step.done ? "bg-green-500" : "border-2 border-slate-300"
+                  }`}
+                >
+                  {step.done && (
+                    <svg viewBox="0 0 24 24" className="w-3 h-3 text-white" fill="none" strokeWidth={3}>
+                      <path d="M5 13l4 4L19 7" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </div>
+                <span
+                  className={`text-sm flex-1 ${step.done ? "line-through text-slate-400" : "text-slate-700"}`}
+                >
+                  {step.label}
+                </span>
+                {!step.done && step.href && (
+                  <Link href={step.href} className="text-xs font-bold text-red-600 shrink-0 hover:underline">
+                    →
+                  </Link>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Explorer */}
+      <div className="space-y-2.5">
+        <SectionHeader title="Explorer" />
+        <div className="grid grid-cols-3 gap-2.5">
+          {[
+            { href: "/stats", emoji: "📊", label: "Stats" },
+            { href: "/social", emoji: "👥", label: "Social" },
+            { href: "/chat", emoji: "🤖", label: "Sensei" },
+          ].map(({ href, emoji, label }) => (
+            <Link
+              key={href}
+              href={href}
+              className="flex flex-col items-center gap-1.5 p-3.5 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow active:scale-95 transition-all"
+            >
+              <span className="text-2xl">{emoji}</span>
+              <span className="text-xs font-semibold text-slate-600">{label}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ================================================================
+// Onglet Jeux
+// ================================================================
+function PlayTab() {
+  return (
+    <div className="space-y-5">
+      <div className="space-y-2">
+        <SectionHeader title="Entraînement kanji" color="text-indigo-600" />
+        {TRAININGS.map((g) => (
+          <GameCard key={g.href} {...g} />
+        ))}
+      </div>
+      <div className="space-y-2">
+        <SectionHeader title="Mini-jeux" color="text-amber-600" />
+        {GAMES_LIST.map((g) => (
+          <GameCard key={g.href} {...g} />
+        ))}
+      </div>
+      <div className="space-y-2">
+        <SectionHeader title="Grammaire" color="text-emerald-600" />
+        {GRAMMAR_LIST.map((g) => (
+          <GameCard key={g.href} {...g} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ================================================================
+// Onglet Dojo (collection)
+// ================================================================
+interface DojoTabProps {
+  kanjis: KanjiEntry[];
+  loading: boolean;
+  error: string | null;
+  onEdit: (k: KanjiEntry) => void;
+  onDelete: (id: string) => void;
+  onKanjiAdded: () => void;
+  onImport: () => void;
+  onExport: () => void;
+}
+
+function DojoTab({
+  kanjis,
+  loading,
+  error,
+  onEdit,
+  onDelete,
+  onKanjiAdded,
+  onImport,
+  onExport,
+}: DojoTabProps) {
+  const [showAdd, setShowAdd] = useState(false);
+
+  return (
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-bold text-slate-800">Ma Collection</h2>
+          <p className="text-xs text-slate-400">
+            {loading ? "Chargement…" : `${kanjis.length} kanji${kanjis.length !== 1 ? "s" : ""}`}
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={onImport}
+            className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors"
+            title="Importer JSON"
+          >
+            📥
+          </button>
+          <button
+            onClick={onExport}
+            className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors"
+            title="Exporter JSON"
+          >
+            📤
+          </button>
+          <button
+            onClick={() => setShowAdd((v) => !v)}
+            className={`flex items-center gap-1.5 px-3 h-9 rounded-xl text-sm font-semibold transition-colors ${
+              showAdd ? "bg-slate-200 text-slate-700" : "bg-red-600 text-white hover:bg-red-700"
+            }`}
+          >
+            {showAdd ? "✕" : "+ Ajouter"}
+          </button>
+        </div>
+      </div>
+
+      {/* Formulaire d'ajout */}
+      {showAdd && (
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+          <AddKanjiForm
+            onKanjiAdded={() => {
+              onKanjiAdded();
+              setShowAdd(false);
+            }}
+          />
+        </div>
+      )}
+
+      {error && (
+        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+          <span>⚠️</span> {error}
+        </div>
+      )}
+
+      <KanjiList kanjis={kanjis} loading={loading} onEdit={onEdit} onDelete={onDelete} />
+    </div>
+  );
+}
+
+// ================================================================
+// Onglet Social
+// ================================================================
+function SocialTab() {
+  return (
+    <div className="space-y-4">
+      <div className="relative overflow-hidden bg-gradient-to-br from-indigo-600 to-purple-700 rounded-3xl p-5 text-white shadow-lg">
+        <div className="absolute -top-4 -right-4 text-9xl opacity-10 leading-none select-none">友</div>
+        <p className="text-xs font-medium opacity-70 mb-0.5">仲間と一緒に</p>
+        <h2 className="text-xl font-bold mb-2">Challenge tes amis</h2>
+        <p className="text-sm opacity-80">Défie tes amis sur les mêmes jeux et compare vos scores.</p>
+      </div>
+
+      <Link
+        href="/social"
+        className="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md active:scale-[0.98] transition-all"
+      >
+        <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-xl">👥</div>
+        <div className="flex-1">
+          <p className="font-semibold text-slate-800">Amis &amp; Défis</p>
+          <p className="text-xs text-slate-400">Gérer tes amis, envoyer et recevoir des défis</p>
+        </div>
+        <svg viewBox="0 0 24 24" className="w-4 h-4 text-slate-300" fill="none" strokeWidth={2.5}>
+          <path d="M9 18l6-6-6-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </Link>
+
+      <div className="space-y-2">
+        <SectionHeader title="Jeux pour les défis" color="text-indigo-500" />
+        {GAMES_LIST.slice(0, 4).map(({ href, emoji, name, desc }) => (
+          <GameCard key={href} href={href} emoji={emoji} name={name} desc={desc} />
+        ))}
+      </div>
+
+      <p className="text-xs text-center text-slate-400 pb-2">
+        Lance un défi depuis la page Social après avoir joué 🏆
+      </p>
+    </div>
+  );
+}
+
+// ================================================================
+// Page principale
+// ================================================================
+export default function Home() {
+  const router = useRouter();
+  const [tab, setTab] = useState<Tab>("home");
+  const [editingKanji, setEditingKanji] = useState<KanjiEntry | null>(null);
+  const { kanjis, loading, error, updateKanji, deleteKanji, refreshKanjis } = useKanjis();
+
+  const handleSaveEdit = async (k: KanjiEntry) => {
+    await updateKanji(k);
     setEditingKanji(null);
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce kanji ?")) {
-      await deleteKanji(id);
-    }
+    if (window.confirm("Supprimer ce kanji ?")) await deleteKanji(id);
   };
 
-  const handleKanjiAdded = () => {
-    refreshKanjis();
-  };
-
-  const handleExport = async () => {
+  const handleExport = useCallback(async () => {
     try {
       const json = await KanjiStorageService.exportKanjis();
-      const blob = new Blob([json], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-
       const a = document.createElement("a");
-      a.href = url;
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-      a.download = `japanese-sensei-kanjis-${timestamp}.json`;
-      document.body.appendChild(a);
+      a.href = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+      a.download = `kanjis-${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error("Erreur export kanjis", err);
-      alert("Impossible d'exporter la collection.");
+    } catch {
+      alert("Impossible d'exporter.");
     }
-  };
+  }, []);
 
-  const handleImport = () => {
+  const handleImport = useCallback(() => {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = ".json,application/json";
@@ -68,594 +473,75 @@ export default function Home() {
       if (!file) return;
       try {
         const text = await file.text();
-        const count = await KanjiStorageService.importKanjis(text, false);
+        const result = await KanjiStorageService.importKanjis(text, false);
         await refreshKanjis();
-        alert(`${count} kanji${count > 1 ? "s" : ""} importé${count > 1 ? "s" : ""} avec succès !`);
-      } catch (err) {
-        console.error("Erreur import kanjis", err);
+        alert(
+          `Import terminé !\n✓ ${result.count} ajouté${result.count > 1 ? "s" : ""}` +
+            `\n⏩ ${result.skipped} déjà présent${result.skipped > 1 ? "s" : ""}` +
+            (result.errors > 0 ? `\n⚠️ ${result.errors} erreur(s)` : "")
+        );
+      } catch {
         alert("Fichier invalide ou erreur lors de l'import.");
       }
     };
     input.click();
-  };
+  }, [refreshKanjis]);
 
   const handleLogout = async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-      router.replace("/login");
-    } catch {
-      router.replace("/login");
-    }
+    await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+    router.replace("/login");
   };
 
-  if (currentView === "menu") {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
-        {/* Header compact type mobile */}
-        <header className="bg-gradient-to-r from-amber-100/90 to-orange-100/90 backdrop-blur-md border-b border-amber-200/50">
-          <div className="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="inline-flex items-center justify-center w-10 h-10 bg-gradient-to-br from-red-600 to-orange-700 rounded-xl shadow-md overflow-hidden">
-                <img
-                  src="/sprites/logo_sans_fond.png"
-                  alt="Japanese Sensei"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="flex flex-col leading-tight min-w-0">
-                <span className="text-base md:text-lg font-bold bg-gradient-to-r from-red-800 to-orange-800 bg-clip-text text-transparent truncate">
-                  Japanese Sensei
-                </span>
-                <span className="hidden sm:inline text-[11px] md:text-xs text-amber-700 truncate">
-                  道を極める - Maîtrisez l'art des kanjis
-                </span>
-              </div>
-            </div>
+  const tabTitles: Record<Tab, string> = {
+    home: "Japanese Sensei",
+    play: "Jouer",
+    dojo: "Dojo",
+    social: "Social",
+  };
 
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleLogout}
-                className="px-3 py-1.5 rounded-xl bg-amber-200/80 hover:bg-amber-300 text-amber-900 text-xs md:text-sm font-medium shadow-sm border border-amber-300 transition-colors"
-              >
-                Déconnexion
-              </button>
-            </div>
-          </div>
-        </header>
-
-        <main className="max-w-6xl mx-auto px-4 py-6 md:py-10">
-          {/* Vue principale : petite grille d'icônes */}
-          {activeSection === "main" && (
-            <>
-              <div className="mb-8 flex flex-col items-center text-center gap-2 animate-fade-in-up">
-                <p className="text-sm text-amber-800">
-                  Choisis une section pour continuer ton entraînement.
-                </p>
-                {kanjis.length > 0 && (
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 border border-amber-200 text-xs text-amber-800">
-                    <span className="inline-flex items-center justify-center w-4 h-4 rounded-full overflow-hidden bg-amber-200">
-                      <img
-                        src="/sprites/logo_lecteur.png"
-                        alt="Kanjis dans ta collection"
-                        className="w-full h-full object-cover"
-                      />
-                    </span>
-                    <span>
-                      {kanjis.length} kanji{kanjis.length > 1 ? "s" : ""} dans ta
-                      collection
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6 animate-fade-in-up">
-                {/* Jeux */}
-                <button
-                  type="button"
-                  onClick={() => setActiveSection("games")}
-                  className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-indigo-100/90 to-blue-100/90 border border-indigo-200/70 px-4 py-6 shadow-md hover:border-indigo-400 hover:bg-indigo-50/90 transition-bounce hover:-translate-y-0.5"
-                >
-                  <span className="mb-2 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden shadow-md bg-indigo-200/90">
-                    <img
-                      src="/sprites/logo_gamer.png"
-                      alt="Jeux"
-                      className="w-full h-full object-cover"
-                    />
-                  </span>
-                  <span className="text-sm font-semibold text-indigo-900 mb-1">
-                    Jeux
-                  </span>
-                  <span className="text-[11px] text-indigo-700 text-center">
-                    Speed Match, Kana Rain, Mémory, JLPT...
-                  </span>
-                </button>
-
-                {/* Collection */}
-                <button
-                  type="button"
-                  onClick={() => setCurrentView("collection")}
-                  className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-emerald-100/90 to-green-100/90 border border-emerald-200/70 px-4 py-6 shadow-md hover:border-emerald-400 hover:bg-emerald-50/90 transition-bounce hover:-translate-y-0.5"
-                >
-                  <span className="mb-2 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden shadow-md bg-emerald-200/90">
-                    <img
-                      src="/sprites/logo_lecteur.png"
-                      alt="Collection"
-                      className="w-full h-full object-cover"
-                    />
-                  </span>
-                  <span className="text-sm font-semibold text-emerald-900 mb-1">
-                    Collection
-                  </span>
-                  <span className="text-[11px] text-emerald-700 text-center">
-                    Ajouter, éditer et réviser tes kanjis.
-                  </span>
-                </button>
-
-                {/* Grammaire */}
-                <button
-                  type="button"
-                  onClick={() => setActiveSection("grammar")}
-                  className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-amber-100/90 to-yellow-100/90 border border-amber-200/70 px-4 py-6 shadow-md hover:border-amber-400 hover:bg-amber-50/90 transition-bounce hover:-translate-y-0.5"
-                >
-                  <span className="mb-2 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden shadow-md bg-amber-200/90">
-                    <img
-                      src="/sprites/logo_pensif.png"
-                      alt="Grammaire"
-                      className="w-full h-full object-cover"
-                    />
-                  </span>
-                  <span className="text-sm font-semibold text-amber-900 mb-1">
-                    Grammaire
-                  </span>
-                  <span className="text-[11px] text-amber-700 text-center">
-                    Verbes, adjectifs et particules.
-                  </span>
-                </button>
-
-                {/* Statistiques */}
-                <button
-                  type="button"
-                  onClick={() => router.push("/stats")}
-                  className="group flex flex-col items-center justify-center rounded-3xl bg-gradient-to-br from-rose-100/90 to-pink-100/90 border border-rose-200/70 px-4 py-6 shadow-md hover:border-rose-400 hover:bg-rose-50/90 transition-bounce hover:-translate-y-0.5"
-                >
-                  <span className="mb-2 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden shadow-md bg-rose-200/90">
-                    <img
-                      src="/sprites/logo_maths.png"
-                      alt="Statistiques"
-                      className="w-full h-full object-cover"
-                    />
-                  </span>
-                  <span className="text-sm font-semibold text-rose-900 mb-1">
-                    Statistiques
-                  </span>
-                  <span className="text-[11px] text-rose-700 text-center">
-                    Visualise ta progression globale.
-                  </span>
-                </button>
-              </div>
-
-              {/* Message d'encouragement zen */}
-              {kanjis.length === 0 && (
-                <div className="mt-12 text-center">
-                  <div className="bg-gradient-to-r from-pink-100/90 to-rose-100/90 rounded-2xl p-8 border border-pink-200/50 shadow-lg max-w-md mx-auto backdrop-blur-sm">
-                    <span className="text-4xl mb-4 block">🌸</span>
-                    <h3 className="text-lg font-bold text-pink-800 mb-2">
-                      始まり - Nouveau Départ
-                    </h3>
-                    <p className="text-pink-700 text-sm">
-                      Commence ton voyage en ajoutant ton premier kanji.
-                    </p>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-
-          {/* Sous-menu Jeux */}
-          {activeSection === "games" && (
-            <div className="space-y-6">
-              <button
-                type="button"
-                onClick={() => setActiveSection("main")}
-                className="inline-flex items-center gap-2 text-sm text-amber-800 hover:text-red-700 px-3 py-1.5 rounded-lg hover:bg-amber-100/80 transition-colors"
-              >
-                <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-amber-300/70">
-                  <img
-                    src="/sprites/logo_maison.png"
-                    alt="Menu principal"
-                    className="w-full h-full object-cover"
-                  />
-                </span>
-                <span>Retour au menu principal</span>
-              </button>
-
-              <div className="flex flex-col gap-2 mb-2">
-                <h2 className="text-lg font-bold text-indigo-900 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl overflow-hidden bg-indigo-200/90">
-                    <img
-                      src="/sprites/logo_gamer.png"
-                      alt="Jeux"
-                      className="w-full h-full object-cover"
-                    />
-                  </span>
-                  <span>Jeux & Sensei</span>
-                </h2>
-                <p className="text-sm text-indigo-800">
-                  Choisis un mode de jeu pour t'entraîner avec tes kanjis.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                <Link
-                  href="/training"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-indigo-900">
-                      Quiz kanjis
-                    </span>
-                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-indigo-700">
-                    Révisions adaptatives sur ta collection.
-                  </p>
-                </Link>
-
-                <Link
-                  href="/training?mode=survival"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-indigo-900">
-                      Survival
-                    </span>
-                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-indigo-700">
-                    3 vies, flux infini de questions.
-                  </p>
-                </Link>
-
-                <Link
-                  href="/game/speed-match"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-indigo-900">
-                      Speed Match
-                    </span>
-                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-indigo-700">
-                    QCM chrono — trouve le sens avant la fin du temps !
-                  </p>
-                </Link>
-
-                <Link
-                  href="/game/kana-rain"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-indigo-900">
-                      Kana Rain
-                    </span>
-                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-indigo-700">
-                    Les kanjis tombent — tape leur lecture à temps !
-                  </p>
-                </Link>
-
-                <Link
-                  href="/game/sens-cache"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-indigo-900">
-                      Sens Caché
-                    </span>
-                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-indigo-700">
-                    Un mot en japonais — retrouve son sens dans la liste.
-                  </p>
-                </Link>
-
-                <Link
-                  href="/game/memory"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-indigo-900">
-                      Mémory
-                    </span>
-                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-indigo-700">
-                    Associe les paires kanji–sens retournés.
-                  </p>
-                </Link>
-
-                <Link
-                  href="/game/histoire-a-trous"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-indigo-900">
-                      Histoire à trous
-                    </span>
-                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-indigo-700">
-                    Complète les blancs dans une mini-histoire japonaise.
-                  </p>
-                </Link>
-
-                <Link
-                  href="/game/duo-duel"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-purple-400 hover:bg-purple-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-indigo-900">
-                      Duo Duel
-                    </span>
-                    <span className="text-[10px] text-purple-600 font-medium bg-purple-100 px-1.5 py-0.5 rounded-full">bientôt</span>
-                  </div>
-                  <p className="text-xs text-indigo-700">
-                    Affronte un ami en temps réel sur tes kanjis.
-                  </p>
-                </Link>
-
-                <Link
-                  href="/jlpt"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-teal-200/70 bg-gradient-to-br from-teal-50/90 to-cyan-50/90 px-4 py-3 hover:border-teal-400 hover:bg-teal-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-teal-900">
-                      Base JLPT N5/N4
-                    </span>
-                    <span className="text-xs text-teal-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-teal-700">
-                    Kanjis officiels N5 et N4 à apprendre.
-                  </p>
-                </Link>
-
-                <Link
-                  href="/stories/mini"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-indigo-900">
-                      Mini histoires
-                    </span>
-                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-indigo-700">
-                    Lis des histoires générées avec tes kanjis.
-                  </p>
-                </Link>
-
-                <Link
-                  href="/chat"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-indigo-900">
-                      Chat Sensei
-                    </span>
-                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-indigo-700">
-                    Pose tes questions au professeur virtuel.
-                  </p>
-                </Link>
-
-                <Link
-                  href="/social"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-purple-200/70 bg-white/90 px-4 py-3 hover:border-purple-400 hover:bg-purple-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-purple-900">
-                      Social
-                    </span>
-                    <span className="text-xs text-purple-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-purple-700">
-                    Amis, défis et classements entre joueurs.
-                  </p>
-                </Link>
-              </div>
-            </div>
-          )}
-
-          {/* Sous-menu Grammaire */}
-          {activeSection === "grammar" && (
-            <div className="space-y-6">
-              <button
-                type="button"
-                onClick={() => setActiveSection("main")}
-                className="inline-flex items-center gap-2 text-sm text-amber-800 hover:text-red-700 px-3 py-1.5 rounded-lg hover:bg-amber-100/80 transition-colors"
-              >
-                <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-amber-300/70">
-                  <img
-                    src="/sprites/logo_maison.png"
-                    alt="Menu principal"
-                    className="w-full h-full object-cover"
-                  />
-                </span>
-                <span>Retour au menu principal</span>
-              </button>
-
-              <div className="flex flex-col gap-2 mb-2">
-                <h2 className="text-lg font-bold text-amber-900 flex items-center gap-2">
-                  <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl overflow-hidden bg-amber-200/90">
-                    <img
-                      src="/sprites/logo_pensif.png"
-                      alt="Grammaire"
-                      className="w-full h-full object-cover"
-                    />
-                  </span>
-                  <span>Grammaire & formes</span>
-                </h2>
-                <p className="text-sm text-amber-800">
-                  Choisis le type de point de grammaire à travailler.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                <Link
-                  href="/training/verbs"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-amber-200/70 bg-white/90 px-4 py-3 hover:border-amber-400 hover:bg-amber-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-amber-900">
-                      Verbes
-                    </span>
-                    <span className="text-xs text-amber-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-amber-700">
-                    Conjugaisons de base et formes utiles.
-                  </p>
-                </Link>
-
-                <Link
-                  href="/training/adjectives"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-amber-200/70 bg-white/90 px-4 py-3 hover:border-amber-400 hover:bg-amber-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-amber-900">
-                      Adjectifs
-                    </span>
-                    <span className="text-xs text-amber-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-amber-700">
-                    i / na et leurs transformations.
-                  </p>
-                </Link>
-
-                <Link
-                  href="/training/particles"
-                  className="group flex flex-col items-start justify-between rounded-2xl border border-indigo-200/70 bg-white/90 px-4 py-3 hover:border-indigo-400 hover:bg-indigo-50/90 transition-colors shadow-sm"
-                >
-                  <div className="flex items-center justify-between w-full mb-1">
-                    <span className="text-sm font-semibold text-indigo-900">
-                      Particules
-                    </span>
-                    <span className="text-xs text-indigo-600 group-hover:translate-x-0.5 transition-transform">
-                      →
-                    </span>
-                  </div>
-                  <p className="text-xs text-indigo-700">
-                    Complète la particule manquante dans la phrase.
-                  </p>
-                </Link>
-              </div>
-            </div>
-          )}
-        </main>
-      </div>
-    );
-  }
-
-  // Vue Collection
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
-      {/* Header avec retour zen */}
-      <header className="bg-gradient-to-r from-amber-100/90 to-orange-100/90 backdrop-blur-md border-b border-amber-200/50">
-        <div className="max-w-6xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => setCurrentView("menu")}
-              className="flex items-center gap-2 px-4 py-2 text-amber-700 hover:text-red-700 transition-colors rounded-lg hover:bg-amber-200/50"
-            >
-              <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-amber-300/70">
-                <img
-                  src="/sprites/logo_maison.png"
-                  alt="Menu principal"
-                  className="w-full h-full object-cover"
-                />
-              </span>
-              <span className="hidden sm:inline">戻る Menu</span>
-            </button>
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-red-800">
-                蔵書 Ma Collection
-              </h1>
-              <p className="text-amber-700 text-sm">
-                {kanjis.length} kanji{kanjis.length > 1 ? "s" : ""}
-              </p>
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      {/* Header sticky */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-200">
+        <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl overflow-hidden bg-red-600 flex-shrink-0">
+              <img src="/sprites/logo_sans_fond.png" alt="" className="w-full h-full object-cover" />
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleImport}
-                className="px-3 py-2 rounded-lg bg-blue-200/80 hover:bg-blue-300 text-blue-900 text-xs sm:text-sm font-medium shadow-sm border border-blue-300 transition-colors"
-              >
-                📥 Importer
-              </button>
-              <button
-                onClick={handleExport}
-                className="px-3 py-2 rounded-lg bg-emerald-200/80 hover:bg-emerald-300 text-emerald-900 text-xs sm:text-sm font-medium shadow-sm border border-emerald-300 transition-colors"
-              >
-                📤 Exporter
-              </button>
-            </div>
+            <span className="font-bold text-slate-800 text-sm">{tabTitles[tab]}</span>
           </div>
+          <button
+            onClick={handleLogout}
+            className="text-xs text-slate-400 hover:text-slate-600 transition-colors px-2 py-1 rounded-lg hover:bg-slate-100"
+          >
+            Déconnexion
+          </button>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-        {/* Formulaire d'ajout zen */}
-        <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 backdrop-blur-sm rounded-2xl shadow-lg border border-orange-200/50 p-6">
-          <AddKanjiForm onKanjiAdded={handleKanjiAdded} />
-        </div>
-
-        {error && (
-          <div className="p-4 bg-red-100/90 backdrop-blur-sm border border-red-300/50 rounded-xl shadow-lg">
-            <div className="flex items-center gap-2">
-              <span className="text-red-600">⚠️</span>
-              <p className="text-red-700 font-medium">{error}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Liste des kanjis zen */}
-        <div className="bg-gradient-to-br from-amber-100/90 to-yellow-100/90 backdrop-blur-sm rounded-2xl shadow-lg border border-amber-200/50 p-6">
-          <KanjiList
+      {/* Contenu principal */}
+      <main className="flex-1 max-w-lg mx-auto w-full px-4 pt-5 pb-28">
+        {tab === "home" && <HomeTab kanjis={kanjis} loading={loading} />}
+        {tab === "play" && <PlayTab />}
+        {tab === "dojo" && (
+          <DojoTab
             kanjis={kanjis}
             loading={loading}
-            onEdit={handleEdit}
+            error={error}
+            onEdit={setEditingKanji}
             onDelete={handleDelete}
+            onKanjiAdded={refreshKanjis}
+            onImport={handleImport}
+            onExport={handleExport}
           />
-        </div>
+        )}
+        {tab === "social" && <SocialTab />}
       </main>
 
+      {/* Navigation bas */}
+      <BottomNav tab={tab} setTab={setTab} />
+
+      {/* Modal édition */}
       <EditKanjiModal
         kanji={editingKanji}
         isOpen={!!editingKanji}

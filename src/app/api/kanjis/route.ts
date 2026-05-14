@@ -33,8 +33,9 @@ export async function POST(req: NextRequest) {
   await sql`
     INSERT INTO kanji_entries (id, user_id, kanji, data)
     VALUES (${kanji.id}, ${user.userId}, ${kanji.kanji}, ${dataJson}::jsonb)
-    ON CONFLICT (id) DO UPDATE
-      SET data = EXCLUDED.data, updated_at = NOW()
+    ON CONFLICT (user_id, kanji) DO UPDATE
+      SET data = jsonb_set(EXCLUDED.data, '{id}', to_jsonb(kanji_entries.id::text)),
+          updated_at = NOW()
   `;
 
   return NextResponse.json({ ok: true });
