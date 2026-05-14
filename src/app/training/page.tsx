@@ -21,6 +21,26 @@ import {
   SurvivalState,
   SurvivalStats,
 } from "../../services/survivalService";
+import { ALL_JLPT_KANJI } from "../../data/jlptData";
+import { KanjiEntry } from "../../types/kanji";
+
+/** Converts a JLPT entry to a minimal KanjiEntry for use in training */
+function jlptToKanjiEntry(j: (typeof ALL_JLPT_KANJI)[0]): KanjiEntry {
+  return {
+    id: `jlpt-${j.kanji}`,
+    kanji: j.kanji,
+    onyomi: j.onyomi,
+    kunyomi: j.kunyomi,
+    meanings: j.meanings,
+    primaryMeaning: j.meanings[0],
+    primaryReading: j.onyomi[0] ?? j.kunyomi[0],
+    tags: j.tags ?? [],
+    strokeCount: j.strokeCount,
+    jlptLevel: j.level,
+    dateAdded: new Date(0),
+    lastModified: new Date(0),
+  };
+}
 
 // Composant interne qui utilise useSearchParams
 function TrainingPageContent() {
@@ -55,7 +75,11 @@ function TrainingPageContent() {
 
   // Initialisation au montage
   useEffect(() => {
-    const learningKanjis = kanjis.map((kanji) => {
+    // Si la collection personnelle est vide, utiliser les kanjis JLPT N5+N4
+    const baseKanjis: KanjiEntry[] =
+      kanjis.length > 0 ? kanjis : ALL_JLPT_KANJI.map(jlptToKanjiEntry);
+
+    const learningKanjis = baseKanjis.map((kanji) => {
       const savedData = localStorage.getItem(`simple_learning_${kanji.id}`);
       if (savedData) {
         const parsed = JSON.parse(savedData);

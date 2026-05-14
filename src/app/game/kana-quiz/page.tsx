@@ -93,17 +93,15 @@ export default function KanaQuizPage() {
   const [feedback, setFeedback] = useState<"correct" | "wrong" | null>(null);
   const [results, setResults] = useState<boolean[]>([]);
 
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const feedbackRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const clearTimer = useCallback(() => {
-    if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
+  const clearFeedback = useCallback(() => {
     if (feedbackRef.current) { clearTimeout(feedbackRef.current); feedbackRef.current = null; }
   }, []);
 
   const nextQuestion = useCallback(
     (wasCorrect: boolean) => {
-      clearTimer();
+      clearFeedback();
       setResults((r) => [...r, wasCorrect]);
 
       if (wasCorrect) {
@@ -129,7 +127,7 @@ export default function KanaQuizPage() {
       setFeedback(null);
       setTimeLeft(TIME_PER_QUESTION);
     },
-    [clearTimer]
+    [clearFeedback]
   );
 
   const handleAnswer = useCallback(
@@ -144,20 +142,22 @@ export default function KanaQuizPage() {
     [selected, questions, current, nextQuestion]
   );
 
-  // Timer
+  // Timer — décrémente timeLeft chaque seconde
   useEffect(() => {
     if (phase !== "playing" || selected !== null) return;
-    timerRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          handleAnswer("__timeout__");
-          return 0;
-        }
-        return prev - 1;
-      });
+    const t = setInterval(() => {
+      setTimeLeft((p) => Math.max(0, p - 1));
     }, 1000);
-    return () => clearTimer();
-  }, [phase, current, selected, handleAnswer, clearTimer]);
+    return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, current, selected]);
+
+  // Quand timeLeft atteint 0 → timeout
+  useEffect(() => {
+    if (phase !== "playing" || selected !== null || timeLeft > 0) return;
+    const t = setTimeout(() => handleAnswer("__timeout__"), 0);
+    return () => clearTimeout(t);
+  }, [phase, current, selected, timeLeft, handleAnswer]);
 
   const startGame = () => {
     const pool = getPool(kanaSet);
