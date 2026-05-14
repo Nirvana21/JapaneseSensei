@@ -1,6 +1,6 @@
-﻿"use client";
+"use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AddKanjiForm from "@/components/AddKanjiForm";
@@ -10,538 +10,447 @@ import { useKanjis } from "@/hooks/useKanjis";
 import { KanjiEntry } from "@/types/kanji";
 import { KanjiStorageService } from "@/services/kanjiStorage";
 
-// ================================================================
-// Types
-// ================================================================
-type Tab = "home" | "play" | "dojo" | "social";
-
-// ================================================================
-// Catalogues
-// ================================================================
-const TRAININGS = [
-  { href: "/training", emoji: "📖", name: "Quiz Kanjis", desc: "Révisions adaptatives sur ta collection" },
-  { href: "/training?mode=survival", emoji: "💥", name: "Survival", desc: "3 vies, questions en flux infini" },
-];
-const GAMES_LIST = [
-  { href: "/game/speed-match", emoji: "⚡", name: "Speed Match", desc: "Trouve le sens avant la limite de temps" },
-  { href: "/game/kana-quiz", emoji: "🔤", name: "Kana Quiz", desc: "Maîtrise les hiragana & katakana" },
-  { href: "/game/kana-rain", emoji: "🌧️", name: "Kana Rain", desc: "Tape la lecture des kanjis qui tombent" },
-  { href: "/game/memory", emoji: "🃏", name: "Mémory", desc: "Associe les paires kanji ↔ sens" },
-  { href: "/game/sens-cache", emoji: "👁️", name: "Sens Caché", desc: "Retrouve le sens masqué" },
-  { href: "/game/histoire-a-trous", emoji: "✍️", name: "À trous", desc: "Complète les histoires" },
-  { href: "/game/kanji-legends", emoji: "🏆", name: "Kanji Legends", desc: "Assemble les composants kanji" },
-  { href: "/stories/mini", emoji: "📖", name: "Mini histoires", desc: "Lis des histoires avec tes kanjis" },
-  { href: "/chat", emoji: "🤖", name: "Chat Sensei", desc: "Pose tes questions au professeur IA" },
-];
-const GRAMMAR_LIST = [
-  { href: "/training/verbs", emoji: "動", name: "Verbes", desc: "Conjugaisons et formes courantes" },
-  { href: "/training/adjectives", emoji: "形", name: "Adjectifs", desc: "い-adj / な-adj et transformations" },
-  { href: "/training/particles", emoji: "は", name: "Particules", desc: "Complète la particule manquante" },
-];
-
-// ================================================================
-// Bottom Nav
-// ================================================================
-function BottomNav({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
-  const items: { key: Tab; label: string }[] = [
-    { key: "home", label: "Accueil" },
-    { key: "play", label: "Jouer" },
-    { key: "dojo", label: "Dojo" },
-    { key: "social", label: "Social" },
-  ];
-
-  const icons: Record<Tab, React.ReactNode> = {
-    home: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" strokeWidth={2}>
-        <path d="M3 12L12 3L21 12V21H15V15H9V21H3V12Z" stroke="currentColor" strokeLinejoin="round" strokeLinecap="round" />
-      </svg>
-    ),
-    play: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" strokeWidth={2}>
-        <circle cx="12" cy="12" r="9" stroke="currentColor" />
-        <path d="M10 8.5L16 12L10 15.5V8.5Z" fill="currentColor" />
-      </svg>
-    ),
-    dojo: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" strokeWidth={2}>
-        <path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="currentColor" strokeLinecap="round" />
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="currentColor" />
-      </svg>
-    ),
-    social: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5" strokeWidth={2}>
-        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" stroke="currentColor" strokeLinecap="round" />
-        <circle cx="9" cy="7" r="4" stroke="currentColor" />
-        <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" stroke="currentColor" strokeLinecap="round" />
-      </svg>
-    ),
-  };
-
-  return (
-    <nav
-      className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200"
-      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
-    >
-      <div className="max-w-lg mx-auto flex justify-around">
-        {items.map(({ key, label }) => (
-          <button
-            key={key}
-            onClick={() => setTab(key)}
-            className={`flex flex-col items-center gap-0.5 flex-1 py-2.5 transition-colors ${
-              tab === key ? "text-red-600" : "text-slate-400 hover:text-slate-600"
-            }`}
-          >
-            {icons[key]}
-            <span className={`text-[10px] font-bold ${tab === key ? "text-red-600" : "text-slate-400"}`}>
-              {label}
-            </span>
-          </button>
-        ))}
-      </div>
-    </nav>
-  );
-}
-
-// ================================================================
-// Composant Card de jeu
-// ================================================================
-function GameCard({ href, emoji, name, desc }: { href: string; emoji: string; name: string; desc: string }) {
-  return (
-    <Link
-      href={href}
-      className="flex items-center gap-3.5 p-3.5 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 active:scale-[0.98] transition-all"
-    >
-      <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-xl flex-shrink-0">
-        {emoji}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-slate-800">{name}</p>
-        <p className="text-xs text-slate-400 truncate">{desc}</p>
-      </div>
-      <svg viewBox="0 0 24 24" className="w-4 h-4 text-slate-300 flex-shrink-0" fill="none" strokeWidth={2.5}>
-        <path d="M9 18l6-6-6-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    </Link>
-  );
-}
-
-function SectionHeader({ title, color = "text-slate-500" }: { title: string; color?: string }) {
-  return <h3 className={`text-[11px] font-bold uppercase tracking-widest ${color} px-0.5`}>{title}</h3>;
-}
-
-// ================================================================
-// Onglet Accueil
-// ================================================================
-function HomeTab({ kanjis, loading }: { kanjis: KanjiEntry[]; loading: boolean }) {
-  const hour = new Date().getHours();
-  const greetings = [
-    { text: "Ohayō !", ja: "おはようございます" },
-    { text: "Konnichiwa !", ja: "こんにちは" },
-    { text: "Konbanwa !", ja: "こんばんは" },
-  ];
-  const { text: greeting, ja: greetingJa } = greetings[hour < 12 ? 0 : hour < 18 ? 1 : 2];
-
-  const [hasPlayed, setHasPlayed] = useState(false);
-  useEffect(() => {
-    setHasPlayed(!!localStorage.getItem("js_has_played"));
-  }, []);
-
-  const steps = [
-    { label: "Ajouter ton premier kanji", done: kanjis.length > 0, href: null as string | null },
-    { label: "Jouer à un premier jeu", done: hasPlayed, href: "/game/kana-quiz" },
-    { label: "Explorer les kanjis JLPT", done: false, href: "/game/speed-match" },
-    { label: "Trouver un ami", done: false, href: "/social" },
-  ];
-
-  const doneCount = steps.filter((s) => s.done).length;
-  const allDone = doneCount === steps.length;
-
-  const QUICK = [
-    { href: "/training", emoji: "📖", name: "Quiz", bg: "bg-indigo-50 border-indigo-200", text: "text-indigo-700" },
-    { href: "/game/speed-match", emoji: "⚡", name: "Speed", bg: "bg-amber-50 border-amber-200", text: "text-amber-700" },
-    { href: "/game/kana-quiz", emoji: "🔤", name: "Kana", bg: "bg-emerald-50 border-emerald-200", text: "text-emerald-700" },
-    { href: "/game/kana-rain", emoji: "🌧️", name: "Rain", bg: "bg-blue-50 border-blue-200", text: "text-blue-700" },
-  ];
-
-  return (
-    <div className="space-y-5">
-      {/* Hero */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-red-600 to-rose-700 rounded-3xl p-5 text-white shadow-lg">
-        <div className="absolute -top-4 -right-4 text-9xl opacity-10 leading-none select-none pointer-events-none">日</div>
-        <p className="text-xs font-medium opacity-70 mb-0.5">{greetingJa}</p>
-        <h2 className="text-2xl font-bold mb-4">{greeting}</h2>
-        <div className="flex gap-3">
-          <div className="bg-white/20 rounded-xl px-3 py-2 text-center">
-            {loading ? (
-              <div className="w-8 h-5 bg-white/20 rounded animate-pulse mx-auto" />
-            ) : (
-              <p className="text-xl font-bold">{kanjis.length}</p>
-            )}
-            <p className="text-[10px] opacity-80">kanjis</p>
-          </div>
-          <div className="bg-white/20 rounded-xl px-3 py-2 text-center">
-            <p className="text-xl font-bold">
-              {doneCount}/{steps.length}
-            </p>
-            <p className="text-[10px] opacity-80">objectifs</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Jouer rapidement */}
-      <div className="space-y-2.5">
-        <SectionHeader title="Jouer maintenant" />
-        <div className="grid grid-cols-4 gap-2">
-          {QUICK.map(({ href, emoji, name, bg, text }) => (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => localStorage.setItem("js_has_played", "1")}
-              className={`flex flex-col items-center gap-1.5 py-3 rounded-2xl border ${bg} active:scale-95 transition-transform`}
-            >
-              <span className="text-2xl">{emoji}</span>
-              <span className={`text-[11px] font-semibold ${text}`}>{name}</span>
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* Onboarding */}
-      {!allDone && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="px-4 pt-4 pb-3">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-bold text-slate-700">🗺️ Premiers pas</h3>
-              <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-                {doneCount}/{steps.length}
-              </span>
-            </div>
-            <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-gradient-to-r from-red-500 to-rose-500 rounded-full transition-all duration-500"
-                style={{ width: `${(doneCount / steps.length) * 100}%` }}
-              />
-            </div>
-          </div>
-          <div className="divide-y divide-slate-100">
-            {steps.map((step, i) => (
-              <div
-                key={i}
-                className={`flex items-center gap-3 px-4 py-3 ${step.done ? "opacity-40" : ""}`}
-              >
-                <div
-                  className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center ${
-                    step.done ? "bg-green-500" : "border-2 border-slate-300"
-                  }`}
-                >
-                  {step.done && (
-                    <svg viewBox="0 0 24 24" className="w-3 h-3 text-white" fill="none" strokeWidth={3}>
-                      <path d="M5 13l4 4L19 7" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  )}
-                </div>
-                <span
-                  className={`text-sm flex-1 ${step.done ? "line-through text-slate-400" : "text-slate-700"}`}
-                >
-                  {step.label}
-                </span>
-                {!step.done && step.href && (
-                  <Link href={step.href} className="text-xs font-bold text-red-600 shrink-0 hover:underline">
-                    →
-                  </Link>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Explorer */}
-      <div className="space-y-2.5">
-        <SectionHeader title="Explorer" />
-        <div className="grid grid-cols-3 gap-2.5">
-          {[
-            { href: "/stats", emoji: "📊", label: "Stats" },
-            { href: "/social", emoji: "👥", label: "Social" },
-            { href: "/chat", emoji: "🤖", label: "Sensei" },
-          ].map(({ href, emoji, label }) => (
-            <Link
-              key={href}
-              href={href}
-              className="flex flex-col items-center gap-1.5 p-3.5 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow active:scale-95 transition-all"
-            >
-              <span className="text-2xl">{emoji}</span>
-              <span className="text-xs font-semibold text-slate-600">{label}</span>
-            </Link>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ================================================================
-// Onglet Jeux
-// ================================================================
-function PlayTab() {
-  return (
-    <div className="space-y-5">
-      <div className="space-y-2">
-        <SectionHeader title="Entraînement kanji" color="text-indigo-600" />
-        {TRAININGS.map((g) => (
-          <GameCard key={g.href} {...g} />
-        ))}
-      </div>
-      <div className="space-y-2">
-        <SectionHeader title="Mini-jeux" color="text-amber-600" />
-        {GAMES_LIST.map((g) => (
-          <GameCard key={g.href} {...g} />
-        ))}
-      </div>
-      <div className="space-y-2">
-        <SectionHeader title="Grammaire" color="text-emerald-600" />
-        {GRAMMAR_LIST.map((g) => (
-          <GameCard key={g.href} {...g} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ================================================================
-// Onglet Dojo (collection)
-// ================================================================
-interface DojoTabProps {
-  kanjis: KanjiEntry[];
-  loading: boolean;
-  error: string | null;
-  onEdit: (k: KanjiEntry) => void;
-  onDelete: (id: string) => void;
-  onKanjiAdded: () => void;
-  onImport: () => void;
-  onExport: () => void;
-}
-
-function DojoTab({
-  kanjis,
-  loading,
-  error,
-  onEdit,
-  onDelete,
-  onKanjiAdded,
-  onImport,
-  onExport,
-}: DojoTabProps) {
-  const [showAdd, setShowAdd] = useState(false);
-
-  return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-lg font-bold text-slate-800">Ma Collection</h2>
-          <p className="text-xs text-slate-400">
-            {loading ? "Chargement…" : `${kanjis.length} kanji${kanjis.length !== 1 ? "s" : ""}`}
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <button
-            onClick={onImport}
-            className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors"
-            title="Importer JSON"
-          >
-            📥
-          </button>
-          <button
-            onClick={onExport}
-            className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors"
-            title="Exporter JSON"
-          >
-            📤
-          </button>
-          <button
-            onClick={() => setShowAdd((v) => !v)}
-            className={`flex items-center gap-1.5 px-3 h-9 rounded-xl text-sm font-semibold transition-colors ${
-              showAdd ? "bg-slate-200 text-slate-700" : "bg-red-600 text-white hover:bg-red-700"
-            }`}
-          >
-            {showAdd ? "✕" : "+ Ajouter"}
-          </button>
-        </div>
-      </div>
-
-      {/* Formulaire d'ajout */}
-      {showAdd && (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
-          <AddKanjiForm
-            onKanjiAdded={() => {
-              onKanjiAdded();
-              setShowAdd(false);
-            }}
-          />
-        </div>
-      )}
-
-      {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
-          <span>⚠️</span> {error}
-        </div>
-      )}
-
-      <KanjiList kanjis={kanjis} loading={loading} onEdit={onEdit} onDelete={onDelete} />
-    </div>
-  );
-}
-
-// ================================================================
-// Onglet Social
-// ================================================================
-function SocialTab() {
-  return (
-    <div className="space-y-4">
-      <div className="relative overflow-hidden bg-gradient-to-br from-indigo-600 to-purple-700 rounded-3xl p-5 text-white shadow-lg">
-        <div className="absolute -top-4 -right-4 text-9xl opacity-10 leading-none select-none">友</div>
-        <p className="text-xs font-medium opacity-70 mb-0.5">仲間と一緒に</p>
-        <h2 className="text-xl font-bold mb-2">Challenge tes amis</h2>
-        <p className="text-sm opacity-80">Défie tes amis sur les mêmes jeux et compare vos scores.</p>
-      </div>
-
-      <Link
-        href="/social"
-        className="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md active:scale-[0.98] transition-all"
-      >
-        <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-xl">👥</div>
-        <div className="flex-1">
-          <p className="font-semibold text-slate-800">Amis &amp; Défis</p>
-          <p className="text-xs text-slate-400">Gérer tes amis, envoyer et recevoir des défis</p>
-        </div>
-        <svg viewBox="0 0 24 24" className="w-4 h-4 text-slate-300" fill="none" strokeWidth={2.5}>
-          <path d="M9 18l6-6-6-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </Link>
-
-      <div className="space-y-2">
-        <SectionHeader title="Jeux pour les défis" color="text-indigo-500" />
-        {GAMES_LIST.slice(0, 4).map(({ href, emoji, name, desc }) => (
-          <GameCard key={href} href={href} emoji={emoji} name={name} desc={desc} />
-        ))}
-      </div>
-
-      <p className="text-xs text-center text-slate-400 pb-2">
-        Lance un défi depuis la page Social après avoir joué 🏆
-      </p>
-    </div>
-  );
-}
-
-// ================================================================
-// Page principale
-// ================================================================
 export default function Home() {
   const router = useRouter();
-  const [tab, setTab] = useState<Tab>("home");
+  const [currentView, setCurrentView] =
+    useState<"menu" | "collection">("menu");
+  const [activeSection, setActiveSection] =
+    useState<"main" | "games" | "grammar">("main");
   const [editingKanji, setEditingKanji] = useState<KanjiEntry | null>(null);
-  const { kanjis, loading, error, updateKanji, deleteKanji, refreshKanjis } = useKanjis();
+  const [importStatus, setImportStatus] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [importing, setImporting] = useState(false);
+  const importInputRef = useRef<HTMLInputElement>(null);
+  const { kanjis, loading, error, updateKanji, deleteKanji, refreshKanjis } =
+    useKanjis();
 
-  const handleSaveEdit = async (k: KanjiEntry) => {
-    await updateKanji(k);
+  const handleEdit = (kanji: KanjiEntry) => {
+    setEditingKanji(kanji);
+  };
+
+  const handleSaveEdit = async (updatedKanji: KanjiEntry) => {
+    await updateKanji(updatedKanji);
     setEditingKanji(null);
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm("Supprimer ce kanji ?")) await deleteKanji(id);
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce kanji ?")) {
+      await deleteKanji(id);
+    }
   };
 
-  const handleExport = useCallback(async () => {
+  const handleKanjiAdded = () => {
+    refreshKanjis();
+  };
+
+  const handleExport = async () => {
     try {
       const json = await KanjiStorageService.exportKanjis();
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(new Blob([json], { type: "application/json" }));
-      a.download = `kanjis-${new Date().toISOString().slice(0, 10)}.json`;
-      a.click();
-    } catch {
-      alert("Impossible d'exporter.");
-    }
-  }, []);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
 
-  const handleImport = useCallback(() => {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".json,application/json";
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-      try {
-        const text = await file.text();
-        const result = await KanjiStorageService.importKanjis(text, false);
-        await refreshKanjis();
-        alert(
-          `Import terminé !\n✓ ${result.count} ajouté${result.count > 1 ? "s" : ""}` +
-            `\n⏩ ${result.skipped} déjà présent${result.skipped > 1 ? "s" : ""}` +
-            (result.errors > 0 ? `\n⚠️ ${result.errors} erreur(s)` : "")
-        );
-      } catch {
-        alert("Fichier invalide ou erreur lors de l'import.");
-      }
-    };
-    input.click();
-  }, [refreshKanjis]);
+      const a = document.createElement("a");
+      a.href = url;
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      a.download = `japanese-sensei-kanjis-${timestamp}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Erreur export kanjis", err);
+      alert("Impossible d'exporter la collection.");
+    }
+  };
+
+  const handleImportFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    e.target.value = ""; // reset so same file can be re-selected
+    setImporting(true);
+    setImportStatus(null);
+    try {
+      const text = await file.text();
+      const result = await KanjiStorageService.importKanjis(text, false);
+      await refreshKanjis();
+      const msg = `${result.count} kanji${result.count > 1 ? "s" : ""} importé${result.count > 1 ? "s" : ""}` +
+        (result.skipped > 0 ? ` · ${result.skipped} ignoré${result.skipped > 1 ? "s" : ""}` : "") +
+        (result.errors.length > 0 ? `\n${result.errors[0]}` : "");
+      setImportStatus({ ok: true, msg });
+    } catch (err) {
+      setImportStatus({ ok: false, msg: err instanceof Error ? err.message : "Erreur import" });
+    } finally {
+      setImporting(false);
+    }
+  };
 
   const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
-    router.replace("/login");
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.replace("/login");
+    } catch {
+      router.replace("/login");
+    }
   };
 
-  const tabTitles: Record<Tab, string> = {
-    home: "Japanese Sensei",
-    play: "Jouer",
-    dojo: "Dojo",
-    social: "Social",
-  };
-
-  return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Header sticky */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-200">
-        <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl overflow-hidden bg-red-600 flex-shrink-0">
-              <img src="/sprites/logo_sans_fond.png" alt="" className="w-full h-full object-cover" />
+  if (currentView === "menu") {
+    return (
+      <div className="min-h-screen bg-[#100c08] text-[#f5ede0] flex flex-col">
+        {/* Glow overlay */}
+        <div
+          className="fixed inset-0 pointer-events-none z-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(ellipse 80% 50% at 50% -5%, rgba(196,30,30,0.15) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 85% 90%, rgba(201,168,76,0.06) 0%, transparent 55%)",
+          }}
+        />
+        {/* Header */}
+        <header className="relative z-10 border-b border-white/[0.07] bg-black/25 backdrop-blur-md">
+          <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="w-9 h-9 rounded-xl overflow-hidden shadow-lg shadow-red-900/40 border border-white/10">
+                <img src="/sprites/logo_sans_fond.png" alt="Japanese Sensei" className="w-full h-full object-cover" />
+              </div>
+              <div className="flex flex-col leading-tight min-w-0">
+                <span
+                  className="text-base font-bold text-[#f5ede0] truncate"
+                  style={{ fontFamily: "var(--font-noto-serif-jp, serif)" }}
+                >
+                  Japanese Sensei
+                </span>
+                <span className="hidden sm:inline text-[10px] text-[#c9a84c]/70 tracking-wider">
+                  道を極める
+                </span>
+              </div>
             </div>
-            <span className="font-bold text-slate-800 text-sm">{tabTitles[tab]}</span>
+            <button
+              onClick={handleLogout}
+              className="px-3 py-1.5 rounded-xl text-xs font-medium border border-white/15 text-[#f5ede0]/50 hover:text-[#f5ede0] hover:border-white/30 transition-colors"
+            >
+              Déconnexion
+            </button>
           </div>
-          <button
-            onClick={handleLogout}
-            className="text-xs text-slate-400 hover:text-slate-600 transition-colors px-2 py-1 rounded-lg hover:bg-slate-100"
-          >
-            Déconnexion
-          </button>
+        </header>
+
+        <main className="relative z-10 max-w-5xl mx-auto px-4 py-8 flex-1">
+          {/* Vue principale */}
+          {activeSection === "main" && (
+            <>
+              {/* Mascot + title */}
+              <div className="flex flex-col items-center gap-3 mb-10">
+                <div className="w-20 h-20 rounded-3xl overflow-hidden shadow-2xl shadow-red-900/30 border border-white/10">
+                  <img src="/Logo_Sensei.png" alt="" className="w-full h-full object-cover" />
+                </div>
+                <div className="text-center">
+                  <h1
+                    className="text-2xl font-bold text-[#f5ede0] mb-0.5"
+                    style={{ fontFamily: "var(--font-noto-serif-jp, serif)" }}
+                  >
+                    日本語先生
+                  </h1>
+                  <p className="text-[#c9a84c]/80 text-xs tracking-widest">JAPANESE SENSEI</p>
+                </div>
+                {kanjis.length > 0 && (
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.05] border border-white/10 text-xs text-[#f5ede0]/60">
+                    <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full overflow-hidden">
+                      <img src="/sprites/logo_lecteur.png" alt="" className="w-full h-full object-cover" />
+                    </span>
+                    {kanjis.length} kanji{kanjis.length > 1 ? "s" : ""} dans ta collection
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+                {/* Jeux */}
+                <button
+                  type="button"
+                  onClick={() => setActiveSection("games")}
+                  className="group flex flex-col items-center justify-center rounded-3xl bg-white/[0.04] border border-white/[0.08] px-4 py-6 hover:border-[#c41e1e]/50 hover:bg-[#c41e1e]/5 transition-all hover:-translate-y-0.5 shadow-lg"
+                >
+                  <span className="mb-2.5 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden border border-white/10">
+                    <img src="/sprites/logo_gamer.png" alt="Jeux" className="w-full h-full object-cover" />
+                  </span>
+                  <span className="text-sm font-semibold text-[#f5ede0] mb-1">Jeux</span>
+                  <span className="text-[11px] text-[#f5ede0]/40 text-center leading-tight">Quiz, survival, histoires...</span>
+                </button>
+
+                {/* Collection */}
+                <button
+                  type="button"
+                  onClick={() => setCurrentView("collection")}
+                  className="group flex flex-col items-center justify-center rounded-3xl bg-white/[0.04] border border-white/[0.08] px-4 py-6 hover:border-emerald-600/40 hover:bg-emerald-900/10 transition-all hover:-translate-y-0.5 shadow-lg"
+                >
+                  <span className="mb-2.5 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden border border-white/10">
+                    <img src="/sprites/logo_lecteur.png" alt="Collection" className="w-full h-full object-cover" />
+                  </span>
+                  <span className="text-sm font-semibold text-[#f5ede0] mb-1">Collection</span>
+                  <span className="text-[11px] text-[#f5ede0]/40 text-center leading-tight">Ajoute et gère tes kanjis.</span>
+                </button>
+
+                {/* Grammaire */}
+                <button
+                  type="button"
+                  onClick={() => setActiveSection("grammar")}
+                  className="group flex flex-col items-center justify-center rounded-3xl bg-white/[0.04] border border-white/[0.08] px-4 py-6 hover:border-[#c9a84c]/50 hover:bg-[#c9a84c]/5 transition-all hover:-translate-y-0.5 shadow-lg"
+                >
+                  <span className="mb-2.5 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden border border-white/10">
+                    <img src="/sprites/logo_pensif.png" alt="Grammaire" className="w-full h-full object-cover" />
+                  </span>
+                  <span className="text-sm font-semibold text-[#f5ede0] mb-1">Grammaire</span>
+                  <span className="text-[11px] text-[#f5ede0]/40 text-center leading-tight">Verbes, adjectifs, particules.</span>
+                </button>
+
+                {/* Statistiques */}
+                <button
+                  type="button"
+                  onClick={() => router.push("/stats")}
+                  className="group flex flex-col items-center justify-center rounded-3xl bg-white/[0.04] border border-white/[0.08] px-4 py-6 hover:border-rose-500/40 hover:bg-rose-900/10 transition-all hover:-translate-y-0.5 shadow-lg"
+                >
+                  <span className="mb-2.5 inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden border border-white/10">
+                    <img src="/sprites/logo_maths.png" alt="Statistiques" className="w-full h-full object-cover" />
+                  </span>
+                  <span className="text-sm font-semibold text-[#f5ede0] mb-1">Stats</span>
+                  <span className="text-[11px] text-[#f5ede0]/40 text-center leading-tight">Visualise ta progression.</span>
+                </button>
+              </div>
+
+              {/* Message d'encouragement */}
+              {kanjis.length === 0 && (
+                <div className="mt-10 text-center">
+                  <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-8 max-w-sm mx-auto">
+                    <div className="flex justify-center mb-4">
+                      <span className="inline-flex items-center justify-center w-14 h-14 rounded-2xl overflow-hidden border border-white/10">
+                        <img src="/sprites/logo_pensif.png" alt="" className="w-full h-full object-cover" />
+                      </span>
+                    </div>
+                    <h3
+                      className="text-lg font-bold text-[#f5ede0] mb-2"
+                      style={{ fontFamily: "var(--font-noto-serif-jp, serif)" }}
+                    >
+                      始まり — Nouveau Départ
+                    </h3>
+                    <p className="text-[#f5ede0]/50 text-sm">
+                      Commence ton voyage en ajoutant ton premier kanji dans ta collection.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Sous-menu Jeux */}
+          {activeSection === "games" && (
+            <div className="space-y-6">
+              <button
+                type="button"
+                onClick={() => setActiveSection("main")}
+                className="inline-flex items-center gap-2 text-sm text-[#f5ede0]/60 hover:text-[#f5ede0] px-3 py-1.5 rounded-lg hover:bg-white/[0.06] transition-colors"
+              >
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden border border-white/10">
+                  <img src="/sprites/logo_maison.png" alt="" className="w-full h-full object-cover" />
+                </span>
+                <span>Retour au menu</span>
+              </button>
+
+              <div className="mb-2">
+                <h2
+                  className="text-lg font-bold text-[#f5ede0] flex items-center gap-2 mb-1"
+                  style={{ fontFamily: "var(--font-noto-serif-jp, serif)" }}
+                >
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden border border-white/10">
+                    <img src="/sprites/logo_gamer.png" alt="" className="w-full h-full object-cover" />
+                  </span>
+                  遊び — Jeux & Entraînement
+                </h2>
+                <p className="text-sm text-[#f5ede0]/40 pl-8">Choisis un mode pour t'entraîner.</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {([
+                  { href: "/training", label: "Quiz kanjis", desc: "Révisions adaptatives sur ta collection." },
+                  { href: "/training?mode=survival", label: "Mode Survival", desc: "3 vies, flux infini de questions." },
+                  { href: "/game/kana-quiz", label: "Quiz Kana", desc: "Reconnaître hiragana et katakana." },
+                  { href: "/game/kana-rain", label: "Kana Rain", desc: "Identifie les kana avant qu'ils touchent le sol." },
+                  { href: "/game/speed-match", label: "Speed Match", desc: "Associe le kanji à sa signification à toute vitesse." },
+                  { href: "/game/memory", label: "Memory", desc: "Retrouve les paires kanji ↔ sens." },
+                  { href: "/stories/mini", label: "Mini histoires", desc: "Lis des histoires générées avec tes kanjis." },
+                  { href: "/chat", label: "Chat Sensei", desc: "Pose tes questions au professeur virtuel." },
+                ] as { href: string; label: string; desc: string }[]).map(({ href, label, desc }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className="group flex flex-col items-start justify-between rounded-2xl bg-white/[0.04] border border-white/[0.08] px-4 py-3 hover:border-[#c41e1e]/40 hover:bg-[#c41e1e]/5 transition-all shadow-sm"
+                  >
+                    <div className="flex items-center justify-between w-full mb-1">
+                      <span className="text-sm font-semibold text-[#f5ede0]">{label}</span>
+                      <span className="text-xs text-[#c9a84c]/70 group-hover:translate-x-0.5 transition-transform">→</span>
+                    </div>
+                    <p className="text-xs text-[#f5ede0]/40">{desc}</p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Sous-menu Grammaire */}
+          {activeSection === "grammar" && (
+            <div className="space-y-6">
+              <button
+                type="button"
+                onClick={() => setActiveSection("main")}
+                className="inline-flex items-center gap-2 text-sm text-[#f5ede0]/60 hover:text-[#f5ede0] px-3 py-1.5 rounded-lg hover:bg-white/[0.06] transition-colors"
+              >
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden border border-white/10">
+                  <img src="/sprites/logo_maison.png" alt="" className="w-full h-full object-cover" />
+                </span>
+                <span>Retour au menu</span>
+              </button>
+
+              <div className="mb-2">
+                <h2
+                  className="text-lg font-bold text-[#f5ede0] flex items-center gap-2 mb-1"
+                  style={{ fontFamily: "var(--font-noto-serif-jp, serif)" }}
+                >
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden border border-white/10">
+                    <img src="/sprites/logo_pensif.png" alt="" className="w-full h-full object-cover" />
+                  </span>
+                  文法 — Grammaire & Formes
+                </h2>
+                <p className="text-sm text-[#f5ede0]/40 pl-8">Choisis le point de grammaire à travailler.</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {([
+                  { href: "/training/verbs", label: "Verbes", desc: "Conjugaisons de base et formes utiles." },
+                  { href: "/training/adjectives", label: "Adjectifs", desc: "i / na et leurs transformations." },
+                  { href: "/training/particles", label: "Particules", desc: "Complète la particule manquante dans la phrase." },
+                ] as { href: string; label: string; desc: string }[]).map(({ href, label, desc }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className="group flex flex-col items-start justify-between rounded-2xl bg-white/[0.04] border border-white/[0.08] px-4 py-3 hover:border-[#c9a84c]/40 hover:bg-[#c9a84c]/5 transition-all shadow-sm"
+                  >
+                    <div className="flex items-center justify-between w-full mb-1">
+                      <span className="text-sm font-semibold text-[#f5ede0]">{label}</span>
+                      <span className="text-xs text-[#c9a84c]/70 group-hover:translate-x-0.5 transition-transform">→</span>
+                    </div>
+                    <p className="text-xs text-[#f5ede0]/40">{desc}</p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+    );
+  }
+
+  // Vue Collection
+  return (
+    <div className="min-h-screen bg-[#100c08] text-[#f5ede0] flex flex-col">
+      <div className="fixed inset-0 pointer-events-none z-0" style={{ backgroundImage: "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(196,30,30,0.1) 0%, transparent 55%)" }} />
+      {/* Header */}
+      <header className="relative z-10 border-b border-white/[0.07] bg-black/25 backdrop-blur-md">
+        <div className="max-w-5xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between gap-3">
+            <button
+              onClick={() => setCurrentView("menu")}
+              className="flex items-center gap-2 px-3 py-1.5 text-[#f5ede0]/60 hover:text-[#f5ede0] transition-colors rounded-lg hover:bg-white/[0.06]"
+            >
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden border border-white/10">
+                <img src="/sprites/logo_maison.png" alt="" className="w-full h-full object-cover" />
+              </span>
+              <span className="hidden sm:inline text-sm">戻る Menu</span>
+            </button>
+            <div className="text-center">
+              <h1
+                className="text-xl font-bold text-[#f5ede0]"
+                style={{ fontFamily: "var(--font-noto-serif-jp, serif)" }}
+              >
+                蔵書 Ma Collection
+              </h1>
+              <p className="text-[#c9a84c]/60 text-xs">
+                {kanjis.length} kanji{kanjis.length > 1 ? "s" : ""}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                ref={importInputRef}
+                type="file"
+                accept=".json,application/json"
+                className="hidden"
+                onChange={handleImportFile}
+              />
+              <button
+                onClick={() => importInputRef.current?.click()}
+                disabled={importing}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border border-white/15 text-[#f5ede0]/60 hover:text-[#f5ede0] hover:border-white/30 transition-colors disabled:opacity-40"
+              >
+                <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded overflow-hidden">
+                  <img src="/sprites/logo_victoire.png" alt="" className="w-full h-full object-cover" />
+                </span>
+                {importing ? "Import…" : "Importer"}
+              </button>
+              <button
+                onClick={handleExport}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium border border-white/15 text-[#f5ede0]/60 hover:text-[#f5ede0] hover:border-white/30 transition-colors"
+              >
+                <span className="inline-flex items-center justify-center w-3.5 h-3.5 rounded overflow-hidden">
+                  <img src="/sprites/logo_lecteur.png" alt="" className="w-full h-full object-cover" />
+                </span>
+                Exporter
+              </button>
+            </div>
+          </div>
         </div>
       </header>
 
-      {/* Contenu principal */}
-      <main className="flex-1 max-w-lg mx-auto w-full px-4 pt-5 pb-28">
-        {tab === "home" && <HomeTab kanjis={kanjis} loading={loading} />}
-        {tab === "play" && <PlayTab />}
-        {tab === "dojo" && (
-          <DojoTab
+      <main className="relative z-10 max-w-5xl mx-auto px-4 py-8 space-y-6 flex-1">
+        {/* Statut import */}
+        {importStatus && (
+          <div className={`flex items-start gap-3 p-4 rounded-xl border text-sm whitespace-pre-line ${
+            !importStatus.ok
+              ? "bg-red-900/30 border-red-500/30 text-red-300"
+              : "bg-emerald-900/30 border-emerald-500/30 text-emerald-300"
+          }`}>
+            <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg overflow-hidden flex-shrink-0 border border-white/10">
+              <img
+                src={!importStatus.ok ? "/sprites/logo_triste.png" : "/sprites/logo_victoire.png"}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            </span>
+            <span className="flex-1">{importStatus.msg}</span>
+            <button onClick={() => setImportStatus(null)} className="text-current opacity-50 hover:opacity-100 text-lg leading-none">×</button>
+          </div>
+        )}
+
+        {/* Formulaire d'ajout */}
+        <div className="bg-white/[0.04] rounded-2xl border border-white/[0.08] p-6">
+          <AddKanjiForm onKanjiAdded={handleKanjiAdded} />
+        </div>
+
+        {error && (
+          <div className="p-4 bg-red-900/30 border border-red-500/30 rounded-xl">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center justify-center w-5 h-5 rounded overflow-hidden flex-shrink-0 border border-white/10">
+                <img src="/sprites/logo_triste.png" alt="" className="w-full h-full object-cover" />
+              </span>
+              <p className="text-red-300 font-medium">{error}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Liste des kanjis */}
+        <div className="bg-white/[0.04] rounded-2xl border border-white/[0.08] p-6">
+          <KanjiList
             kanjis={kanjis}
             loading={loading}
-            error={error}
-            onEdit={setEditingKanji}
+            onEdit={handleEdit}
             onDelete={handleDelete}
-            onKanjiAdded={refreshKanjis}
-            onImport={handleImport}
-            onExport={handleExport}
           />
-        )}
-        {tab === "social" && <SocialTab />}
+        </div>
       </main>
 
-      {/* Navigation bas */}
-      <BottomNav tab={tab} setTab={setTab} />
-
-      {/* Modal édition */}
       <EditKanjiModal
         kanji={editingKanji}
         isOpen={!!editingKanji}

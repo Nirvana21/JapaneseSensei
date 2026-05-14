@@ -45,10 +45,6 @@ export async function middleware(req: NextRequest) {
   const session = req.cookies.get("js_session")?.value;
 
   if (!session || !(await verifySession(session))) {
-    // API routes: retourner JSON 401 au lieu d'une redirection
-    if (pathname.startsWith("/api/")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("from", pathname);
     return NextResponse.redirect(loginUrl);
