@@ -9,12 +9,12 @@ export interface ImportResult {
 function parseKanji(raw: unknown): KanjiEntry {
   const k = raw as Record<string, unknown>;
   return {
-    ...(k as KanjiEntry),
+    ...(k as unknown as KanjiEntry),
     dateAdded: k.dateAdded ? new Date(k.dateAdded as string) : new Date(),
     lastModified: k.lastModified ? new Date(k.lastModified as string) : new Date(),
     studyData: k.studyData
       ? {
-          ...(k.studyData as KanjiEntry["studyData"]),
+          ...(k.studyData as unknown as KanjiEntry["studyData"]),
           lastStudied:
             (k.studyData as Record<string, unknown>).lastStudied
               ? new Date((k.studyData as Record<string, unknown>).lastStudied as string)
