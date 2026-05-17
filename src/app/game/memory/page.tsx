@@ -211,22 +211,22 @@ export default function MemoryPage() {
   if (phase === "menu") {
     const hasPersonal = kanjis.length >= 6;
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex flex-col">
-        <header className="bg-white/80 backdrop-blur border-b border-emerald-100 px-4 py-3 flex items-center gap-3">
+      <div className="min-h-screen bg-[#100c08] text-[#f5ede0] flex flex-col">
+        <header className="bg-black/30 backdrop-blur-md border-b border-white/[0.08] px-4 py-3 flex items-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden bg-amber-100 hover:bg-amber-200 transition-colors"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden border border-white/10 hover:bg-white/[0.08] transition-colors"
           >
             <img src="/sprites/logo_maison.png" alt="Menu" className="w-full h-full object-cover" />
           </Link>
-          <h1 className="text-lg font-bold text-emerald-900">Mémory</h1>
+          <h1 className="text-lg font-bold text-[#f5ede0]">Mémory</h1>
         </header>
 
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 gap-8">
           <div className="text-center max-w-sm">
             <div className="text-5xl mb-4">🃏</div>
-            <h2 className="text-2xl font-bold text-emerald-900 mb-2">Mémory rapide</h2>
-            <p className="text-emerald-700 text-sm">
+            <h2 className="text-2xl font-bold text-[#f5ede0] mb-2">Mémory rapide</h2>
+            <p className="text-[#f5ede0]/60 text-sm">
               Associe chaque <strong>kanji</strong> à son <strong>sens</strong>.
               Retourne deux cartes à la fois — trouve toutes les paires avec le moins de coups possible !
             </p>
@@ -235,7 +235,7 @@ export default function MemoryPage() {
           {/* Source */}
           <div className="w-full max-w-xs space-y-4">
             <div>
-              <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wide mb-2 text-center">
+              <p className="text-xs font-semibold text-[#f5ede0]/50 uppercase tracking-wide mb-2 text-center">
                 Source
               </p>
               <div className="grid grid-cols-2 gap-2">
@@ -244,8 +244,8 @@ export default function MemoryPage() {
                   disabled={!hasPersonal}
                   className={`py-3 px-4 rounded-2xl text-sm font-semibold border-2 transition-all ${
                     sourceMode === "personal"
-                      ? "border-emerald-500 bg-emerald-500 text-white shadow-md"
-                      : "border-emerald-200 bg-white text-emerald-700 hover:border-emerald-400"
+                      ? "border-[#c41e1e] bg-[#c41e1e] text-[#f5ede0] shadow-md"
+                      : "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/70 hover:border-white/[0.30]"
                   } ${!hasPersonal ? "opacity-40 cursor-not-allowed" : ""}`}
                 >
                   Ma collection
@@ -255,8 +255,8 @@ export default function MemoryPage() {
                   onClick={() => setSourceMode("n5")}
                   className={`py-3 px-4 rounded-2xl text-sm font-semibold border-2 transition-all ${
                     sourceMode === "n5"
-                      ? "border-teal-500 bg-teal-500 text-white shadow-md"
-                      : "border-teal-200 bg-white text-teal-700 hover:border-teal-400"
+                      ? "border-[#c41e1e] bg-[#c41e1e] text-[#f5ede0] shadow-md"
+                      : "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/70 hover:border-white/[0.30]"
                   }`}
                 >
                   <div>N5</div>
@@ -266,8 +266,8 @@ export default function MemoryPage() {
                   onClick={() => setSourceMode("n4")}
                   className={`py-3 px-4 rounded-2xl text-sm font-semibold border-2 transition-all ${
                     sourceMode === "n4"
-                      ? "border-sky-500 bg-sky-500 text-white shadow-md"
-                      : "border-sky-200 bg-white text-sky-700 hover:border-sky-400"
+                      ? "border-[#c41e1e] bg-[#c41e1e] text-[#f5ede0] shadow-md"
+                      : "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/70 hover:border-white/[0.30]"
                   }`}
                 >
                   <div>N4</div>
@@ -277,8 +277,8 @@ export default function MemoryPage() {
                   onClick={() => setSourceMode("n5n4")}
                   className={`py-3 px-4 rounded-2xl text-sm font-semibold border-2 transition-all ${
                     sourceMode === "n5n4"
-                      ? "border-purple-500 bg-purple-500 text-white shadow-md"
-                      : "border-purple-200 bg-white text-purple-700 hover:border-purple-400"
+                      ? "border-[#c41e1e] bg-[#c41e1e] text-[#f5ede0] shadow-md"
+                      : "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/70 hover:border-white/[0.30]"
                   }`}
                 >
                   <div>N5+N4</div>
@@ -289,7 +289,7 @@ export default function MemoryPage() {
 
             {/* Difficulté */}
             <div>
-              <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wide mb-2 text-center">
+              <p className="text-xs font-semibold text-[#f5ede0]/50 uppercase tracking-wide mb-2 text-center">
                 Nombre de paires
               </p>
               <div className="grid grid-cols-3 gap-2">
@@ -299,8 +299,8 @@ export default function MemoryPage() {
                     onClick={() => setPairsCount(n)}
                     className={`py-2.5 rounded-2xl text-sm font-semibold border-2 transition-all ${
                       pairsCount === n
-                        ? "border-emerald-500 bg-emerald-500 text-white"
-                        : "border-emerald-200 bg-white text-emerald-700 hover:border-emerald-400"
+                        ? "border-[#c41e1e] bg-[#c41e1e] text-[#f5ede0]"
+                        : "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/70 hover:border-white/[0.30]"
                     }`}
                   >
                     {n} paires
@@ -312,7 +312,7 @@ export default function MemoryPage() {
 
           <button
             onClick={startGame}
-            className="px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-lg shadow-lg hover:-translate-y-0.5 transition-all active:scale-95"
+            className="px-8 py-4 rounded-2xl bg-[#c41e1e] text-[#f5ede0] font-bold text-lg shadow-lg hover:-translate-y-0.5 transition-all active:scale-95"
           >
             Jouer
           </button>
@@ -327,29 +327,29 @@ export default function MemoryPage() {
   if (phase === "result") {
     const finalScore = computeScore();
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex flex-col">
-        <header className="bg-white/80 backdrop-blur border-b border-emerald-100 px-4 py-3 flex items-center gap-3">
+      <div className="min-h-screen bg-[#100c08] text-[#f5ede0] flex flex-col">
+        <header className="bg-black/30 backdrop-blur-md border-b border-white/[0.08] px-4 py-3 flex items-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden bg-amber-100"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden border border-white/10"
           >
             <img src="/sprites/logo_maison.png" alt="Menu" className="w-full h-full object-cover" />
           </Link>
-          <h1 className="text-lg font-bold text-emerald-900">Résultat</h1>
+          <h1 className="text-lg font-bold text-[#f5ede0]">Résultat</h1>
         </header>
 
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 gap-6">
-          <div className="bg-white rounded-3xl shadow-xl px-8 py-8 text-center w-full max-w-sm space-y-3">
+          <div className="bg-white/[0.04] rounded-3xl border border-white/[0.08] px-8 py-8 text-center w-full max-w-sm space-y-3">
             <div className="text-5xl">{finalScore >= 80 ? "🏆" : finalScore >= 50 ? "⭐" : "🌱"}</div>
-            <div className="text-4xl font-black text-emerald-900">{finalScore} pts</div>
-            <div className="grid grid-cols-2 gap-2 text-sm text-emerald-700 pt-2">
-              <div className="bg-emerald-50 rounded-xl py-2">
-                <div className="font-bold text-lg">{moves}</div>
-                <div className="text-xs text-emerald-500">coups</div>
+            <div className="text-4xl font-black text-[#c9a84c]">{finalScore} pts</div>
+            <div className="grid grid-cols-2 gap-2 text-sm text-[#f5ede0]/60 pt-2">
+              <div className="bg-white/[0.04] rounded-xl py-2 border border-white/[0.08]">
+                <div className="font-bold text-lg text-[#f5ede0]">{moves}</div>
+                <div className="text-xs text-[#f5ede0]/40">coups</div>
               </div>
-              <div className="bg-teal-50 rounded-xl py-2">
-                <div className="font-bold text-lg">{formatTime(elapsedSec)}</div>
-                <div className="text-xs text-teal-500">temps</div>
+              <div className="bg-white/[0.04] rounded-xl py-2 border border-white/[0.08]">
+                <div className="font-bold text-lg text-[#f5ede0]">{formatTime(elapsedSec)}</div>
+                <div className="text-xs text-[#f5ede0]/40">temps</div>
               </div>
             </div>
           </div>
@@ -357,13 +357,13 @@ export default function MemoryPage() {
           <div className="flex gap-3 w-full max-w-sm">
             <button
               onClick={() => setPhase("menu")}
-              className="flex-1 py-3 rounded-2xl bg-white border-2 border-emerald-200 text-emerald-700 font-semibold hover:border-emerald-400 transition-colors"
+              className="flex-1 py-3 rounded-2xl bg-white/[0.04] border-2 border-white/[0.15] text-[#f5ede0]/70 font-semibold hover:border-white/[0.30] transition-colors"
             >
               Rejouer
             </button>
             <Link
               href="/"
-              className="flex-1 py-3 rounded-2xl bg-emerald-500 text-white font-semibold text-center hover:bg-emerald-600 transition-colors"
+              className="flex-1 py-3 rounded-2xl bg-[#c41e1e] text-[#f5ede0] font-semibold text-center hover:bg-[#c41e1e]/80 transition-colors"
             >
               Menu
             </Link>
@@ -380,15 +380,15 @@ export default function MemoryPage() {
   const cols = pairsCount === 6 ? "grid-cols-4" : "grid-cols-4";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex flex-col">
-      <header className="bg-white/80 backdrop-blur border-b border-emerald-100 px-4 py-2 flex items-center justify-between">
+    <div className="min-h-screen bg-[#100c08] text-[#f5ede0] flex flex-col">
+      <header className="bg-black/30 backdrop-blur-md border-b border-white/[0.08] px-4 py-2 flex items-center justify-between">
         <Link
           href="/"
-          className="inline-flex items-center justify-center w-7 h-7 rounded-lg overflow-hidden bg-amber-100"
+          className="inline-flex items-center justify-center w-7 h-7 rounded-lg overflow-hidden border border-white/10"
         >
           <img src="/sprites/logo_maison.png" alt="Menu" className="w-full h-full object-cover" />
         </Link>
-        <div className="flex gap-4 text-sm font-semibold text-emerald-800">
+        <div className="flex gap-4 text-sm font-semibold text-[#f5ede0]/70">
           <span>🃏 {matchedCount}/{pairsCount}</span>
           <span>🕐 {formatTime(elapsedSec)}</span>
           <span>🔄 {moves}</span>
@@ -406,12 +406,12 @@ export default function MemoryPage() {
                 disabled={isFlipped || locked}
                 className={`aspect-square rounded-2xl text-center flex items-center justify-center transition-all duration-300 font-semibold shadow-sm border-2 ${
                   card.matched
-                    ? "border-emerald-300 bg-emerald-100 text-emerald-700"
+                    ? "border-[#c9a84c]/40 bg-[#c9a84c]/10 text-[#c9a84c]"
                     : isFlipped
                     ? card.type === "kanji"
-                      ? "border-teal-300 bg-teal-50 text-teal-900 text-2xl"
-                      : "border-blue-200 bg-blue-50 text-blue-800 text-xs"
-                    : "border-emerald-200 bg-white hover:border-emerald-400 hover:bg-emerald-50 cursor-pointer"
+                      ? "border-white/[0.20] bg-white/[0.08] text-[#f5ede0] text-2xl"
+                      : "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/80 text-xs"
+                    : "border-white/[0.10] bg-white/[0.04] hover:border-white/[0.25] hover:bg-white/[0.08] cursor-pointer"
                 }`}
               >
                 {isFlipped ? (
@@ -423,7 +423,7 @@ export default function MemoryPage() {
                     {card.content}
                   </span>
                 ) : (
-                  <span className="text-emerald-300 text-xl">?</span>
+                  <span className="text-[#f5ede0]/20 text-xl">?</span>
                 )}
               </button>
             );

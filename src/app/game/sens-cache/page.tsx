@@ -178,32 +178,32 @@ export default function SensCachePage() {
   if (phase === "menu") {
     const hasPersonal = kanjis.length >= 4;
     return (
-      <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50 flex flex-col">
-        <header className="bg-white/80 backdrop-blur border-b border-violet-100 px-4 py-3 flex items-center gap-3">
+      <div className="min-h-screen bg-[#100c08] text-[#f5ede0] flex flex-col">
+        <header className="bg-black/30 backdrop-blur-md border-b border-white/[0.08] px-4 py-3 flex items-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden bg-amber-100 hover:bg-amber-200 transition-colors"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden border border-white/10 hover:bg-white/[0.08] transition-colors"
           >
             <img src="/sprites/logo_maison.png" alt="Menu" className="w-full h-full object-cover" />
           </Link>
-          <h1 className="text-lg font-bold text-violet-900">Sens Caché</h1>
+          <h1 className="text-lg font-bold text-[#f5ede0]">Sens Caché</h1>
         </header>
 
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 gap-8">
           <div className="text-center max-w-sm">
             <div className="text-5xl mb-4">🔍</div>
-            <h2 className="text-2xl font-bold text-violet-900 mb-2">Sens Caché</h2>
-            <p className="text-violet-700 text-sm">
+            <h2 className="text-2xl font-bold text-[#f5ede0] mb-2">Sens Caché</h2>
+            <p className="text-[#f5ede0]/60 text-sm">
               Un <strong>mot japonais</strong> s'affiche. Retrouve son sens parmi 4 propositions.
               Tu peux demander un <strong>indice</strong>, mais ça vaut moins de points !
             </p>
-            <p className="text-xs text-violet-500 mt-2">
+            <p className="text-xs text-[#f5ede0]/30 mt-2">
               Sans indice : +2 pts · Avec indice : +1 pt
             </p>
           </div>
 
           <div className="w-full max-w-xs">
-            <p className="text-xs font-semibold text-violet-600 uppercase tracking-wide mb-2 text-center">
+            <p className="text-xs font-semibold text-[#f5ede0]/50 uppercase tracking-wide mb-2 text-center">
               Source
             </p>
             <div className="grid grid-cols-2 gap-2">
@@ -212,8 +212,8 @@ export default function SensCachePage() {
                 disabled={!hasPersonal}
                 className={`py-3 px-4 rounded-2xl text-sm font-semibold border-2 transition-all ${
                   sourceMode === "personal"
-                    ? "border-violet-500 bg-violet-500 text-white shadow-md"
-                    : "border-violet-200 bg-white text-violet-700 hover:border-violet-400"
+                    ? "border-[#c41e1e] bg-[#c41e1e] text-[#f5ede0] shadow-md"
+                    : "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/70 hover:border-white/[0.30]"
                 } ${!hasPersonal ? "opacity-40 cursor-not-allowed" : ""}`}
               >
                 Ma collection
@@ -223,8 +223,8 @@ export default function SensCachePage() {
                 onClick={() => setSourceMode("jlpt")}
                 className={`py-3 px-4 rounded-2xl text-sm font-semibold border-2 transition-all ${
                   sourceMode === "jlpt"
-                    ? "border-teal-500 bg-teal-500 text-white shadow-md"
-                    : "border-teal-200 bg-white text-teal-700 hover:border-teal-400"
+                    ? "border-[#c41e1e] bg-[#c41e1e] text-[#f5ede0] shadow-md"
+                    : "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/70 hover:border-white/[0.30]"
                 }`}
               >
                 JLPT N5/N4
@@ -234,7 +234,7 @@ export default function SensCachePage() {
 
           <button
             onClick={startGame}
-            className="px-8 py-4 rounded-2xl bg-gradient-to-r from-violet-500 to-purple-500 text-white font-bold text-lg shadow-lg hover:-translate-y-0.5 transition-all active:scale-95"
+            className="px-8 py-4 rounded-2xl bg-[#c41e1e] text-[#f5ede0] font-bold text-lg shadow-lg hover:-translate-y-0.5 transition-all active:scale-95"
           >
             Jouer — {QUESTIONS_PER_ROUND} mots
           </button>
@@ -250,28 +250,28 @@ export default function SensCachePage() {
     const correct = results.filter((r) => r.correct).length;
     const pct = Math.round((correct / results.length) * 100);
     return (
-      <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50 flex flex-col">
-        <header className="bg-white/80 backdrop-blur border-b border-violet-100 px-4 py-3 flex items-center gap-3">
+      <div className="min-h-screen bg-[#100c08] text-[#f5ede0] flex flex-col">
+        <header className="bg-black/30 backdrop-blur-md border-b border-white/[0.08] px-4 py-3 flex items-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden bg-amber-100"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden border border-white/10"
           >
             <img src="/sprites/logo_maison.png" alt="Menu" className="w-full h-full object-cover" />
           </Link>
-          <h1 className="text-lg font-bold text-violet-900">Résultat</h1>
+          <h1 className="text-lg font-bold text-[#f5ede0]">Résultat</h1>
         </header>
 
         <main className="flex-1 flex flex-col items-center px-4 py-8 gap-6">
-          <div className="bg-white rounded-3xl shadow-xl px-8 py-6 text-center w-full max-w-sm">
+          <div className="bg-white/[0.04] rounded-3xl border border-white/[0.08] px-8 py-6 text-center w-full max-w-sm">
             <div className="text-5xl mb-3">
               {pct >= 80 ? "🏆" : pct >= 50 ? "👍" : "📚"}
             </div>
-            <div className="text-4xl font-black text-violet-900 mb-1">{score} pts</div>
-            <div className="text-sm text-violet-600">
+            <div className="text-4xl font-black text-[#c9a84c] mb-1">{score} pts</div>
+            <div className="text-sm text-[#f5ede0]/50">
               {correct}/{results.length} correctes ({pct}%)
             </div>
             {hintsUsed > 0 && (
-              <div className="text-xs text-violet-400 mt-2">
+              <div className="text-xs text-[#f5ede0]/30 mt-2">
                 {hintsUsed} indice{hintsUsed > 1 ? "s" : ""} utilisé{hintsUsed > 1 ? "s" : ""}
               </div>
             )}
@@ -283,14 +283,14 @@ export default function SensCachePage() {
                 key={i}
                 className={`flex items-center justify-between px-3 py-2 rounded-xl text-sm ${
                   r.correct
-                    ? "bg-green-50 border border-green-200 text-green-900"
-                    : "bg-red-50 border border-red-200 text-red-900"
+                    ? "bg-green-900/20 border border-green-500/40 text-green-400"
+                    : "bg-red-900/20 border border-red-500/40 text-red-400"
                 }`}
               >
                 <span className="font-bold text-base">{r.word}</span>
                 <div className="flex items-center gap-1.5">
                   {r.usedHint && (
-                    <span className="text-[10px] text-violet-400">💡</span>
+                    <span className="text-[10px] text-[#c9a84c]">💡</span>
                   )}
                   <span>{r.correct ? "✓" : "✗"}</span>
                 </div>
@@ -301,13 +301,13 @@ export default function SensCachePage() {
           <div className="flex gap-3 w-full max-w-sm">
             <button
               onClick={() => setPhase("menu")}
-              className="flex-1 py-3 rounded-2xl bg-white border-2 border-violet-200 text-violet-700 font-semibold hover:border-violet-400 transition-colors"
+              className="flex-1 py-3 rounded-2xl bg-white/[0.04] border-2 border-white/[0.15] text-[#f5ede0]/70 font-semibold hover:border-white/[0.30] transition-colors"
             >
               Rejouer
             </button>
             <Link
               href="/"
-              className="flex-1 py-3 rounded-2xl bg-violet-500 text-white font-semibold text-center hover:bg-violet-600 transition-colors"
+              className="flex-1 py-3 rounded-2xl bg-[#c41e1e] text-[#f5ede0] font-semibold text-center hover:bg-[#c41e1e]/80 transition-colors"
             >
               Menu
             </Link>
@@ -324,25 +324,25 @@ export default function SensCachePage() {
   if (!q) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-purple-50 to-fuchsia-50 flex flex-col">
+    <div className="min-h-screen bg-[#100c08] text-[#f5ede0] flex flex-col">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur border-b border-violet-100 px-4 py-2 flex items-center justify-between">
+      <header className="bg-black/30 backdrop-blur-md border-b border-white/[0.08] px-4 py-2 flex items-center justify-between">
         <Link
           href="/"
-          className="inline-flex items-center justify-center w-7 h-7 rounded-lg overflow-hidden bg-amber-100"
+          className="inline-flex items-center justify-center w-7 h-7 rounded-lg overflow-hidden border border-white/10"
         >
           <img src="/sprites/logo_maison.png" alt="Menu" className="w-full h-full object-cover" />
         </Link>
-        <div className="text-sm font-bold text-violet-800">{score} pts</div>
-        <div className="text-xs text-violet-500">
+        <div className="text-sm font-bold text-[#f5ede0]/80">{score} pts</div>
+        <div className="text-xs text-[#f5ede0]/40">
           {currentQ + 1}/{questions.length}
         </div>
       </header>
 
       {/* Barre de progression */}
-      <div className="h-1.5 bg-violet-100">
+      <div className="h-1.5 bg-white/[0.08]">
         <div
-          className="h-full bg-violet-400 transition-all duration-300"
+          className="h-full bg-[#c41e1e] transition-all duration-300"
           style={{ width: `${(currentQ / questions.length) * 100}%` }}
         />
       </div>
@@ -351,30 +351,30 @@ export default function SensCachePage() {
         {/* Mot à deviner */}
         <div className="w-full max-w-xs text-center space-y-2">
           <div
-            className={`inline-flex flex-col items-center justify-center w-52 h-40 rounded-3xl shadow-xl transition-colors ${
+            className={`inline-flex flex-col items-center justify-center w-52 h-40 rounded-3xl border border-white/[0.12] transition-colors ${
               selectedAnswer !== null
                 ? selectedAnswer === q.correctMeaning
-                  ? "bg-green-100"
-                  : "bg-red-100"
-                : "bg-white"
+                  ? "bg-green-900/30"
+                  : "bg-red-900/30"
+                : "bg-white/[0.06]"
             }`}
           >
-            <div className="text-5xl font-bold text-violet-900 mb-1">{q.word}</div>
+            <div className="text-5xl font-bold text-[#c9a84c] mb-1">{q.word}</div>
             {q.reading && (
-              <div className="text-sm text-violet-500">({q.reading})</div>
+              <div className="text-sm text-[#f5ede0]/40">({q.reading})</div>
             )}
           </div>
 
           {/* Indice */}
           {showHint && q.hint ? (
-            <div className="text-xs text-violet-600 bg-violet-100 rounded-xl px-3 py-1.5">
+            <div className="text-xs text-[#c9a84c]/80 bg-[#c9a84c]/10 border border-[#c9a84c]/20 rounded-xl px-3 py-1.5">
               💡 {q.hint}
             </div>
           ) : (
             !selectedAnswer && q.hint && (
               <button
                 onClick={handleHint}
-                className="text-xs text-violet-500 hover:text-violet-700 underline underline-offset-2"
+                className="text-xs text-[#f5ede0]/40 hover:text-[#f5ede0]/70 underline underline-offset-2"
               >
                 Voir un indice (−1 pt possible)
               </button>
@@ -390,15 +390,15 @@ export default function SensCachePage() {
 
             if (selectedAnswer !== null) {
               if (opt === q.correctMeaning) {
-                cls += "border-green-400 bg-green-100 text-green-800";
+                cls += "border-green-500/40 bg-green-900/20 text-green-400";
               } else if (opt === selectedAnswer) {
-                cls += "border-red-400 bg-red-100 text-red-800";
+                cls += "border-red-500/40 bg-red-900/20 text-red-400";
               } else {
-                cls += "border-gray-100 bg-gray-50 text-gray-400";
+                cls += "border-white/[0.08] bg-white/[0.02] text-[#f5ede0]/20";
               }
             } else {
               cls +=
-                "border-violet-200 bg-white text-violet-800 hover:border-violet-400 hover:bg-violet-50 cursor-pointer";
+                "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/80 hover:border-white/[0.30] hover:bg-white/[0.10] cursor-pointer";
             }
 
             return (
@@ -417,10 +417,10 @@ export default function SensCachePage() {
         {/* Feedback */}
         <div className="h-5 text-center text-sm font-semibold">
           {selectedAnswer === q.correctMeaning && (
-            <span className="text-green-600">✓ Correct !</span>
+            <span className="text-green-400">✓ Correct !</span>
           )}
           {selectedAnswer !== null && selectedAnswer !== q.correctMeaning && (
-            <span className="text-red-600">✗ C'était : {q.correctMeaning}</span>
+            <span className="text-red-400">✗ C'était : {q.correctMeaning}</span>
           )}
         </div>
       </main>

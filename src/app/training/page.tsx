@@ -341,28 +341,28 @@ function TrainingPageContent() {
 
   if (selectedKanjis.length === 0 && allLearningKanjis.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+      <div className="min-h-screen bg-[#100c08] text-[#f5ede0]">
         <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center p-8 bg-gradient-to-br from-orange-100/90 to-red-100/90 backdrop-blur-sm rounded-2xl shadow-lg border border-orange-200/50 max-w-md">
-            <div className="mb-6 inline-flex items-center justify-center w-20 h-20 rounded-3xl overflow-hidden bg-red-200/80 shadow-md">
+          <div className="text-center p-8 bg-white/[0.04] backdrop-blur-sm rounded-2xl border border-white/[0.08] max-w-md">
+            <div className="mb-6 inline-flex items-center justify-center w-20 h-20 rounded-3xl overflow-hidden bg-white/[0.08] shadow-md">
               <img
                 src="/sprites/logo_lecteur.png"
                 alt="Collection vide"
                 className="w-full h-full object-cover"
               />
             </div>
-            <h2 className="text-2xl font-bold text-red-800 mb-4">
+            <h2 className="text-2xl font-bold text-[#f5ede0] mb-4">
               コレクション空 Collection vide
             </h2>
-            <p className="text-amber-700 mb-6">
+            <p className="text-[#f5ede0]/60 mb-6">
               Ajoutez des kanjis depuis la page d'accueil pour commencer
               l'entraînement.
             </p>
             <Link
               href="/"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-red-500 to-orange-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-[#c41e1e] text-[#f5ede0] font-semibold rounded-xl shadow-lg hover:bg-[#c41e1e]/80 transition-all duration-200"
             >
-              <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-red-500/20">
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-white/[0.10]">
                 <img
                   src="/sprites/logo_maison.png"
                   alt="Retour au menu"
@@ -380,17 +380,17 @@ function TrainingPageContent() {
   const currentKanji = selectedKanjis[currentIndex];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50">
+    <div className="min-h-screen bg-[#100c08] text-[#f5ede0]">
       {/* Header zen avec sélecteur de tags */}
-      <header className="sticky top-0 z-50 bg-gradient-to-r from-amber-100/90 to-orange-100/90 backdrop-blur-md border-b border-amber-200/50 shadow-sm">
+      <header className="sticky top-0 z-50 bg-black/30 backdrop-blur-md border-b border-white/[0.08]">
         <div className="max-w-6xl mx-auto px-4 py-4">
           {/* Première ligne : Navigation et titre */}
           <div className="flex items-center justify-between mb-3">
             <Link
               href="/"
-              className="flex items-center gap-2 px-3 py-2 bg-amber-200/50 hover:bg-orange-200/50 text-amber-800 font-medium rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-2 bg-white/[0.06] hover:bg-white/[0.10] text-[#f5ede0] font-medium rounded-lg transition-colors border border-white/[0.10]"
             >
-              <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-amber-300/60">
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-white/[0.08]">
                 <img
                   src="/sprites/logo_maison.png"
                   alt="Menu principal"
@@ -415,7 +415,7 @@ function TrainingPageContent() {
                 </span>
               </span>
               {selectedKanjis.length < 20 && (
-                <span className="text-sm text-amber-700 block">
+                  <span className="text-sm text-[#f5ede0]/50 block">
                   ℹ️ Toutes les cartes disponibles incluses
                 </span>
               )}
@@ -438,14 +438,14 @@ function TrainingPageContent() {
                 onChange={(e) =>
                   setTrainingMode(e.target.value as "fr-to-jp" | "jp-to-fr")
                 }
-                className="px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 focus:ring-red-500"
+                className="px-3 py-2 bg-white/[0.06] border border-white/[0.12] rounded-lg text-sm font-medium text-[#f5ede0] focus:outline-none focus:ring-2 focus:ring-[#c41e1e]"
               >
                 <option value="fr-to-jp">🇫🇷 → 🇯🇵</option>
                 <option value="jp-to-fr">🇯🇵 → 🇫🇷</option>
               </select>
 
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl overflow-hidden bg-amber-200/90">
+                <span className="inline-flex items-center justify-center w-7 h-7 rounded-xl overflow-hidden bg-white/[0.08]">
                   <img
                     src={
                       difficultyMode === "normal"
@@ -471,10 +471,10 @@ function TrainingPageContent() {
                       e.target.value as "normal" | "hard" | "hardcore"
                     )
                   }
-                  className={`px-3 py-2 bg-amber-100/90 border border-amber-300/50 rounded-lg text-sm font-medium text-amber-800 focus:outline-none focus:ring-2 transition-all ${
+                  className={`px-3 py-2 bg-white/[0.06] border border-white/[0.12] rounded-lg text-sm font-medium text-[#f5ede0] focus:outline-none focus:ring-2 transition-all ${
                     difficultyMode === "hardcore"
                       ? "focus:ring-purple-500 border-purple-500/50"
-                      : "focus:ring-red-500"
+                      : "focus:ring-[#c41e1e]"
                   }`}
                 >
                   <option value="normal">普通 Normal</option>
@@ -510,7 +510,7 @@ function TrainingPageContent() {
 
               {/* Progression visuelle zen */}
               <div className="hidden sm:block w-24">
-                <div className="h-2 bg-amber-200/50 rounded-full overflow-hidden">
+                <div className="h-2 bg-white/[0.08] rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-red-500 to-orange-600 transition-all duration-300"
                     style={{
@@ -538,7 +538,7 @@ function TrainingPageContent() {
                   </span>
                   <span>{learningStats.byScore[0]}</span>
                 </div>
-                <div className="px-2 py-1 bg-red-100/90 text-red-700 rounded border border-red-300/50 flex items-center gap-1.5">
+                  <div className="px-2 py-1 bg-red-900/20 text-red-400 rounded border border-red-500/30 flex items-center gap-1.5">
                   <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-red-200/80">
                     <img
                       src="/sprites/logo_triste.png"
@@ -548,7 +548,7 @@ function TrainingPageContent() {
                   </span>
                   <span>{learningStats.byScore[1]}</span>
                 </div>
-                <div className="px-2 py-1 bg-yellow-100/90 text-yellow-700 rounded border border-yellow-300/50 flex items-center gap-1.5">
+                  <div className="px-2 py-1 bg-[#c9a84c]/10 text-[#c9a84c]/80 rounded border border-[#c9a84c]/20 flex items-center gap-1.5">
                   <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-yellow-200/80">
                     <img
                       src="/sprites/logo_sport.png"
@@ -558,7 +558,7 @@ function TrainingPageContent() {
                   </span>
                   <span>{learningStats.byScore[2]}</span>
                 </div>
-                <div className="px-2 py-1 bg-green-100/90 text-green-700 rounded border border-green-300/50 flex items-center gap-1.5">
+                  <div className="px-2 py-1 bg-green-900/20 text-green-400 rounded border border-green-500/30 flex items-center gap-1.5">
                   <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-green-200/80">
                     <img
                       src="/sprites/logo_victoire.png"
@@ -569,7 +569,7 @@ function TrainingPageContent() {
                   <span>{learningStats.byScore[3]}</span>
                 </div>
                 {learningStats.needsReview > 0 && (
-                  <div className="px-2 py-1 bg-orange-100/90 text-orange-700 rounded border border-orange-300/50 animate-pulse">
+                  <div className="px-2 py-1 bg-[#c41e1e]/20 text-[#c41e1e]/80 rounded border border-[#c41e1e]/30 animate-pulse">
                     ⏰ {learningStats.needsReview}
                   </div>
                 )}
@@ -614,24 +614,24 @@ function TrainingPageContent() {
                 {/* Bouton effacer en dehors de la carte pour éviter les conflits */}
                 {survivalState.currentDirection === 'fr-to-jp' && (
                   <div className="flex flex-col items-center gap-2 mt-3">
-                    <div className="inline-flex items-center gap-1 bg-orange-100 rounded-lg p-1 border border-orange-200">
+                    <div className="inline-flex items-center gap-1 bg-white/[0.06] rounded-lg p-1 border border-white/[0.08]">
                       <button
                         onClick={() => setSurvivalStrokeScale(0.8)}
-                        className={`px-3 py-1 text-sm rounded-md ${ survivalStrokeScale < 0.9 ? 'bg-white text-orange-700 shadow-sm' : 'text-orange-700 hover:bg-orange-200'}`}
+                        className={`px-3 py-1 text-sm rounded-md ${ survivalStrokeScale < 0.9 ? 'bg-white/[0.12] text-[#f5ede0] shadow-sm' : 'text-[#f5ede0]/50 hover:bg-white/[0.08]'}`}
                         aria-label="Trait fin"
                       >
                         Fin
                       </button>
                       <button
                         onClick={() => setSurvivalStrokeScale(1)}
-                        className={`px-3 py-1 text-sm rounded-md ${ survivalStrokeScale >= 0.9 && survivalStrokeScale < 1.15 ? 'bg-white text-orange-700 shadow-sm' : 'text-orange-700 hover:bg-orange-200'}`}
+                        className={`px-3 py-1 text-sm rounded-md ${ survivalStrokeScale >= 0.9 && survivalStrokeScale < 1.15 ? 'bg-white/[0.12] text-[#f5ede0] shadow-sm' : 'text-[#f5ede0]/50 hover:bg-white/[0.08]'}`}
                         aria-label="Trait moyen"
                       >
                         Moyen
                       </button>
                       <button
                         onClick={() => setSurvivalStrokeScale(1.3)}
-                        className={`px-3 py-1 text-sm rounded-md ${ survivalStrokeScale >= 1.15 ? 'bg-white text-orange-700 shadow-sm' : 'text-orange-700 hover:bg-orange-200'}`}
+                        className={`px-3 py-1 text-sm rounded-md ${ survivalStrokeScale >= 1.15 ? 'bg-white/[0.12] text-[#f5ede0] shadow-sm' : 'text-[#f5ede0]/50 hover:bg-white/[0.08]'}`}
                         aria-label="Trait épais"
                       >
                         Épais
@@ -639,7 +639,7 @@ function TrainingPageContent() {
                     </div>
                     <button
                       onClick={() => setClearCanvas(prev => prev + 1)}
-                      className="px-4 py-2 bg-orange-200 hover:bg-orange-300 text-orange-700 text-sm rounded-lg transition-colors shadow-md hover:shadow-lg"
+                      className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.10] text-[#f5ede0]/70 text-sm rounded-lg transition-colors shadow-md hover:shadow-lg"
                     >
                       🗑️ Effacer le dessin
                     </button>
@@ -652,15 +652,15 @@ function TrainingPageContent() {
             <div className="flex justify-center gap-4 mt-6 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
               <button
                 onClick={exitSurvivalMode}
-                className="px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white font-medium rounded-lg hover:from-gray-600 hover:to-gray-700 transition-all shadow-lg transform hover:scale-105 hover:-translate-y-1"
+                className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.10] border border-white/[0.10] text-[#f5ede0] font-medium rounded-lg transition-all"
               >
                 ↩️ Quitter Survival
               </button>
               <Link
                 href="/"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all shadow-lg transform hover:scale-105 hover:-translate-y-1"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-[#c41e1e] text-[#f5ede0] font-medium rounded-lg hover:bg-[#c41e1e]/80 transition-all"
               >
-                <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-blue-600/20">
+                <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-white/[0.08]">
                   <img
                     src="/sprites/logo_maison.png"
                     alt="Menu principal"
@@ -684,19 +684,19 @@ function TrainingPageContent() {
                 onTap={() => setShowAnswer(!showAnswer)}
                 className="w-full max-w-lg"
               >
-                <div className="bg-gradient-to-br from-orange-100/90 to-red-100/90 backdrop-blur-sm rounded-2xl shadow-lg p-6 sm:p-8 border border-orange-200/50">
+                <div className="bg-white/[0.04] backdrop-blur-sm rounded-2xl shadow-lg p-6 sm:p-8 border border-white/[0.08]">
                   {trainingMode === "fr-to-jp" ? (
                     // Mode: Français → Japonais
                     <div className="text-center">
                       <div className="mb-6">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-200/80 to-orange-200/80 rounded-full mb-4 border border-red-300/50">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/[0.06] rounded-full mb-4 border border-white/[0.10]">
                           <span className="text-lg">🇫🇷</span>
-                          <span className="text-sm font-medium text-red-800">
+                          <span className="text-sm font-medium text-[#f5ede0]/60">
                             翻訳してください
                           </span>
                           <span className="text-lg">🇯🇵</span>
                         </div>
-                        <p className="text-2xl sm:text-4xl font-bold text-red-800 leading-relaxed">
+                        <p className="text-2xl sm:text-4xl font-bold text-[#f5ede0] leading-relaxed">
                           {currentKanji.primaryMeaning ||
                             currentKanji.meanings[0]}
                         </p>
@@ -706,8 +706,8 @@ function TrainingPageContent() {
                         <div className="space-y-4">
                           {/* Score et difficulté */}
                           <div className="flex justify-center mb-4">
-                            <div className="flex items-center gap-2 px-3 py-1 bg-orange-200/90 rounded-lg border border-orange-300">
-                              <span className="text-xs text-orange-700">
+                            <div className="flex items-center gap-2 px-3 py-1 bg-white/[0.06] rounded-lg border border-white/[0.10]">
+                              <span className="text-xs text-[#f5ede0]/40">
                                 スコア Score:
                               </span>
                               <div
@@ -769,16 +769,16 @@ function TrainingPageContent() {
                               openModal(currentKanji);
                             }}
                             data-no-tap="true"
-                            className="w-full p-4 bg-orange-200/80 hover:bg-orange-300/80 rounded-xl border border-orange-300 hover:border-orange-400 transition-all group"
+                            className="w-full p-4 bg-white/[0.06] hover:bg-white/[0.10] rounded-xl border border-white/[0.10] hover:border-white/[0.20] transition-all group"
                           >
-                            <p className="text-sm text-orange-700 mb-2">
+                            <p className="text-sm text-[#f5ede0]/40 mb-2">
                               漢字詳細 Détails du kanji
                             </p>
                             <div className="flex items-center justify-center gap-3">
-                              <p className="text-4xl sm:text-6xl font-bold text-red-900 group-hover:scale-110 transition-transform">
+                              <p className="text-4xl sm:text-6xl font-bold text-[#c9a84c] group-hover:scale-110 transition-transform">
                                 {currentKanji.kanji}
                               </p>
-                              <div className="text-orange-600 group-hover:text-red-700 transition-colors">
+                              <div className="text-[#f5ede0]/30 group-hover:text-[#f5ede0]/60 transition-colors">
                                 <svg
                                   className="w-6 h-6"
                                   fill="none"
@@ -986,9 +986,9 @@ function TrainingPageContent() {
             {/* Zone Canvas pour le mode Français → Japonais */}
             {trainingMode === "fr-to-jp" && (
               <div className="flex justify-center mb-6">
-                <div className="bg-slate-800/80 backdrop-blur-sm rounded-xl p-4 border border-slate-700/50 shadow-lg">
-                  <p className="text-center text-slate-300 mb-3 text-sm flex items-center justify-center gap-2">
-                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-slate-700/80">
+                <div className="bg-black/30 backdrop-blur-sm rounded-xl p-4 border border-white/[0.08]">
+                  <p className="text-center text-[#f5ede0]/50 mb-3 text-sm flex items-center justify-center gap-2">
+                    <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-white/[0.08]">
                       <img
                         src="/sprites/logo_pensif.png"
                         alt="Entraînement écriture"
@@ -1008,24 +1008,24 @@ function TrainingPageContent() {
                     </div>
                   </div>
                   <div className="flex flex-col items-center gap-2 mt-3">
-                    <div className="inline-flex items-center gap-1 bg-slate-700 rounded-lg p-1 border border-slate-600/50">
+                    <div className="inline-flex items-center gap-1 bg-white/[0.06] rounded-lg p-1 border border-white/[0.08]">
                       <button
                         onClick={() => setTrainingStrokeScale(0.8)}
-                        className={`px-3 py-1 text-sm rounded-md ${ trainingStrokeScale < 0.9 ? 'bg-slate-600 text-slate-100 shadow-sm' : 'text-slate-200 hover:bg-slate-600/70'}`}
+                        className={`px-3 py-1 text-sm rounded-md ${ trainingStrokeScale < 0.9 ? 'bg-white/[0.12] text-[#f5ede0] shadow-sm' : 'text-[#f5ede0]/50 hover:bg-white/[0.08]'}`}
                         aria-label="Trait fin"
                       >
                         Fin
                       </button>
                       <button
                         onClick={() => setTrainingStrokeScale(1)}
-                        className={`px-3 py-1 text-sm rounded-md ${ trainingStrokeScale >= 0.9 && trainingStrokeScale < 1.15 ? 'bg-slate-600 text-slate-100 shadow-sm' : 'text-slate-200 hover:bg-slate-600/70'}`}
+                        className={`px-3 py-1 text-sm rounded-md ${ trainingStrokeScale >= 0.9 && trainingStrokeScale < 1.15 ? 'bg-white/[0.12] text-[#f5ede0] shadow-sm' : 'text-[#f5ede0]/50 hover:bg-white/[0.08]'}`}
                         aria-label="Trait moyen"
                       >
                         Moyen
                       </button>
                       <button
                         onClick={() => setTrainingStrokeScale(1.3)}
-                        className={`px-3 py-1 text-sm rounded-md ${ trainingStrokeScale >= 1.15 ? 'bg-slate-600 text-slate-100 shadow-sm' : 'text-slate-200 hover:bg-slate-600/70'}`}
+                        className={`px-3 py-1 text-sm rounded-md ${ trainingStrokeScale >= 1.15 ? 'bg-white/[0.12] text-[#f5ede0] shadow-sm' : 'text-[#f5ede0]/50 hover:bg-white/[0.08]'}`}
                         aria-label="Trait épais"
                       >
                         Épais
@@ -1033,7 +1033,7 @@ function TrainingPageContent() {
                     </div>
                     <button
                       onClick={() => setClearCanvas(prev => prev + 1)}
-                      className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-100 text-sm rounded-lg transition-colors shadow-md hover:shadow-lg"
+                      className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.10] text-[#f5ede0]/60 text-sm rounded-lg transition-colors shadow-md hover:shadow-lg"
                     >
                       🗑️ Effacer le dessin
                     </button>
@@ -1202,13 +1202,13 @@ function TrainingPageContent() {
               <div className="space-y-3">
                 <button
                   onClick={startNewSession}
-                  className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-700 text-white font-semibold rounded-xl hover:from-indigo-700 hover:to-purple-800 transition-all transform hover:scale-105 shadow-lg"
+                  className="w-full px-6 py-3 bg-[#c41e1e] text-[#f5ede0] font-semibold rounded-xl hover:bg-[#c41e1e]/80 transition-all shadow-lg"
                 >
                   🔄 Nouvelle session
                 </button>
                 <Link
                   href="/"
-                  className="block w-full px-6 py-3 bg-slate-700/80 text-slate-300 font-medium text-center rounded-xl hover:bg-slate-600/80 transition-all"
+                  className="block w-full px-6 py-3 bg-white/[0.06] text-[#f5ede0]/60 font-medium text-center rounded-xl hover:bg-white/[0.10] transition-all border border-white/[0.08]"
                 >
                   <span className="inline-flex items-center justify-center w-5 h-5 rounded-lg overflow-hidden bg-slate-600/80 mr-2 align-middle">
                     <img
@@ -1222,7 +1222,7 @@ function TrainingPageContent() {
               </div>
 
               {/* Encouragement selon l'heure */}
-              <div className="mt-6 text-xs text-slate-500">
+                <div className="mt-6 text-xs text-[#f5ede0]/20">
                 {(() => {
                   const hour = new Date().getHours();
                   if (hour >= 6 && hour < 12) {
@@ -1275,19 +1275,19 @@ function TrainingPageContent() {
 export default function TrainingPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#100c08] text-[#f5ede0] flex items-center justify-center">
         <div className="text-center">
-          <div className="mb-4 inline-flex items-center justify-center w-20 h-20 rounded-3xl overflow-hidden bg-red-200/80 shadow-lg">
+          <div className="mb-4 inline-flex items-center justify-center w-20 h-20 rounded-3xl overflow-hidden bg-white/[0.06] shadow-lg">
             <img
               src="/sprites/logo_sport.png"
               alt="Entraînement en cours de chargement"
               className="w-full h-full object-cover"
             />
           </div>
-          <h2 className="text-2xl font-bold text-orange-800 mb-2">
+          <h2 className="text-2xl font-bold text-[#f5ede0] mb-2">
             Chargement...
           </h2>
-          <p className="text-orange-600">
+          <p className="text-[#f5ede0]/50">
             準備中 - Préparation en cours
           </p>
         </div>

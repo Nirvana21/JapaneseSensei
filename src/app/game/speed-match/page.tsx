@@ -242,24 +242,24 @@ export default function SpeedMatchPage() {
   if (phase === "menu") {
     const hasPersonal = kanjis.length >= 4;
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-cyan-50 flex flex-col">
+      <div className="min-h-screen bg-[#100c08] text-[#f5ede0] flex flex-col">
         {/* Header */}
-        <header className="bg-white/80 backdrop-blur border-b border-indigo-100 px-4 py-3 flex items-center gap-3">
+        <header className="bg-black/30 backdrop-blur-md border-b border-white/[0.08] px-4 py-3 flex items-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden bg-amber-100 hover:bg-amber-200 transition-colors"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden border border-white/10 hover:bg-white/[0.08] transition-colors"
           >
             <img src="/sprites/logo_maison.png" alt="Menu" className="w-full h-full object-cover" />
           </Link>
-          <h1 className="text-lg font-bold text-indigo-900">Speed Match</h1>
+          <h1 className="text-lg font-bold text-[#f5ede0]">Speed Match</h1>
         </header>
 
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 gap-8">
           {/* Description */}
           <div className="text-center max-w-sm">
             <div className="text-5xl mb-4">⚡</div>
-            <h2 className="text-2xl font-bold text-indigo-900 mb-2">Speed Match</h2>
-            <p className="text-indigo-700 text-sm">
+            <h2 className="text-2xl font-bold text-[#f5ede0] mb-2">Speed Match</h2>
+            <p className="text-[#f5ede0]/60 text-sm">
               Un kanji apparaît. Tu as <strong>{TIME_PER_QUESTION}s</strong> pour choisir le bon sens parmi 4 propositions.
               Enchaîne les bonnes réponses pour des points bonus !
             </p>
@@ -267,7 +267,7 @@ export default function SpeedMatchPage() {
 
           {/* Source */}
           <div className="w-full max-w-xs">
-            <p className="text-xs font-semibold text-indigo-600 uppercase tracking-wide mb-2 text-center">
+            <p className="text-xs font-semibold text-[#f5ede0]/50 uppercase tracking-wide mb-2 text-center">
               Source des kanjis
             </p>
             <div className="grid grid-cols-2 gap-2">
@@ -276,8 +276,8 @@ export default function SpeedMatchPage() {
                 disabled={!hasPersonal}
                 className={`py-3 px-4 rounded-2xl text-sm font-semibold border-2 transition-all ${
                   sourceMode === "personal"
-                    ? "border-indigo-500 bg-indigo-500 text-white shadow-md"
-                    : "border-indigo-200 bg-white text-indigo-700 hover:border-indigo-400"
+                    ? "border-[#c41e1e] bg-[#c41e1e] text-[#f5ede0] shadow-md"
+                    : "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/70 hover:border-white/[0.30]"
                 } ${!hasPersonal ? "opacity-40 cursor-not-allowed" : ""}`}
               >
                 <div>Ma collection</div>
@@ -291,8 +291,8 @@ export default function SpeedMatchPage() {
                 onClick={() => setSourceMode("n5")}
                 className={`py-3 px-4 rounded-2xl text-sm font-semibold border-2 transition-all ${
                   sourceMode === "n5"
-                    ? "border-teal-500 bg-teal-500 text-white shadow-md"
-                    : "border-teal-200 bg-white text-teal-700 hover:border-teal-400"
+                    ? "border-[#c41e1e] bg-[#c41e1e] text-[#f5ede0] shadow-md"
+                    : "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/70 hover:border-white/[0.30]"
                 }`}
               >
                 <div>JLPT N5</div>
@@ -304,8 +304,8 @@ export default function SpeedMatchPage() {
                 onClick={() => setSourceMode("n4")}
                 className={`py-3 px-4 rounded-2xl text-sm font-semibold border-2 transition-all ${
                   sourceMode === "n4"
-                    ? "border-sky-500 bg-sky-500 text-white shadow-md"
-                    : "border-sky-200 bg-white text-sky-700 hover:border-sky-400"
+                    ? "border-[#c41e1e] bg-[#c41e1e] text-[#f5ede0] shadow-md"
+                    : "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/70 hover:border-white/[0.30]"
                 }`}
               >
                 <div>JLPT N4</div>
@@ -317,8 +317,8 @@ export default function SpeedMatchPage() {
                 onClick={() => setSourceMode("n5n4")}
                 className={`py-3 px-4 rounded-2xl text-sm font-semibold border-2 col-span-2 transition-all ${
                   sourceMode === "n5n4"
-                    ? "border-purple-500 bg-purple-500 text-white shadow-md"
-                    : "border-purple-200 bg-white text-purple-700 hover:border-purple-400"
+                    ? "border-[#c41e1e] bg-[#c41e1e] text-[#f5ede0] shadow-md"
+                    : "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/70 hover:border-white/[0.30]"
                 }`}
               >
                 <div>N5 + N4 mélangé</div>
@@ -332,7 +332,7 @@ export default function SpeedMatchPage() {
           {/* Lancer */}
           <button
             onClick={startGame}
-            className="px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-bold text-lg shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all active:scale-95"
+            className="px-8 py-4 rounded-2xl bg-[#c41e1e] text-[#f5ede0] font-bold text-lg shadow-lg hover:-translate-y-0.5 transition-all active:scale-95"
           >
             Jouer — {QUESTIONS_PER_ROUND} questions
           </button>
@@ -347,30 +347,30 @@ export default function SpeedMatchPage() {
   if (phase === "result") {
     const pct = Math.round((results.filter((r) => r.correct).length / results.length) * 100);
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-cyan-50 flex flex-col">
-        <header className="bg-white/80 backdrop-blur border-b border-indigo-100 px-4 py-3 flex items-center gap-3">
+      <div className="min-h-screen bg-[#100c08] text-[#f5ede0] flex flex-col">
+        <header className="bg-black/30 backdrop-blur-md border-b border-white/[0.08] px-4 py-3 flex items-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden bg-amber-100 hover:bg-amber-200 transition-colors"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden border border-white/10 hover:bg-white/[0.08] transition-colors"
           >
             <img src="/sprites/logo_maison.png" alt="Menu" className="w-full h-full object-cover" />
           </Link>
-          <h1 className="text-lg font-bold text-indigo-900">Speed Match — Résultat</h1>
+          <h1 className="text-lg font-bold text-[#f5ede0]">Speed Match — Résultat</h1>
         </header>
 
         <main className="flex-1 flex flex-col items-center px-4 py-8 gap-6">
           {/* Score principal */}
-          <div className="bg-white rounded-3xl shadow-xl px-8 py-6 text-center w-full max-w-sm">
+          <div className="bg-white/[0.04] rounded-3xl border border-white/[0.08] px-8 py-6 text-center w-full max-w-sm">
             <div className="text-5xl mb-3">
               {pct >= 80 ? "🏆" : pct >= 50 ? "👍" : "📚"}
             </div>
-            <div className="text-4xl font-black text-indigo-900 mb-1">
+            <div className="text-4xl font-black text-[#c9a84c] mb-1">
               {score} pts
             </div>
-            <div className="text-sm text-indigo-600">
+            <div className="text-sm text-[#f5ede0]/50">
               {results.filter((r) => r.correct).length}/{results.length} correctes ({pct}%)
             </div>
-            <div className="mt-3 text-sm text-indigo-700">
+            <div className="mt-3 text-sm text-[#f5ede0]/60">
               Meilleure série : <strong>{bestStreak}</strong>
             </div>
           </div>
@@ -382,8 +382,8 @@ export default function SpeedMatchPage() {
                 key={i}
                 className={`flex items-center justify-between px-3 py-2 rounded-xl text-sm ${
                   r.correct
-                    ? "bg-green-50 border border-green-200 text-green-900"
-                    : "bg-red-50 border border-red-200 text-red-900"
+                    ? "bg-green-900/20 border border-green-500/40 text-green-400"
+                    : "bg-red-900/20 border border-red-500/40 text-red-400"
                 }`}
               >
                 <span className="font-bold text-lg">{r.kanji}</span>
@@ -396,13 +396,13 @@ export default function SpeedMatchPage() {
           <div className="flex gap-3 w-full max-w-sm">
             <button
               onClick={() => setPhase("menu")}
-              className="flex-1 py-3 rounded-2xl bg-white border-2 border-indigo-200 text-indigo-700 font-semibold hover:border-indigo-400 transition-colors"
+              className="flex-1 py-3 rounded-2xl bg-white/[0.04] border-2 border-white/[0.15] text-[#f5ede0]/70 font-semibold hover:border-white/[0.30] transition-colors"
             >
               Rejouer
             </button>
             <Link
               href="/"
-              className="flex-1 py-3 rounded-2xl bg-indigo-500 text-white font-semibold text-center hover:bg-indigo-600 transition-colors"
+              className="flex-1 py-3 rounded-2xl bg-[#c41e1e] text-[#f5ede0] font-semibold text-center hover:bg-[#c41e1e]/80 transition-colors"
             >
               Menu
             </Link>
@@ -428,32 +428,32 @@ export default function SpeedMatchPage() {
       : "bg-indigo-500";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-cyan-50 flex flex-col">
+    <div className="min-h-screen bg-[#100c08] text-[#f5ede0] flex flex-col">
       {/* Header compact */}
-      <header className="bg-white/80 backdrop-blur border-b border-indigo-100 px-4 py-2 flex items-center justify-between gap-3">
+      <header className="bg-black/30 backdrop-blur-md border-b border-white/[0.08] px-4 py-2 flex items-center justify-between gap-3">
         <Link
           href="/"
-          className="inline-flex items-center justify-center w-7 h-7 rounded-lg overflow-hidden bg-amber-100 hover:bg-amber-200 transition-colors"
+          className="inline-flex items-center justify-center w-7 h-7 rounded-lg overflow-hidden border border-white/10 hover:bg-white/[0.08] transition-colors"
         >
           <img src="/sprites/logo_maison.png" alt="Menu" className="w-full h-full object-cover" />
         </Link>
-        <div className="flex items-center gap-3 text-sm font-semibold text-indigo-800">
+        <div className="flex items-center gap-3 text-sm font-semibold text-[#f5ede0]/80">
           <span>⚡ {score} pts</span>
           {streak >= 2 && (
-            <span className="text-amber-600 text-xs bg-amber-100 px-2 py-0.5 rounded-full">
+            <span className="text-[#c9a84c] text-xs bg-[#c9a84c]/10 border border-[#c9a84c]/20 px-2 py-0.5 rounded-full">
               🔥 ×{streak}
             </span>
           )}
         </div>
-        <span className="text-xs text-indigo-500">
+        <span className="text-xs text-[#f5ede0]/40">
           {currentQ + 1}/{questions.length}
         </span>
       </header>
 
       {/* Barre de progression */}
-      <div className="h-1.5 bg-indigo-100">
+      <div className="h-1.5 bg-white/[0.08]">
         <div
-          className="h-full bg-indigo-400 transition-all duration-300"
+          className="h-full bg-[#c41e1e] transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -461,11 +461,11 @@ export default function SpeedMatchPage() {
       <main className="flex-1 flex flex-col items-center justify-between px-4 py-6 gap-4">
         {/* Timer */}
         <div className="w-full max-w-xs">
-          <div className="flex justify-between text-xs text-indigo-500 mb-1">
+            <div className="flex justify-between text-xs text-[#f5ede0]/40 mb-1">
             <span>Temps restant</span>
-            <span className={timeLeft <= 3 ? "text-red-600 font-bold" : ""}>{timeLeft}s</span>
+            <span className={timeLeft <= 3 ? "text-red-400 font-bold" : ""}>{timeLeft}s</span>
           </div>
-          <div className="h-2 bg-indigo-100 rounded-full overflow-hidden">
+          <div className="h-2 bg-white/[0.08] rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-1000 ${timerColor}`}
               style={{ width: `${timerPct}%` }}
@@ -475,12 +475,12 @@ export default function SpeedMatchPage() {
 
         {/* Kanji central */}
         <div
-          className={`flex items-center justify-center w-44 h-44 rounded-3xl shadow-xl text-7xl font-bold transition-all duration-200 ${
+          className={`flex items-center justify-center w-44 h-44 rounded-3xl border border-white/[0.12] text-7xl font-bold transition-all duration-200 ${
             isCorrect === null
-              ? "bg-white text-indigo-900"
+              ? "bg-white/[0.06] text-[#f5ede0]"
               : isCorrect
-              ? "bg-green-100 text-green-700"
-              : "bg-red-100 text-red-700"
+              ? "bg-green-900/30 text-green-400"
+              : "bg-red-900/30 text-red-400"
           }`}
         >
           {q.kanji}
@@ -494,14 +494,14 @@ export default function SpeedMatchPage() {
 
             if (selectedAnswer !== null) {
               if (opt === q.correctAnswer) {
-                cls += "border-green-400 bg-green-100 text-green-800";
+                cls += "border-green-500/40 bg-green-900/20 text-green-400";
               } else if (opt === selectedAnswer && !isCorrect) {
-                cls += "border-red-400 bg-red-100 text-red-800";
+                cls += "border-red-500/40 bg-red-900/20 text-red-400";
               } else {
-                cls += "border-gray-200 bg-gray-50 text-gray-400";
+                cls += "border-white/[0.10] bg-white/[0.04] text-[#f5ede0]/30";
               }
             } else {
-              cls += "border-indigo-200 bg-white text-indigo-800 hover:border-indigo-400 hover:bg-indigo-50 cursor-pointer";
+              cls += "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/80 hover:border-white/[0.30] hover:bg-white/[0.10] cursor-pointer";
             }
 
             return (
@@ -520,12 +520,12 @@ export default function SpeedMatchPage() {
         {/* Feedback */}
         <div className="h-6 text-center text-sm font-semibold">
           {isCorrect === true && (
-            <span className="text-green-600">
+            <span className="text-green-400">
               {streak >= 3 ? `🔥 Combo ×${streak} !` : "✓ Correct !"}
             </span>
           )}
           {isCorrect === false && (
-            <span className="text-red-600">
+            <span className="text-red-400">
               ✗ {q.correctAnswer}
             </span>
           )}

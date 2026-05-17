@@ -32,63 +32,57 @@ function KanjiCard({ kanji, expanded, onToggle }: KanjiCardProps) {
       onClick={onToggle}
       className={`w-full text-left rounded-2xl border-2 transition-all ${
         expanded
-          ? "border-teal-400 bg-teal-50/90 shadow-md"
-          : "border-slate-200/80 bg-white/80 hover:border-teal-300 hover:bg-teal-50/50"
+          ? "border-[#c9a84c]/70 bg-white/[0.08] shadow-md"
+          : "border-white/[0.08] bg-white/[0.03] hover:border-[#c9a84c]/30 hover:bg-white/[0.06]"
       }`}
     >
       {/* Ligne principale */}
       <div className="flex items-center gap-3 px-3 py-2.5">
         <span
-          className={`text-3xl font-bold w-10 text-center flex-shrink-0 ${
-            kanji.level === "N5" ? "text-teal-700" : "text-cyan-700"
-          }`}
+          className={`text-3xl font-bold w-10 text-center flex-shrink-0 text-[#c9a84c]`}
         >
           {kanji.kanji}
         </span>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span
-              className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
-                kanji.level === "N5"
-                  ? "bg-teal-100 text-teal-700"
-                  : "bg-cyan-100 text-cyan-700"
-              }`}
+              className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-white/[0.08] text-[#f5ede0]/70`}
             >
               {kanji.level}
             </span>
-            <span className="text-sm font-semibold text-slate-800 truncate">
+            <span className="text-sm font-semibold text-[#f5ede0] truncate">
               {kanji.meanings.slice(0, 2).join(", ")}
             </span>
           </div>
-          <div className="text-xs text-slate-400 mt-0.5">
+          <div className="text-xs text-[#f5ede0]/40 mt-0.5">
             {[...kanji.onyomi, ...kanji.kunyomi].slice(0, 3).join("・")}
           </div>
         </div>
-        <span className="text-slate-400 text-xs">{expanded ? "▲" : "▼"}</span>
+        <span className="text-[#f5ede0]/30 text-xs">{expanded ? "▲" : "▼"}</span>
       </div>
 
       {/* Détails expandus */}
       {expanded && (
-        <div className="px-3 pb-3 space-y-2 border-t border-teal-200/60 pt-2">
+        <div className="px-3 pb-3 space-y-2 border-t border-white/[0.08] pt-2">
           {/* Lectures */}
           <div className="flex gap-3 text-xs">
             {kanji.onyomi.length > 0 && (
               <div>
-                <span className="text-teal-500 font-semibold">On : </span>
-                <span className="text-slate-700">{kanji.onyomi.join("、")}</span>
+                <span className="text-[#c9a84c] font-semibold">On : </span>
+                <span className="text-[#f5ede0]/70">{kanji.onyomi.join("、")}</span>
               </div>
             )}
             {kanji.kunyomi.length > 0 && (
               <div>
-                <span className="text-cyan-500 font-semibold">Kun : </span>
-                <span className="text-slate-700">{kanji.kunyomi.join("、")}</span>
+                <span className="text-[#c9a84c]/70 font-semibold">Kun : </span>
+                <span className="text-[#f5ede0]/70">{kanji.kunyomi.join("、")}</span>
               </div>
             )}
           </div>
 
           {/* Tous les sens */}
-          <div className="text-xs text-slate-600">
-            <span className="font-semibold text-slate-500">Sens : </span>
+          <div className="text-xs text-[#f5ede0]/60">
+            <span className="font-semibold text-[#f5ede0]/40">Sens : </span>
             {kanji.meanings.join(", ")}
           </div>
 
@@ -100,7 +94,7 @@ function KanjiCard({ kanji, expanded, onToggle }: KanjiCardProps) {
                 .map((tag) => (
                   <span
                     key={tag}
-                    className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-500"
+                    className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/[0.06] text-[#f5ede0]/50"
                   >
                     {tag}
                   </span>
@@ -111,14 +105,14 @@ function KanjiCard({ kanji, expanded, onToggle }: KanjiCardProps) {
           {/* Exemples */}
           {kanji.examples.length > 0 && (
             <div className="space-y-1">
-              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
+              <p className="text-[10px] font-semibold text-[#f5ede0]/30 uppercase tracking-wide">
                 Exemples
               </p>
               {kanji.examples.map((ex, i) => (
                 <div key={i} className="flex items-baseline gap-2 text-xs">
-                  <span className="font-bold text-slate-800">{ex.word}</span>
-                  <span className="text-slate-400">({ex.reading})</span>
-                  <span className="text-slate-600">→ {ex.meaning}</span>
+                  <span className="font-bold text-[#f5ede0]">{ex.word}</span>
+                  <span className="text-[#f5ede0]/40">({ex.reading})</span>
+                  <span className="text-[#f5ede0]/60">→ {ex.meaning}</span>
                 </div>
               ))}
             </div>
@@ -164,13 +158,13 @@ export default function JLPTPage() {
   }, [level, sort, search]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-cyan-50 to-sky-50">
+    <div className="min-h-screen bg-[#100c08] text-[#f5ede0]">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-teal-200/60 sticky top-0 z-10">
+      <header className="bg-black/30 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-10">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden bg-amber-100 hover:bg-amber-200 transition-colors flex-shrink-0"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden border border-white/10 hover:bg-white/[0.08] transition-colors flex-shrink-0"
           >
             <img
               src="/sprites/logo_maison.png"
@@ -179,23 +173,23 @@ export default function JLPTPage() {
             />
           </Link>
           <div className="flex-1">
-            <h1 className="text-base font-bold text-teal-900 leading-tight">
+            <h1 className="text-base font-bold text-[#f5ede0] leading-tight">
               Base JLPT
             </h1>
-            <p className="text-[11px] text-teal-600">
+            <p className="text-[11px] text-[#f5ede0]/40">
               {JLPT_STATS.N5} kanjis N5 · {JLPT_STATS.N4} kanjis N4
             </p>
           </div>
           <div className="flex gap-2">
             <Link
               href="/game/speed-match"
-              className="text-[11px] px-2.5 py-1.5 rounded-xl bg-teal-100 text-teal-700 font-semibold hover:bg-teal-200 transition-colors"
+              className="text-[11px] px-2.5 py-1.5 rounded-xl bg-white/[0.06] text-[#f5ede0]/70 font-semibold hover:bg-white/[0.10] transition-colors border border-white/[0.08]"
             >
               Speed Match
             </Link>
             <Link
               href="/game/kana-rain"
-              className="text-[11px] px-2.5 py-1.5 rounded-xl bg-cyan-100 text-cyan-700 font-semibold hover:bg-cyan-200 transition-colors"
+              className="text-[11px] px-2.5 py-1.5 rounded-xl bg-white/[0.06] text-[#f5ede0]/70 font-semibold hover:bg-white/[0.10] transition-colors border border-white/[0.08]"
             >
               Kana Rain
             </Link>
@@ -212,20 +206,20 @@ export default function JLPTPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Rechercher un kanji, sens, ou tag..."
-            className="w-full rounded-xl border border-teal-200 bg-white/80 px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-teal-400 transition-colors"
+            className="w-full rounded-xl border border-white/[0.10] bg-white/[0.06] px-4 py-2.5 text-sm text-[#f5ede0] placeholder:text-[#f5ede0]/30 outline-none focus:border-[#c9a84c]/50 transition-colors"
           />
 
           <div className="flex items-center gap-2 flex-wrap">
             {/* Niveau */}
-            <div className="flex rounded-xl overflow-hidden border border-teal-200 bg-white/80">
+            <div className="flex rounded-xl overflow-hidden border border-white/[0.10] bg-white/[0.04]">
               {(["all", "N5", "N4"] as Level[]).map((l) => (
                 <button
                   key={l}
                   onClick={() => setLevel(l)}
                   className={`px-3 py-1.5 text-xs font-semibold transition-colors ${
                     level === l
-                      ? "bg-teal-500 text-white"
-                      : "text-teal-700 hover:bg-teal-50"
+                      ? "bg-[#c41e1e] text-[#f5ede0]"
+                      : "text-[#f5ede0]/60 hover:bg-white/[0.08]"
                   }`}
                 >
                   {l === "all" ? "Tous" : l}
@@ -243,7 +237,7 @@ export default function JLPTPage() {
             </div>
 
             {/* Tri */}
-            <div className="flex rounded-xl overflow-hidden border border-teal-200 bg-white/80">
+            <div className="flex rounded-xl overflow-hidden border border-white/[0.10] bg-white/[0.04]">
               {([
                 ["default", "Défaut"],
                 ["alpha", "A→Z"],
@@ -254,8 +248,8 @@ export default function JLPTPage() {
                   onClick={() => setSort(s)}
                   className={`px-3 py-1.5 text-xs font-semibold transition-colors ${
                     sort === s
-                      ? "bg-teal-500 text-white"
-                      : "text-teal-700 hover:bg-teal-50"
+                      ? "bg-[#c41e1e] text-[#f5ede0]"
+                      : "text-[#f5ede0]/60 hover:bg-white/[0.08]"
                   }`}
                 >
                   {label}
@@ -263,14 +257,14 @@ export default function JLPTPage() {
               ))}
             </div>
 
-            <span className="text-xs text-teal-500 ml-auto">
+            <span className="text-xs text-[#f5ede0]/40 ml-auto">
               {filtered.length} kanji{filtered.length > 1 ? "s" : ""}
             </span>
           </div>
         </div>
 
         {/* Description */}
-        <div className="bg-teal-100/70 rounded-2xl px-4 py-3 text-xs text-teal-800">
+        <div className="bg-white/[0.04] rounded-2xl px-4 py-3 text-xs text-[#f5ede0]/60 border border-white/[0.08]">
           <strong>Collection de référence</strong> — Ces kanjis font partie du
           programme officiel JLPT N5 et N4. Utilise-les dans Speed Match, Kana
           Rain, ou Sens Caché pour t'entraîner dessus !
@@ -278,7 +272,7 @@ export default function JLPTPage() {
 
         {/* Liste */}
         {filtered.length === 0 ? (
-          <div className="text-center py-12 text-teal-400">
+          <div className="text-center py-12 text-[#f5ede0]/30">
             Aucun kanji trouvé pour &ldquo;{search}&rdquo;
           </div>
         ) : (

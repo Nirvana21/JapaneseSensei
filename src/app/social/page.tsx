@@ -101,7 +101,7 @@ function useToast() {
 function Avatar({ emoji, size = "md" }: { emoji?: string | null; size?: "sm" | "md" | "lg" }) {
   const sizeClass = size === "sm" ? "w-8 h-8 text-lg" : size === "lg" ? "w-14 h-14 text-3xl" : "w-10 h-10 text-xl";
   return (
-    <div className={`${sizeClass} rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 border border-indigo-200/60 flex items-center justify-center flex-shrink-0`}>
+    <div className={`${sizeClass} rounded-full bg-white/[0.08] border border-white/[0.12] flex items-center justify-center flex-shrink-0`}>
       {emoji || "🎌"}
     </div>
   );
@@ -115,24 +115,24 @@ function EmptyState({ icon, title, sub }: { icon: string; title: string; sub?: s
   return (
     <div className="text-center py-10 space-y-2">
       <div className="text-4xl">{icon}</div>
-      <p className="text-sm font-semibold text-slate-600">{title}</p>
-      {sub && <p className="text-xs text-slate-400">{sub}</p>}
+      <p className="text-sm font-semibold text-[#f5ede0]/60">{title}</p>
+      {sub && <p className="text-xs text-[#f5ede0]/30">{sub}</p>}
     </div>
   );
 }
 
 function SectionTitle({ children, count, color = "slate" }: { children: React.ReactNode; count?: number; color?: string }) {
   const cls: Record<string, string> = {
-    slate: "text-slate-500",
-    amber: "text-amber-700",
-    green: "text-green-700",
-    indigo: "text-indigo-700",
+    slate: "text-[#f5ede0]/40",
+    amber: "text-[#c9a84c]/70",
+    green: "text-green-400",
+    indigo: "text-[#f5ede0]/50",
   };
   return (
-    <h3 className={`text-xs font-bold uppercase tracking-wider px-1 ${cls[color] ?? "text-slate-500"} flex items-center gap-2`}>
+    <h3 className={`text-xs font-bold uppercase tracking-wider px-1 ${cls[color] ?? "text-[#f5ede0]/40"} flex items-center gap-2`}>
       {children}
       {count !== undefined && (
-        <span className="inline-block text-[10px] font-semibold bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded-full">
+        <span className="inline-block text-[10px] font-semibold bg-white/[0.08] text-[#f5ede0]/50 px-1.5 py-0.5 rounded-full">
           {count}
         </span>
       )}
@@ -239,15 +239,15 @@ function FriendsTab({ toast }: { toast: (msg: string, type?: ToastType) => void 
 
   return (
     <div className="space-y-4">
-      <div className="bg-white/80 rounded-2xl border border-slate-200/70 shadow-sm p-4 space-y-3">
-        <h3 className="text-sm font-bold text-slate-700">🔍 Trouver un joueur</h3>
+      <div className="bg-white/[0.04] rounded-2xl border border-white/[0.08] p-4 space-y-3">
+        <h3 className="text-sm font-bold text-[#f5ede0]/70">🔍 Trouver un joueur</h3>
         <div className="relative">
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Nom d'utilisateur (2 caractères min)..."
-            className="w-full rounded-xl border border-indigo-200 bg-indigo-50/40 px-4 py-2.5 pr-10 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-indigo-400 focus:bg-white transition-colors"
+            className="w-full rounded-xl border border-white/[0.12] bg-white/[0.06] px-4 py-2.5 pr-10 text-sm text-[#f5ede0] placeholder:text-[#f5ede0]/30 outline-none focus:border-white/[0.25] transition-colors"
           />
           {searching && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -260,19 +260,19 @@ function FriendsTab({ toast }: { toast: (msg: string, type?: ToastType) => void 
             {results.map(u => {
               const alreadyFriend = friendIds.has(u.id);
               return (
-                <div key={u.id} className="flex items-center gap-3 px-3 py-2 rounded-xl bg-slate-50 hover:bg-indigo-50/60 transition-colors">
+                <div key={u.id} className="flex items-center gap-3 px-3 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] transition-colors">
                   <Avatar emoji={u.avatar_emoji} size="sm" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-800 truncate">{u.display_name || u.username}</p>
-                    <p className="text-xs text-slate-400">@{u.username}</p>
+                    <p className="text-sm font-semibold text-[#f5ede0] truncate">{u.display_name || u.username}</p>
+                    <p className="text-xs text-[#f5ede0]/40">@{u.username}</p>
                   </div>
                   {alreadyFriend ? (
-                    <span className="text-xs text-green-600 font-medium">✓ Ami</span>
+                    <span className="text-xs text-green-400 font-medium">✓ Ami</span>
                   ) : (
                     <button
                       onClick={() => sendRequestToUser(u.id)}
                       disabled={pendingActions.has(u.id)}
-                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl bg-indigo-500 text-white font-semibold hover:bg-indigo-600 transition-colors disabled:opacity-50"
+                      className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-xl bg-[#c41e1e] text-[#f5ede0] font-semibold hover:bg-[#c41e1e]/80 transition-colors disabled:opacity-50"
                     >
                       {pendingActions.has(u.id) ? <Spinner /> : null}
                       + Ajouter
@@ -284,21 +284,19 @@ function FriendsTab({ toast }: { toast: (msg: string, type?: ToastType) => void 
           </div>
         )}
         {search.length >= 2 && !searching && results.length === 0 && (
-          <p className="text-xs text-slate-400 text-center py-2">Aucun joueur trouvé pour « {search} »</p>
+          <p className="text-xs text-[#f5ede0]/30 text-center py-2">Aucun joueur trouvé pour « {search} »</p>
         )}
       </div>
 
       {incoming.length > 0 && (
-        <div className="bg-amber-50/90 rounded-2xl border border-amber-200/80 shadow-sm p-4 space-y-3">
+        <div className="bg-[#c9a84c]/10 rounded-2xl border border-[#c9a84c]/20 p-4 space-y-3">
           <SectionTitle count={incoming.length} color="amber">🔔 Demandes reçues</SectionTitle>
           {incoming.map(f => (
             <div key={f.friend_id} className="flex items-center gap-3">
               <Avatar emoji={f.avatar_emoji} />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-slate-800 truncate">{f.display_name || f.username}</p>
-                <p className="text-xs text-slate-400">@{f.username}</p>
-              </div>
-              <div className="flex gap-1.5">
+                <p className="text-sm font-semibold text-[#f5ede0] truncate">{f.display_name || f.username}</p>
+                <p className="text-xs text-[#f5ede0]/40">@{f.username}</p>
                 <button
                   onClick={() => respondToRequest(f.friend_id, "accept")}
                   disabled={pendingActions.has(f.friend_id)}
@@ -309,7 +307,7 @@ function FriendsTab({ toast }: { toast: (msg: string, type?: ToastType) => void 
                 <button
                   onClick={() => respondToRequest(f.friend_id, "decline")}
                   disabled={pendingActions.has(f.friend_id)}
-                  className="text-xs px-3 py-1.5 rounded-xl bg-slate-200 text-slate-600 font-semibold hover:bg-red-100 hover:text-red-700 transition-colors disabled:opacity-50"
+                  className="text-xs px-3 py-1.5 rounded-xl bg-white/[0.06] text-[#f5ede0]/50 font-semibold hover:bg-red-900/20 hover:text-red-400 transition-colors disabled:opacity-50"
                 >
                   Refuser
                 </button>
@@ -324,7 +322,7 @@ function FriendsTab({ toast }: { toast: (msg: string, type?: ToastType) => void 
           <SectionTitle count={accepted.length} color="indigo">👥 Mes amis</SectionTitle>
           <button
             onClick={loadFriends}
-            className="text-lg text-indigo-400 hover:text-indigo-600 transition-colors p-1 rounded-lg hover:bg-indigo-50"
+            className="text-lg text-[#f5ede0]/40 hover:text-[#f5ede0]/70 transition-colors p-1 rounded-lg hover:bg-white/[0.06]"
             title="Rafraîchir"
           >
             {loadingFriends ? <Spinner /> : "↻"}
@@ -333,23 +331,23 @@ function FriendsTab({ toast }: { toast: (msg: string, type?: ToastType) => void 
         {friendsError && <p className="text-xs text-red-500 text-center py-2">{friendsError}</p>}
         {loadingFriends && !friendsError ? (
           <div className="flex justify-center py-6">
-            <div className="w-6 h-6 border-2 border-indigo-300 border-t-indigo-500 rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
           </div>
         ) : accepted.length === 0 ? (
           <EmptyState icon="🤝" title="Aucun ami pour l'instant" sub="Cherche des joueurs ci-dessus !" />
         ) : (
           <div className="space-y-1">
             {accepted.map(f => (
-              <div key={f.friend_id} className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-slate-50 transition-colors group">
+              <div key={f.friend_id} className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-white/[0.06] transition-colors group">
                 <Avatar emoji={f.avatar_emoji} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800 truncate">{f.display_name || f.username}</p>
-                  <p className="text-xs text-slate-400">@{f.username}</p>
+                  <p className="text-sm font-semibold text-[#f5ede0] truncate">{f.display_name || f.username}</p>
+                  <p className="text-xs text-[#f5ede0]/40">@{f.username}</p>
                 </div>
                 <button
                   onClick={() => removeFriend(f.friend_id, false)}
                   disabled={pendingActions.has(f.friend_id)}
-                  className="text-xs text-slate-300 hover:text-red-500 transition-colors p-1.5 rounded-lg opacity-0 group-hover:opacity-100 disabled:opacity-50"
+                  className="text-xs text-[#f5ede0]/20 hover:text-red-400 transition-colors p-1.5 rounded-lg opacity-0 group-hover:opacity-100 disabled:opacity-50"
                   title="Supprimer"
                 >
                   ✕
@@ -361,20 +359,20 @@ function FriendsTab({ toast }: { toast: (msg: string, type?: ToastType) => void 
       </div>
 
       {outgoing.length > 0 && (
-        <div className="bg-slate-50/80 rounded-2xl border border-slate-200/60 p-4 space-y-2">
+          <div className="bg-white/[0.02] rounded-2xl border border-white/[0.06] p-4 space-y-2">
           <SectionTitle count={outgoing.length} color="slate">📤 Demandes envoyées</SectionTitle>
           {outgoing.map(f => (
             <div key={f.friend_id} className="flex items-center gap-3 px-2 py-1.5">
               <Avatar emoji={f.avatar_emoji} size="sm" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-slate-600 truncate">{f.display_name || f.username}</p>
-                <p className="text-xs text-slate-400">@{f.username}</p>
+                <p className="text-sm font-semibold text-[#f5ede0]/70 truncate">{f.display_name || f.username}</p>
+                <p className="text-xs text-[#f5ede0]/40">@{f.username}</p>
               </div>
-              <span className="text-xs text-amber-600 font-medium">En attente…</span>
+              <span className="text-xs text-[#c9a84c]/70 font-medium">En attente…</span>
               <button
                 onClick={() => removeFriend(f.friend_id, true)}
                 disabled={pendingActions.has(f.friend_id)}
-                className="text-xs text-slate-300 hover:text-red-400 transition-colors p-1 disabled:opacity-50"
+                className="text-xs text-[#f5ede0]/20 hover:text-red-400 transition-colors p-1 disabled:opacity-50"
                 title="Annuler"
               >
                 ✕
@@ -416,29 +414,29 @@ function ChallengeCard({ c, pendingActions, onRespond }: ChallengeCardProps) {
       : "";
 
   const cardBg: Record<string, string> = {
-    pending: "border-amber-200 bg-amber-50/60",
-    accepted: "border-green-200 bg-green-50/60",
-    completed: "border-blue-200 bg-blue-50/40",
-    declined: "border-slate-200 bg-slate-50/60",
-    expired:  "border-slate-200 bg-slate-50/40",
+    pending: "border-[#c9a84c]/20 bg-[#c9a84c]/05",
+    accepted: "border-green-500/20 bg-green-900/10",
+    completed: "border-white/[0.10] bg-white/[0.03]",
+    declined: "border-white/[0.06] bg-white/[0.02]",
+    expired:  "border-white/[0.06] bg-white/[0.02]",
   };
 
   return (
-    <div className={`rounded-2xl border p-3 transition-colors ${cardBg[c.status] ?? "border-slate-200 bg-white/80"}`}>
+    <div className={`rounded-2xl border p-3 transition-colors ${cardBg[c.status] ?? "border-white/[0.08] bg-white/[0.04]"}`}>
       <div className="flex items-start gap-3">
         <Avatar emoji={opponent.emoji} size="sm" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-sm font-bold text-slate-800">{opponent.name}</span>
-            <span className="text-[10px] text-slate-400">·</span>
-            <span className="text-xs text-slate-500">{gameLabel}</span>
+            <span className="text-sm font-bold text-[#f5ede0]">{opponent.name}</span>
+            <span className="text-[10px] text-[#f5ede0]/30">·</span>
+            <span className="text-xs text-[#f5ede0]/50">{gameLabel}</span>
           </div>
           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
             {c.role === "challenger" && c.status !== "completed" && (
-              <span className="text-[10px] font-medium text-indigo-500 bg-indigo-100 px-1.5 py-0.5 rounded-full">Tu as lancé</span>
+              <span className="text-[10px] font-medium text-[#f5ede0]/50 bg-white/[0.06] px-1.5 py-0.5 rounded-full">Tu as lancé</span>
             )}
             {c.role === "challenged" && c.status === "pending" && (
-              <span className="text-[10px] font-medium text-amber-600 bg-amber-100 px-1.5 py-0.5 rounded-full">🔔 Invitation reçue</span>
+              <span className="text-[10px] font-medium text-[#c9a84c] bg-[#c9a84c]/10 px-1.5 py-0.5 rounded-full">🔔 Invitation reçue</span>
             )}
             {c.status === "completed" && (
               <>
@@ -446,8 +444,8 @@ function ChallengeCard({ c, pendingActions, onRespond }: ChallengeCardProps) {
                 <span className="text-xs text-slate-400">{myScore ?? "—"} vs {oppScore ?? "—"}</span>
               </>
             )}
-            {c.status === "declined" && <span className="text-xs text-slate-400">Refusé</span>}
-            {c.status === "expired"  && <span className="text-xs text-slate-400">Expiré</span>}
+            {c.status === "declined" && <span className="text-xs text-[#f5ede0]/30">Refusé</span>}
+            {c.status === "expired"  && <span className="text-xs text-[#f5ede0]/30">Expiré</span>}
           </div>
         </div>
         <div className="flex gap-1.5 flex-shrink-0 mt-0.5">
@@ -463,7 +461,7 @@ function ChallengeCard({ c, pendingActions, onRespond }: ChallengeCardProps) {
               <button
                 onClick={onRespond(c.id, "decline")}
                 disabled={pendingActions.has(c.id)}
-                className="text-xs px-2.5 py-1.5 rounded-xl bg-slate-200 text-slate-600 font-semibold hover:bg-red-100 hover:text-red-700 transition-colors disabled:opacity-50"
+                className="text-xs px-2.5 py-1.5 rounded-xl bg-white/[0.06] text-[#f5ede0]/50 font-semibold hover:bg-red-900/20 hover:text-red-400 transition-colors disabled:opacity-50"
               >
                 ✕
               </button>
@@ -472,13 +470,13 @@ function ChallengeCard({ c, pendingActions, onRespond }: ChallengeCardProps) {
           {c.status === "accepted" && gameLink && (
             <Link
               href={gameLink}
-              className="text-xs px-3 py-1.5 rounded-xl bg-indigo-500 text-white font-bold hover:bg-indigo-600 transition-colors"
+              className="text-xs px-3 py-1.5 rounded-xl bg-[#c41e1e] text-[#f5ede0] font-bold hover:bg-[#c41e1e]/80 transition-colors"
             >
               ▶ Jouer
             </Link>
           )}
           {c.status === "pending" && c.role === "challenger" && (
-            <span className="text-xs text-amber-600 font-medium self-center">En attente…</span>
+            <span className="text-xs text-[#c9a84c]/70 font-medium self-center">En attente…</span>
           )}
         </div>
       </div>
@@ -572,26 +570,26 @@ function ChallengesTab({ toast }: { toast: (msg: string, type?: ToastType) => vo
 
   return (
     <div className="space-y-4">
-      <div className="bg-white/80 rounded-2xl border border-slate-200/70 shadow-sm p-4">
+      <div className="bg-white/[0.04] rounded-2xl border border-white/[0.08] p-4">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-bold text-slate-700">⚔️ Lancer un défi</h3>
+          <h3 className="text-sm font-bold text-[#f5ede0]/70">⚔️ Lancer un défi</h3>
           <button
             onClick={() => setShowCreate(v => !v)}
             className={`text-xs px-3 py-1.5 rounded-xl font-semibold transition-colors ${
-              showCreate ? "bg-slate-200 text-slate-600 hover:bg-slate-300" : "bg-indigo-500 text-white hover:bg-indigo-600"
+              showCreate ? "bg-white/[0.06] text-[#f5ede0]/50 hover:bg-white/[0.10]" : "bg-[#c41e1e] text-[#f5ede0] hover:bg-[#c41e1e]/80"
             }`}
           >
             {showCreate ? "Annuler" : "+ Nouveau défi"}
           </button>
         </div>
         {showCreate && (
-          <div className="space-y-4 pt-3 border-t border-slate-100">
+          <div className="space-y-4 pt-3 border-t border-white/[0.06]">
             <div>
-              <label className="text-xs text-slate-500 font-semibold block mb-2">Défier</label>
+              <label className="text-xs text-[#f5ede0]/40 font-semibold block mb-2">Défier</label>
               {friends.length === 0 ? (
-                <div className="flex items-center gap-2 p-3 bg-amber-50 rounded-xl border border-amber-200/60">
+                <div className="flex items-center gap-2 p-3 bg-[#c9a84c]/10 rounded-xl border border-[#c9a84c]/20">
                   <span>⚠️</span>
-                  <p className="text-xs text-amber-700">Ajoute des amis d&apos;abord depuis l&apos;onglet Amis !</p>
+                  <p className="text-xs text-[#c9a84c]/70">Ajoute des amis d&apos;abord depuis l&apos;onglet Amis !</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-2">
@@ -601,14 +599,14 @@ function ChallengesTab({ toast }: { toast: (msg: string, type?: ToastType) => vo
                       onClick={() => setNewFriendId(f.friend_id)}
                       className={`flex items-center gap-2 p-2.5 rounded-xl border text-left transition-colors ${
                         newFriendId === f.friend_id
-                          ? "border-indigo-400 bg-indigo-50 shadow-sm"
-                          : "border-slate-200 bg-slate-50 hover:border-indigo-300 hover:bg-indigo-50/40"
+                          ? "border-[#c41e1e]/50 bg-[#c41e1e]/10 shadow-sm"
+                          : "border-white/[0.10] bg-white/[0.04] hover:border-white/[0.20] hover:bg-white/[0.08]"
                       }`}
                     >
                       <Avatar emoji={f.avatar_emoji} size="sm" />
                       <div className="min-w-0">
-                        <p className="text-xs font-semibold text-slate-800 truncate">{f.display_name || f.username}</p>
-                        <p className="text-[10px] text-slate-400 truncate">@{f.username}</p>
+                        <p className="text-xs font-semibold text-[#f5ede0] truncate">{f.display_name || f.username}</p>
+                        <p className="text-[10px] text-[#f5ede0]/40 truncate">@{f.username}</p>
                       </div>
                     </button>
                   ))}
@@ -616,7 +614,7 @@ function ChallengesTab({ toast }: { toast: (msg: string, type?: ToastType) => vo
               )}
             </div>
             <div>
-              <label className="text-xs text-slate-500 font-semibold block mb-2">Jeu</label>
+              <label className="text-xs text-[#f5ede0]/40 font-semibold block mb-2">Jeu</label>
               <div className="grid grid-cols-1 gap-1.5">
                 {Object.entries(GAME_LABELS).map(([key, label]) => (
                   <button
@@ -688,27 +686,27 @@ export default function SocialPage() {
   const { toasts, show: showToast } = useToast();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-      <header className="bg-white/80 backdrop-blur-md border-b border-indigo-200/60 sticky top-0 z-10">
+    <div className="min-h-screen bg-[#100c08] text-[#f5ede0]">
+      <header className="bg-black/30 backdrop-blur-md border-b border-white/[0.08] sticky top-0 z-10">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden bg-amber-100 hover:bg-amber-200 transition-colors flex-shrink-0"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden border border-white/10 hover:bg-white/[0.08] transition-colors flex-shrink-0"
           >
             <img src="/sprites/logo_maison.png" alt="Accueil" className="w-full h-full object-cover" />
           </Link>
           <div className="flex-1">
-            <h1 className="text-base font-bold text-indigo-900 leading-tight">Social</h1>
-            <p className="text-[11px] text-indigo-400">Amis · Défis · Compétition</p>
+            <h1 className="text-base font-bold text-[#f5ede0] leading-tight">Social</h1>
+            <p className="text-[11px] text-[#f5ede0]/40">Amis · Défis · Compétition</p>
           </div>
         </div>
-        <div className="max-w-lg mx-auto px-4 flex border-t border-indigo-100/60">
+        <div className="max-w-lg mx-auto px-4 flex border-t border-white/[0.06]">
           {([["friends", "👥 Amis"], ["challenges", "⚔️ Défis"]] as ["friends" | "challenges", string][]).map(([key, label]) => (
             <button
               key={key}
               onClick={() => setTab(key)}
               className={`flex-1 py-2.5 text-sm font-semibold border-b-2 transition-colors ${
-                tab === key ? "border-indigo-500 text-indigo-700" : "border-transparent text-slate-500 hover:text-slate-700"
+                tab === key ? "border-[#c41e1e] text-[#f5ede0]" : "border-transparent text-[#f5ede0]/40 hover:text-[#f5ede0]/70"
               }`}
             >
               {label}

@@ -55,11 +55,11 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 flex flex-col">
-      <header className="bg-gradient-to-r from-amber-100/90 to-orange-100/90 backdrop-blur-md border-b border-amber-200/50">
+    <div className="min-h-screen bg-[#100c08] text-[#f5ede0] flex flex-col">
+      <header className="bg-black/30 backdrop-blur-md border-b border-white/[0.08]">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden shadow-md bg-red-100">
+            <div className="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-2xl overflow-hidden shadow-md border border-white/10">
               <img
                 src="/sprites/logo_amour.png"
                 alt="Japanese Sensei - Chat"
@@ -67,19 +67,19 @@ export default function ChatPage() {
               />
             </div>
             <div className="min-w-0">
-              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-red-800 to-orange-800 bg-clip-text text-transparent truncate">
+              <h1 className="text-2xl md:text-3xl font-bold text-[#f5ede0] truncate" style={{ fontFamily: "var(--font-noto-serif-jp, serif)" }}>
                 Japanese Sensei - Chat
               </h1>
-              <p className="text-amber-700 text-sm md:text-base truncate">
+              <p className="text-[#f5ede0]/50 text-sm md:text-base truncate">
                 Pose tes questions sur les kanjis, la grammaire ou le vocabulaire.
               </p>
             </div>
           </div>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-200/80 hover:bg-amber-300 text-amber-900 text-sm font-medium shadow-sm border border-amber-300 transition-smooth hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.10] text-[#f5ede0] text-sm font-medium border border-white/[0.10] transition-colors hover:-translate-y-0.5"
           >
-            <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden bg-amber-300/70">
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-xl overflow-hidden border border-white/10">
               <img
                 src="/sprites/logo_maison.png"
                 alt="Menu principal"
@@ -92,9 +92,9 @@ export default function ChatPage() {
       </header>
 
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-6 flex flex-col gap-4">
-        <div className="flex-1 overflow-y-auto bg-white/70 backdrop-blur-sm rounded-3xl shadow-md border border-amber-100 p-4 space-y-3 animate-fade-in-up">
+        <div className="flex-1 overflow-y-auto bg-white/[0.03] backdrop-blur-sm rounded-3xl border border-white/[0.08] p-4 space-y-3 animate-fade-in-up">
           {messages.length === 0 && (
-            <div className="text-center text-amber-700 text-sm md:text-base">
+            <div className="text-center text-[#f5ede0]/50 text-sm md:text-base">
               💬 Commence par demander :
               <div className="mt-2 space-y-1">
                 <p>• "Explique-moi le kanji 学 avec ses lectures"</p>
@@ -114,8 +114,8 @@ export default function ChatPage() {
               <div
                 className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm md:text-base whitespace-pre-wrap leading-relaxed shadow-sm ${
                   m.role === "user"
-                    ? "bg-orange-500 text-white rounded-br-sm"
-                    : "bg-white/90 text-amber-900 border border-amber-100 rounded-bl-sm"
+                    ? "bg-[#c41e1e] text-[#f5ede0] rounded-br-sm"
+                    : "bg-white/[0.06] text-[#f5ede0]/90 border border-white/[0.08] rounded-bl-sm"
                 }`}
               >
                 {m.content}
@@ -124,7 +124,7 @@ export default function ChatPage() {
           ))}
 
           {loading && (
-            <div className="text-amber-700 text-sm italic">Le sensei réfléchit…</div>
+            <div className="text-[#f5ede0]/40 text-sm italic">Le sensei réfléchit…</div>
           )}
 
           {error && (
@@ -134,22 +134,22 @@ export default function ChatPage() {
 
         <form
           onSubmit={handleSubmit}
-          className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md border border-amber-100 p-3 flex flex-col gap-2 animate-fade-in-up"
+          className="bg-white/[0.04] backdrop-blur-sm rounded-2xl border border-white/[0.08] p-3 flex flex-col gap-2 animate-fade-in-up"
         >
           <textarea
-            className="w-full rounded-xl border border-amber-200 bg-amber-50/70 px-3 py-2 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-orange-400 resize-none min-h-[70px] max-h-40"
+            className="w-full rounded-xl border border-white/[0.10] bg-white/[0.06] px-3 py-2 text-sm md:text-base text-[#f5ede0] placeholder:text-[#f5ede0]/30 focus:outline-none focus:ring-2 focus:ring-[#c41e1e]/40 focus:border-[#c41e1e]/50 resize-none min-h-[70px] max-h-40"
             placeholder="Pose ta question au Japanese Sensei…"
             value={input}
             onChange={(e) => setInput(e.target.value)}
           />
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs text-amber-600">
+            <p className="text-xs text-[#f5ede0]/30">
               Le sensei est spécialisé dans les kanjis, les particules et la grammaire de base.
             </p>
             <button
               type="submit"
               disabled={loading || !input.trim()}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-red-500 to-orange-500 text-white text-sm font-semibold shadow-md disabled:opacity-60 disabled:cursor-not-allowed hover:shadow-lg transition-bounce hover:-translate-y-0.5"
+              className="px-4 py-2 rounded-xl bg-[#c41e1e] hover:bg-[#c41e1e]/80 text-[#f5ede0] text-sm font-semibold shadow-md disabled:opacity-40 disabled:cursor-not-allowed transition-all hover:-translate-y-0.5"
             >
               {loading ? "Envoi en cours…" : "Envoyer"}
             </button>

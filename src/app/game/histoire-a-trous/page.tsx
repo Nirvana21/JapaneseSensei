@@ -163,25 +163,25 @@ export default function HistoireATrousPage() {
   if (phase === "menu" || phase === "loading") {
     const hasPersonal = kanjis.length >= BLANKS_COUNT;
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex flex-col">
-        <header className="bg-white/80 backdrop-blur border-b border-amber-100 px-4 py-3 flex items-center gap-3">
+      <div className="min-h-screen bg-[#100c08] text-[#f5ede0] flex flex-col">
+        <header className="bg-black/30 backdrop-blur-md border-b border-white/[0.08] px-4 py-3 flex items-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden bg-amber-100 hover:bg-amber-200 transition-colors"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden border border-white/10 hover:bg-white/[0.08] transition-colors"
           >
             <img src="/sprites/logo_maison.png" alt="Menu" className="w-full h-full object-cover" />
           </Link>
-          <h1 className="text-lg font-bold text-amber-900">Histoire à trous</h1>
+          <h1 className="text-lg font-bold text-[#f5ede0]">Histoire à trous</h1>
         </header>
 
         <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 gap-8">
           {phase === "loading" ? (
             <div className="text-center">
               <div className="text-5xl mb-4 animate-bounce">✍️</div>
-              <p className="text-amber-800 font-semibold">
+              <p className="text-[#f5ede0]/80 font-semibold">
                 Le Sensei écrit une histoire pour toi...
               </p>
-              <p className="text-amber-600 text-sm mt-1">
+              <p className="text-[#f5ede0]/50 text-sm mt-1">
                 Quelques secondes de patience !
               </p>
             </div>
@@ -189,23 +189,23 @@ export default function HistoireATrousPage() {
             <>
               <div className="text-center max-w-sm">
                 <div className="text-5xl mb-4">📖</div>
-                <h2 className="text-2xl font-bold text-amber-900 mb-2">
+                <h2 className="text-2xl font-bold text-[#f5ede0] mb-2">
                   Histoire à trous
                 </h2>
-                <p className="text-amber-700 text-sm">
+                <p className="text-[#f5ede0]/60 text-sm">
                   Le Sensei génère une <strong>mini-histoire</strong> en japonais avec des mots manquants.
                   À toi de compléter les {BLANKS_COUNT} trous avec les bons mots !
                 </p>
               </div>
 
               {error && (
-                <div className="w-full max-w-xs bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl px-4 py-3">
+                <div className="w-full max-w-xs bg-red-900/20 border border-red-500/40 text-red-400 text-sm rounded-xl px-4 py-3">
                   {error}
                 </div>
               )}
 
               <div className="w-full max-w-xs">
-                <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-2 text-center">
+                <p className="text-xs font-semibold text-[#f5ede0]/50 uppercase tracking-wide mb-2 text-center">
                   Source
                 </p>
                 <div className="grid grid-cols-2 gap-2">
@@ -214,8 +214,8 @@ export default function HistoireATrousPage() {
                     disabled={!hasPersonal}
                     className={`py-3 px-4 rounded-2xl text-sm font-semibold border-2 transition-all ${
                       sourceMode === "personal"
-                        ? "border-amber-500 bg-amber-500 text-white shadow-md"
-                        : "border-amber-200 bg-white text-amber-700 hover:border-amber-400"
+                        ? "border-[#c41e1e] bg-[#c41e1e] text-[#f5ede0] shadow-md"
+                        : "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/70 hover:border-white/[0.30]"
                     } ${!hasPersonal ? "opacity-40 cursor-not-allowed" : ""}`}
                   >
                     Ma collection
@@ -229,8 +229,8 @@ export default function HistoireATrousPage() {
                     onClick={() => setSourceMode("jlpt")}
                     className={`py-3 px-4 rounded-2xl text-sm font-semibold border-2 transition-all ${
                       sourceMode === "jlpt"
-                        ? "border-teal-500 bg-teal-500 text-white shadow-md"
-                        : "border-teal-200 bg-white text-teal-700 hover:border-teal-400"
+                        ? "border-[#c41e1e] bg-[#c41e1e] text-[#f5ede0] shadow-md"
+                        : "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/70 hover:border-white/[0.30]"
                     }`}
                   >
                     JLPT N5/N4
@@ -240,7 +240,7 @@ export default function HistoireATrousPage() {
 
               <button
                 onClick={generateStory}
-                className="px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-lg shadow-lg hover:-translate-y-0.5 transition-all active:scale-95"
+                className="px-8 py-4 rounded-2xl bg-[#c41e1e] text-[#f5ede0] font-bold text-lg shadow-lg hover:-translate-y-0.5 transition-all active:scale-95"
               >
                 Générer une histoire
               </button>
@@ -257,23 +257,23 @@ export default function HistoireATrousPage() {
   if (phase === "result" && story) {
     const pct = Math.round((score / story.blanks.length) * 100);
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex flex-col">
-        <header className="bg-white/80 backdrop-blur border-b border-amber-100 px-4 py-3 flex items-center gap-3">
+      <div className="min-h-screen bg-[#100c08] text-[#f5ede0] flex flex-col">
+        <header className="bg-black/30 backdrop-blur-md border-b border-white/[0.08] px-4 py-3 flex items-center gap-3">
           <Link
             href="/"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden bg-amber-100"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-xl overflow-hidden border border-white/10"
           >
             <img src="/sprites/logo_maison.png" alt="Menu" className="w-full h-full object-cover" />
           </Link>
-          <h1 className="text-lg font-bold text-amber-900">Résultat</h1>
+          <h1 className="text-lg font-bold text-[#f5ede0]">Résultat</h1>
         </header>
 
         <main className="flex-1 flex flex-col items-center px-4 py-6 gap-5">
           {/* Score */}
-          <div className="bg-white rounded-3xl shadow-xl px-8 py-6 text-center w-full max-w-sm">
+          <div className="bg-white/[0.04] rounded-3xl border border-white/[0.08] px-8 py-6 text-center w-full max-w-sm">
             <div className="text-5xl mb-3">{pct === 100 ? "🎉" : pct >= 50 ? "👍" : "📚"}</div>
-            <div className="text-4xl font-black text-amber-900">{score}/{story.blanks.length}</div>
-            <div className="text-sm text-amber-600 mt-1">
+            <div className="text-4xl font-black text-[#c9a84c]">{score}/{story.blanks.length}</div>
+            <div className="text-sm text-[#f5ede0]/50 mt-1">
               bonne{score > 1 ? "s" : ""} réponse{score > 1 ? "s" : ""}
             </div>
           </div>
@@ -288,23 +288,23 @@ export default function HistoireATrousPage() {
                   key={blank.index}
                   className={`px-4 py-3 rounded-2xl border-2 ${
                     correct
-                      ? "border-green-300 bg-green-50"
-                      : "border-red-200 bg-red-50"
+                      ? "border-green-500/40 bg-green-900/20"
+                      : "border-red-500/40 bg-red-900/20"
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-gray-800">
+                    <span className="text-lg font-bold text-[#f5ede0]">
                       {blank.answer}
                     </span>
                     <span
                       className={`text-sm font-semibold ${
-                        correct ? "text-green-600" : "text-red-600"
+                        correct ? "text-green-400" : "text-red-400"
                       }`}
                     >
                       {correct ? "✓ Correct" : `✗ tu as mis : ${given ?? "—"}`}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-500 mt-0.5">{blank.meaning}</div>
+                  <div className="text-xs text-[#f5ede0]/40 mt-0.5">{blank.meaning}</div>
                 </div>
               );
             })}
@@ -312,9 +312,9 @@ export default function HistoireATrousPage() {
 
           {/* Traduction */}
           {story.translation && (
-            <div className="w-full max-w-sm bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3">
-              <p className="text-xs font-semibold text-amber-600 mb-1">Traduction :</p>
-              <p className="text-sm text-amber-800">{story.translation}</p>
+            <div className="w-full max-w-sm bg-white/[0.04] border border-white/[0.08] rounded-2xl px-4 py-3">
+              <p className="text-xs font-semibold text-[#f5ede0]/50 mb-1">Traduction :</p>
+              <p className="text-sm text-[#f5ede0]/80">{story.translation}</p>
             </div>
           )}
 
@@ -324,13 +324,13 @@ export default function HistoireATrousPage() {
                 setPhase("menu");
                 setStory(null);
               }}
-              className="flex-1 py-3 rounded-2xl bg-white border-2 border-amber-200 text-amber-700 font-semibold hover:border-amber-400 transition-colors"
+              className="flex-1 py-3 rounded-2xl bg-white/[0.04] border-2 border-white/[0.15] text-[#f5ede0]/70 font-semibold hover:border-white/[0.30] transition-colors"
             >
               Nouvelle histoire
             </button>
             <Link
               href="/"
-              className="flex-1 py-3 rounded-2xl bg-amber-500 text-white font-semibold text-center hover:bg-amber-600 transition-colors"
+              className="flex-1 py-3 rounded-2xl bg-[#c41e1e] text-[#f5ede0] font-semibold text-center hover:bg-[#c41e1e]/80 transition-colors"
             >
               Menu
             </Link>
@@ -346,25 +346,25 @@ export default function HistoireATrousPage() {
   if (!story) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex flex-col">
-      <header className="bg-white/80 backdrop-blur border-b border-amber-100 px-4 py-2 flex items-center justify-between">
+    <div className="min-h-screen bg-[#100c08] text-[#f5ede0] flex flex-col">
+      <header className="bg-black/30 backdrop-blur-md border-b border-white/[0.08] px-4 py-2 flex items-center justify-between">
         <Link
           href="/"
-          className="inline-flex items-center justify-center w-7 h-7 rounded-lg overflow-hidden bg-amber-100"
+            className="inline-flex items-center justify-center w-7 h-7 rounded-lg overflow-hidden border border-white/10"
         >
           <img src="/sprites/logo_maison.png" alt="Menu" className="w-full h-full object-cover" />
         </Link>
-        <h2 className="text-sm font-bold text-amber-900 truncate max-w-[60%]">
+          <h2 className="text-sm font-bold text-[#f5ede0] truncate max-w-[60%]">
           {story.title}
         </h2>
-        <span className="text-xs text-amber-500">
+          <span className="text-xs text-[#f5ede0]/40">
           {Object.keys(userAnswers).length}/{story.blanks.length}
         </span>
       </header>
 
       <main className="flex-1 overflow-y-auto px-4 py-5 space-y-5">
         {/* Histoire avec les blancs */}
-        <div className="bg-white rounded-2xl shadow p-5 leading-8 text-base text-gray-800">
+        <div className="bg-white/[0.04] rounded-2xl border border-white/[0.08] p-5 leading-8 text-base text-[#f5ede0]">
           {story.segments.map((seg, i) => (
             <span key={i}>
               <span>{seg}</span>
@@ -372,8 +372,8 @@ export default function HistoireATrousPage() {
                 <span
                   className={`inline-flex items-center justify-center min-w-[60px] px-2 py-0.5 rounded-lg border-b-2 font-bold mx-1 transition-colors ${
                     userAnswers[story.blanks[i].index] !== undefined
-                      ? "border-amber-400 bg-amber-50 text-amber-800"
-                      : "border-dashed border-gray-300 text-gray-400"
+                      ? "border-[#c9a84c] bg-[#c9a84c]/10 text-[#c9a84c]"
+                      : "border-dashed border-white/[0.20] text-[#f5ede0]/30"
                   }`}
                 >
                   {userAnswers[story.blanks[i].index] ?? "___"}
@@ -387,8 +387,8 @@ export default function HistoireATrousPage() {
         <div className="space-y-4">
           {story.blanks.map((blank) => (
             <div key={blank.index}>
-              <p className="text-xs font-semibold text-amber-600 mb-2">
-                Trou {blank.index + 1} — <span className="font-normal text-amber-500">{blank.meaning}</span>
+              <p className="text-xs font-semibold text-[#f5ede0]/50 mb-2">
+                Trou {blank.index + 1} — <span className="font-normal text-[#f5ede0]/40">{blank.meaning}</span>
               </p>
               <div className="grid grid-cols-2 gap-2">
                 {blank.options.map((opt) => (
@@ -397,8 +397,8 @@ export default function HistoireATrousPage() {
                     onClick={() => selectAnswer(blank.index, opt)}
                     className={`py-2.5 px-3 rounded-xl text-sm font-semibold border-2 transition-all ${
                       userAnswers[blank.index] === opt
-                        ? "border-amber-400 bg-amber-100 text-amber-900"
-                        : "border-amber-200 bg-white text-amber-800 hover:border-amber-400 hover:bg-amber-50"
+                        ? "border-[#c9a84c] bg-[#c9a84c]/10 text-[#f5ede0]"
+                        : "border-white/[0.15] bg-white/[0.06] text-[#f5ede0]/80 hover:border-white/[0.30] hover:bg-white/[0.08]"
                     }`}
                   >
                     {opt}
@@ -415,8 +415,8 @@ export default function HistoireATrousPage() {
           disabled={!allAnswered}
           className={`w-full py-4 rounded-2xl font-bold text-lg transition-all ${
             allAnswered
-              ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg hover:-translate-y-0.5 active:scale-95"
-              : "bg-amber-100 text-amber-400 cursor-not-allowed"
+              ? "bg-[#c41e1e] text-[#f5ede0] shadow-lg hover:-translate-y-0.5 active:scale-95"
+              : "bg-white/[0.04] text-[#f5ede0]/30 cursor-not-allowed"
           }`}
         >
           Valider mes réponses
