@@ -111,10 +111,9 @@ function Spinner() {
   return <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin opacity-60" />;
 }
 
-function EmptyState({ icon, title, sub }: { icon: string; title: string; sub?: string }) {
+function EmptyState({ icon: _icon, title, sub }: { icon: string; title: string; sub?: string }) {
   return (
     <div className="text-center py-10 space-y-2">
-      <div className="text-4xl">{icon}</div>
       <p className="text-sm font-semibold text-[#f5ede0]/60">{title}</p>
       {sub && <p className="text-xs text-[#f5ede0]/30">{sub}</p>}
     </div>
